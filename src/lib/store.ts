@@ -1,13 +1,22 @@
 import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Annotation, AnnotationData, DocChunk } from "@/lib/types";
+import type {
+  Annotation,
+  AnnotationData,
+  DocChunk,
+  Document,
+} from "@/lib/types";
 
 interface AppState extends AnnotationData {
   addAnnotation: (data: Annotation) => string;
-  updateAnnotation: (id: string, data: Partial<Annotation>) => void;
+  updateAnnotation: (id: string, data: Annotation) => void;
   deleteAnnotation: (id: string) => void;
-  clearAnnotations: () => void;
+  clearAll: () => void;
+
+  addDocument: (data: Document) => string;
+  updateDocument: (id: string, data: Document) => void;
+  deleteDocument: (id: string) => void;
 
   setAuthor: (author: string) => void;
   setProject: (project: string) => void;
@@ -26,6 +35,7 @@ function createEmptyState(): AnnotationData {
     createdAt: now,
     updatedAt: now,
     annotations: {},
+    documents: {},
   };
 }
 
@@ -62,14 +72,49 @@ export const useStore = create<AppState>()(
         });
       },
 
-      clearAnnotations: () => set({ annotations: {} }),
+      clearAll: () => set({ annotations: {}, documents: {} }),
+
+      addDocument: (data) => {
+        const id = uuidv1();
+        set((state) => ({
+          documents: { ...state.documents, [id]: data },
+        }));
+        return id;
+      },
+
+      updateDocument: (id, data) => {
+        set((state) => {
+          const existing = state.documents[id];
+          if (!existing) return state;
+          return {
+            documents: {
+              ...state.documents,
+              [id]: { ...existing, ...data },
+            },
+          };
+        });
+      },
+
+      deleteDocument: (id) => {
+        set((state) => {
+          const { [id]: _, ...rest } = state.documents;
+          return { documents: rest };
+        });
+      },
 
       setAuthor: (author) => set({ author }),
       setProject: (project) => set({ project }),
       setDescription: (description) => set({ description }),
 
       exportAnnotations: () => {
-        const { annotations, author, project, description, createdAt } = get();
+        const {
+          annotations,
+          documents,
+          author,
+          project,
+          description,
+          createdAt,
+        } = get();
         const now = new Date().toISOString();
 
         const exportData = {
@@ -79,6 +124,7 @@ export const useStore = create<AppState>()(
           createdAt,
           updatedAt: now,
           annotations,
+          documents,
         };
 
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
@@ -127,8 +173,30 @@ export const useStore = create<AppState>()(
           Object.entries(imported).filter(([id]) => !currentIds.has(id)),
         );
 
+        const importedDocs: Record<string, Document> =
+          parsed.documents && typeof parsed.documents === "object"
+            ? Object.fromEntries(
+                Object.entries(parsed.documents).map(([id, doc]) => {
+                  const d = doc as Record<string, unknown>;
+                  return [
+                    id,
+                    {
+                      filename: String(d.filename ?? ""),
+                      description: String(d.description ?? ""),
+                    },
+                  ];
+                }),
+              )
+            : {};
+
+        const currentDocIds = new Set(Object.keys(get().documents));
+        const newDocuments = Object.fromEntries(
+          Object.entries(importedDocs).filter(([id]) => !currentDocIds.has(id)),
+        );
+
         set((state) => ({
           annotations: { ...state.annotations, ...newAnnotations },
+          documents: { ...state.documents, ...newDocuments },
           createdAt: parsed.createdAt ?? state.createdAt,
           updatedAt: now,
           author: parsed.author || state.author,
@@ -148,6 +216,7 @@ export const useStore = create<AppState>()(
         createdAt: state.createdAt,
         updatedAt: state.updatedAt,
         annotations: state.annotations,
+        documents: state.documents,
       }),
     },
   ),

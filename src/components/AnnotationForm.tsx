@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { DocsInput } from "@/components/DocsInput";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,11 @@ import { QUERY_TYPE_DESCRIPTIONS, QUERY_TYPE_LABELS } from "@/lib/types";
 interface AnnotationFormProps {
   annotation?: Annotation;
   onSubmit: (data: Annotation) => void;
-  onCancel?: () => void;
+  onCancel: () => void;
+}
+
+export interface AnnotationFormRef {
+  hasUnsavedChanges: () => boolean;
 }
 
 const emptyFormData: Annotation = {
@@ -30,36 +34,40 @@ const emptyFormData: Annotation = {
   notes: "",
 };
 
-export function AnnotationForm({
-  annotation,
-  onSubmit,
-  onCancel,
-}: AnnotationFormProps) {
+export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>(
+  function AnnotationForm({ annotation, onSubmit, onCancel }, ref) {
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const [errors, setErrors] = useState<
     Partial<Record<keyof Annotation, string>>
   >({});
+  const initialFormData = useRef<Annotation>(emptyFormData);
+
+  useImperativeHandle(ref, () => ({
+    hasUnsavedChanges: () => {
+      return JSON.stringify(formData) !== JSON.stringify(initialFormData.current);
+    },
+  }));
 
   useEffect(() => {
-    if (annotation) {
-      setFormData({
-        query: annotation.query,
-        queryType: annotation.queryType ?? "fact_single",
-        relevantDocs:
-          annotation.relevantDocs.length > 0
-            ? annotation.relevantDocs
-            : [{ content: "" }],
-        distractorDocs:
-          annotation.distractorDocs?.length > 0
-            ? annotation.distractorDocs
-            : [{ content: "" }],
-        response: annotation.response,
-        complexity: annotation.complexity,
-        notes: annotation.notes,
-      });
-    } else {
-      setFormData(emptyFormData);
-    }
+    const newFormData = annotation
+      ? {
+          query: annotation.query,
+          queryType: annotation.queryType ?? "fact_single",
+          relevantDocs:
+            annotation.relevantDocs.length > 0
+              ? annotation.relevantDocs
+              : [{ content: "" }],
+          distractorDocs:
+            annotation.distractorDocs?.length > 0
+              ? annotation.distractorDocs
+              : [{ content: "" }],
+          response: annotation.response,
+          complexity: annotation.complexity,
+          notes: annotation.notes,
+        }
+      : emptyFormData;
+    setFormData(newFormData);
+    initialFormData.current = newFormData;
     setErrors({});
   }, [annotation]);
 
@@ -257,14 +265,12 @@ export function AnnotationForm({
 
           <div className="flex gap-3 pt-4">
             <Button type="submit">Speichern</Button>
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel}>
-                Abbrechen
-              </Button>
-            )}
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Abbrechen
+            </Button>
           </div>
         </form>
       </CardContent>
     </Card>
   );
-}
+});

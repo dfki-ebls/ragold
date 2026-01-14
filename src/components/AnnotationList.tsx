@@ -1,11 +1,12 @@
 import {
+  CheckCircle,
   ChevronDown,
   ChevronUp,
   FileText,
   Pencil,
-  RotateCcw,
   Star,
   Trash2,
+  XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ interface AnnotationListProps {
   annotations: Record<string, Annotation>;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
-  onClear: () => void;
 }
 
 function AnnotationCard({
@@ -25,13 +25,16 @@ function AnnotationCard({
   annotation,
   onEdit,
   onDelete,
+  deleteConfirm,
 }: {
   id: string;
   annotation: Annotation;
   onEdit: () => void;
   onDelete: () => void;
+  deleteConfirm: boolean;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const distractorCount = annotation.distractorDocs?.length ?? 0;
 
   return (
     <Card>
@@ -47,10 +50,16 @@ function AnnotationCard({
                   {QUERY_TYPE_LABELS[annotation.queryType]}
                 </span>
               )}
-              <span className="flex items-center gap-1">
-                <FileText className="w-3.5 h-3.5" />
-                {annotation.relevantDocs.length} Dok.
+              <span className="flex items-center gap-1 text-green-600">
+                <CheckCircle className="w-3.5 h-3.5" />
+                {annotation.relevantDocs.length}
               </span>
+              {distractorCount > 0 && (
+                <span className="flex items-center gap-1 text-red-600">
+                  <XCircle className="w-3.5 h-3.5" />
+                  {distractorCount}
+                </span>
+              )}
               <span className="flex items-center gap-1">
                 {Array.from({ length: 5 }, (_, i) => (
                   <Star
@@ -69,6 +78,11 @@ function AnnotationCard({
             </div>
           </div>
           <div className="flex items-center gap-1 shrink-0">
+            {deleteConfirm && (
+              <span className="text-xs text-destructive mr-2">
+                Nochmal klicken
+              </span>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -78,7 +92,7 @@ function AnnotationCard({
               <Pencil className="w-4 h-4" />
             </Button>
             <Button
-              variant="ghost"
+              variant={deleteConfirm ? "destructive" : "ghost"}
               size="icon"
               onClick={onDelete}
               className="h-8 w-8"
@@ -180,10 +194,8 @@ export function AnnotationList({
   annotations,
   onEdit,
   onDelete,
-  onClear,
 }: AnnotationListProps) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [clearConfirm, setClearConfirm] = useState(false);
 
   const entries = Object.entries(annotations);
 
@@ -194,16 +206,6 @@ export function AnnotationList({
     } else {
       setDeleteConfirm(id);
       setTimeout(() => setDeleteConfirm(null), 3000);
-    }
-  };
-
-  const handleClear = () => {
-    if (clearConfirm) {
-      onClear();
-      setClearConfirm(false);
-    } else {
-      setClearConfirm(true);
-      setTimeout(() => setClearConfirm(false), 3000);
     }
   };
 
@@ -225,33 +227,18 @@ export function AnnotationList({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {entries.length} Annotation(en)
-        </p>
-        <Button
-          variant={clearConfirm ? "destructive" : "ghost"}
-          size="sm"
-          onClick={handleClear}
-        >
-          <RotateCcw className="w-4 h-4 mr-2" />
-          {clearConfirm ? "Klicken zum Bestätigen" : "Alle löschen"}
-        </Button>
-      </div>
+      <p className="text-sm text-muted-foreground">
+        {entries.length} Annotation(en)
+      </p>
       {entries.map(([id, annotation]) => (
-        <div key={id}>
-          <AnnotationCard
-            id={id}
-            annotation={annotation}
-            onEdit={() => onEdit(id)}
-            onDelete={() => handleDelete(id)}
-          />
-          {deleteConfirm === id && (
-            <div className="mt-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
-              Klicken Sie erneut auf Löschen, um zu bestätigen.
-            </div>
-          )}
-        </div>
+        <AnnotationCard
+          key={id}
+          id={id}
+          annotation={annotation}
+          onEdit={() => onEdit(id)}
+          onDelete={() => handleDelete(id)}
+          deleteConfirm={deleteConfirm === id}
+        />
       ))}
     </div>
   );

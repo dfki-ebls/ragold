@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { AnnotationForm } from "@/components/AnnotationForm";
+import { useRef, useState } from "react";
+import { AnnotationForm, type AnnotationFormRef } from "@/components/AnnotationForm";
 import { AnnotationList } from "@/components/AnnotationList";
+import { DocumentManager } from "@/components/DocumentManager";
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,15 +12,36 @@ import type { Annotation } from "@/lib/types";
 
 export default function App() {
   const annotations = useStore((s) => s.annotations);
+  const documents = useStore((s) => s.documents);
   const author = useStore((s) => s.author);
   const project = useStore((s) => s.project);
   const description = useStore((s) => s.description);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("new");
+  const formRef = useRef<AnnotationFormRef>(null);
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
   const annotationCount = Object.keys(annotations).length;
+  const documentCount = Object.keys(documents).length;
+
+  const handleTabChange = (value: string) => {
+    if (value === "manage" && activeTab === "new" && formRef.current?.hasUnsavedChanges()) {
+      const confirmed = window.confirm(
+        "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?"
+      );
+      if (!confirmed) return;
+    }
+    setActiveTab(value);
+    if (value === "manage") {
+      setEditingId(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setActiveTab("manage");
+  };
 
   const handleSubmit = (data: Annotation) => {
     const store = useStore.getState();
@@ -84,24 +106,32 @@ export default function App() {
                 placeholder="Kurze Beschreibung des Datensatzes (optional)"
               />
             </div>
+            <p className="text-sm text-muted-foreground mt-4">
+              Diese Metadaten gelten für alle Annotationen und Dokumente.
+              Der Export enthält sowohl Annotationen als auch Dokumente.
+            </p>
           </CardContent>
         </Card>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6">
             <TabsTrigger value="new">
               {editingId ? "Bearbeiten" : "Neue Annotation"}
             </TabsTrigger>
             <TabsTrigger value="manage">
-              Verwalten ({annotationCount})
+              Annotationen ({annotationCount})
+            </TabsTrigger>
+            <TabsTrigger value="documents">
+              Dokumente ({documentCount})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="new">
             <AnnotationForm
+              ref={formRef}
               annotation={editingAnnotation ?? undefined}
               onSubmit={handleSubmit}
-              onCancel={editingId ? () => setEditingId(null) : undefined}
+              onCancel={handleCancel}
             />
           </TabsContent>
 
@@ -113,8 +143,11 @@ export default function App() {
                 setActiveTab("new");
               }}
               onDelete={(id) => useStore.getState().deleteAnnotation(id)}
-              onClear={() => useStore.getState().clearAnnotations()}
             />
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <DocumentManager />
           </TabsContent>
         </Tabs>
       </main>
