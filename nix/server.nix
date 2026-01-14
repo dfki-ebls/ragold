@@ -40,6 +40,7 @@ in
 writeShellApplication {
   name = "server";
   text = ''
+    echo "Starting Caddy server on port ${toString caddyPort}..."
     ${lib.getExe caddy} run --config ${caddyfile}/Caddyfile --adapter caddyfile
   '';
   derivationArgs = {
