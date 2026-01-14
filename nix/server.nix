@@ -1,13 +1,15 @@
 {
   writeShellApplication,
-  writeText,
+  writeTextDir,
   app,
   lib,
+  stdenv,
   caddy,
+  runCommand,
   caddyPort ? 8080,
 }:
 let
-  caddyfile = writeText "caddyfile" ''
+  caddyfileRaw = writeTextDir "Caddyfile" ''
     {
       admin off
       auto_https off
@@ -25,11 +27,20 @@ let
       }
     }
   '';
+
+  caddyfileFormatted = runCommand "Caddyfile-formatted" { nativeBuildInputs = [ caddy ]; } /* bash */ ''
+    mkdir -p $out
+    cp --no-preserve=mode ${caddyfileRaw}/Caddyfile $out/Caddyfile
+    caddy fmt --overwrite $out/Caddyfile
+  '';
+
+  caddyfile =
+    if stdenv.buildPlatform == stdenv.hostPlatform then caddyfileFormatted else caddyfileRaw;
 in
 writeShellApplication {
   name = "server";
   text = ''
-    ${lib.getExe caddy} run --config ${caddyfile} --adapter caddyfile
+    ${lib.getExe caddy} run --config ${caddyfile}/Caddyfile --adapter caddyfile
   '';
   derivationArgs = {
     passthru.port = caddyPort;
