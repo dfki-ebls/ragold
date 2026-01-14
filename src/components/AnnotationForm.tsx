@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
 import { DocsInput } from "@/components/DocsInput";
 import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
@@ -12,7 +19,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Annotation, QueryType } from "@/lib/types";
-import { QUERY_TYPE_DESCRIPTIONS, QUERY_TYPE_LABELS } from "@/lib/types";
+
+const QUERY_TYPES: QueryType[] = [
+  "fact_single",
+  "summary",
+  "reasoning",
+  "unanswerable",
+];
 
 interface AnnotationFormProps {
   annotation?: Annotation;
@@ -34,8 +47,11 @@ const emptyFormData: Annotation = {
   notes: "",
 };
 
-export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>(
-  function AnnotationForm({ annotation, onSubmit, onCancel }, ref) {
+export const AnnotationForm = forwardRef<
+  AnnotationFormRef,
+  AnnotationFormProps
+>(function AnnotationForm({ annotation, onSubmit, onCancel }, ref) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const [errors, setErrors] = useState<
     Partial<Record<keyof Annotation, string>>
@@ -44,7 +60,9 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
 
   useImperativeHandle(ref, () => ({
     hasUnsavedChanges: () => {
-      return JSON.stringify(formData) !== JSON.stringify(initialFormData.current);
+      return (
+        JSON.stringify(formData) !== JSON.stringify(initialFormData.current)
+      );
     },
   }));
 
@@ -75,20 +93,19 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
     const newErrors: Partial<Record<keyof Annotation, string>> = {};
 
     if (!formData.query.trim()) {
-      newErrors.query = "Nutzeranfrage ist erforderlich";
+      newErrors.query = t("form.queryError");
     }
 
     if (formData.relevantDocs.every((doc) => !doc.content.trim())) {
-      newErrors.relevantDocs =
-        "Mindestens eine Dokumentpassage ist erforderlich";
+      newErrors.relevantDocs = t("docs.relevantError");
     }
 
     if (!formData.response.trim()) {
-      newErrors.response = "Erwartete Antwort ist erforderlich";
+      newErrors.response = t("form.responseError");
     }
 
     if (formData.complexity < 1 || formData.complexity > 5) {
-      newErrors.complexity = "Komplexität (1-5 Sterne) ist erforderlich";
+      newErrors.complexity = t("form.complexityError");
     }
 
     setErrors(newErrors);
@@ -118,20 +135,16 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
     <Card>
       <CardHeader>
         <CardTitle>
-          {isEditing ? "Annotation bearbeiten" : "Neue Annotation erstellen"}
+          {isEditing ? t("form.titleEdit") : t("form.titleNew")}
         </CardTitle>
-        <CardDescription>
-          Erstellen Sie ein Beispiel für eine Nutzeranfrage an ein RAG-System
-          mit den relevanten Dokumenten und der erwarteten Antwort.
-        </CardDescription>
+        <CardDescription>{t("form.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="query">Nutzeranfrage *</Label>
+            <Label htmlFor="query">{t("form.query")} *</Label>
             <p className="text-sm text-muted-foreground">
-              Formulieren Sie die Frage so, wie ein Nutzer sie in ein
-              Chat-System eingeben würde.
+              {t("form.queryDescription")}
             </p>
             <Textarea
               id="query"
@@ -139,7 +152,7 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
               onChange={(e) =>
                 setFormData({ ...formData, query: e.target.value })
               }
-              placeholder="Wie beantrage ich Urlaub im Self-Service-Portal?"
+              placeholder={t("form.queryPlaceholder")}
               rows={3}
             />
             {errors.query && (
@@ -148,12 +161,12 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
           </div>
 
           <div className="space-y-2">
-            <Label>Fragetyp *</Label>
+            <Label>{t("form.queryType")} *</Label>
             <p className="text-sm text-muted-foreground">
-              Wie wird die Frage durch den Kontext beantwortet?
+              {t("form.queryTypeDescription")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {(Object.keys(QUERY_TYPE_LABELS) as QueryType[]).map((type) => (
+              {QUERY_TYPES.map((type) => (
                 <button
                   key={type}
                   type="button"
@@ -165,10 +178,10 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
                   }`}
                 >
                   <div className="font-medium text-sm">
-                    {QUERY_TYPE_LABELS[type]}
+                    {t(`queryTypes.${type}.label`)}
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    {QUERY_TYPE_DESCRIPTIONS[type]}
+                    {t(`queryTypes.${type}.description`)}
                   </div>
                 </button>
               ))}
@@ -193,17 +206,14 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
               onChange={(distractorDocs) =>
                 setFormData({ ...formData, distractorDocs })
               }
-              label="Irrelevante Dokumenteninhalte (optional)"
-              description="Textpassagen, die relevant erscheinen, aber nicht zur Beantwortung verwendet werden sollten."
-              placeholder="Ablenkende Passage"
+              variant="distractor"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="response">Erwartete Antwort *</Label>
+            <Label htmlFor="response">{t("form.response")} *</Label>
             <p className="text-sm text-muted-foreground">
-              Formulieren Sie die ideale Antwort, die das Chat-System geben
-              sollte.
+              {t("form.responseDescription")}
             </p>
             <Textarea
               id="response"
@@ -211,7 +221,7 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
               onChange={(e) =>
                 setFormData({ ...formData, response: e.target.value })
               }
-              placeholder="Antwort auf die Nutzeranfrage..."
+              placeholder={t("form.responsePlaceholder")}
               rows={4}
             />
             {errors.response && (
@@ -220,20 +230,16 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
           </div>
 
           <div className="space-y-2">
-            <Label>Komplexität der Aufgabe *</Label>
+            <Label>{t("form.complexity")} *</Label>
             <p className="text-sm text-muted-foreground">
-              Wie schwierig ist diese Aufgabe für ein RAG-System?
+              {t("form.complexityDescription")}
             </p>
             <div className="text-xs text-muted-foreground space-y-0.5 mb-2">
-              <p>
-                1: Einfache Faktenabfrage, Antwort steht wörtlich im Dokument
-              </p>
-              <p>2: Leichte Umformulierung oder Filterung nötig</p>
-              <p>3: Informationen aus mehreren Absätzen kombinieren</p>
-              <p>
-                4: Komplexe Zusammenhänge verstehen, implizites Wissen nutzen
-              </p>
-              <p>5: Sehr anspruchsvoll, erfordert tiefes Verständnis</p>
+              <p>1: {t("form.complexityLevel1")}</p>
+              <p>2: {t("form.complexityLevel2")}</p>
+              <p>3: {t("form.complexityLevel3")}</p>
+              <p>4: {t("form.complexityLevel4")}</p>
+              <p>5: {t("form.complexityLevel5")}</p>
             </div>
             <StarRating
               value={formData.complexity}
@@ -247,10 +253,9 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Anmerkungen (optional)</Label>
+            <Label htmlFor="notes">{t("form.notes")}</Label>
             <p className="text-sm text-muted-foreground">
-              Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit,
-              besondere Formulierungen.
+              {t("form.notesDescription")}
             </p>
             <Textarea
               id="notes"
@@ -258,15 +263,15 @@ export const AnnotationForm = forwardRef<AnnotationFormRef, AnnotationFormProps>
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              placeholder="Optionale Hinweise..."
+              placeholder={t("form.notesPlaceholder")}
               rows={3}
             />
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="submit">Speichern</Button>
+            <Button type="submit">{t("common.save")}</Button>
             <Button type="button" variant="outline" onClick={onCancel}>
-              Abbrechen
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

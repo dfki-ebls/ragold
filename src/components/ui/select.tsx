@@ -24,10 +24,7 @@ function Select({ className, children, placeholder, ...props }: SelectProps) {
   );
 }
 
-function SelectOption({
-  className,
-  ...props
-}: React.ComponentProps<"option">) {
+function SelectOption({ className, ...props }: React.ComponentProps<"option">) {
   return <option className={cn(className)} {...props} />;
 }
 

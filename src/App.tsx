@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
-import { AnnotationForm, type AnnotationFormRef } from "@/components/AnnotationForm";
+import { useTranslation } from "react-i18next";
+import {
+  AnnotationForm,
+  type AnnotationFormRef,
+} from "@/components/AnnotationForm";
 import { AnnotationList } from "@/components/AnnotationList";
 import { DocumentManager } from "@/components/DocumentManager";
 import Header from "@/components/Header";
@@ -11,6 +15,7 @@ import { useStore } from "@/lib/store";
 import type { Annotation } from "@/lib/types";
 
 export default function App() {
+  const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
   const author = useStore((s) => s.author);
@@ -26,10 +31,12 @@ export default function App() {
   const documentCount = Object.keys(documents).length;
 
   const handleTabChange = (value: string) => {
-    if (value === "manage" && activeTab === "new" && formRef.current?.hasUnsavedChanges()) {
-      const confirmed = window.confirm(
-        "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?"
-      );
+    if (
+      value === "manage" &&
+      activeTab === "new" &&
+      formRef.current?.hasUnsavedChanges()
+    ) {
+      const confirmed = window.confirm(t("form.unsavedChanges"));
       if (!confirmed) return;
     }
     setActiveTab(value);
@@ -59,56 +66,51 @@ export default function App() {
       <Header />
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">
-            Annotation von RAG-Beispielen
-          </h1>
-          <p className="text-muted-foreground">
-            Erstellen Sie Beispiele für Nutzeranfragen an ein Chat-System, das
-            Antworten basierend auf Dokumenteninhalten generiert
-            (Retrieval-Augmented Generation).
-          </p>
+          <h1 className="text-2xl font-bold mb-2">{t("metadata.title")}</h1>
+          <p className="text-muted-foreground">{t("metadata.description")}</p>
         </div>
 
         <Card className="mb-8">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="space-y-2">
-                <Label htmlFor="author">Autor *</Label>
+                <Label htmlFor="author">{t("metadata.author")} *</Label>
                 <Input
                   id="author"
                   value={author}
                   onChange={(e) =>
                     useStore.getState().setAuthor(e.target.value)
                   }
-                  placeholder="Name des Annotators"
+                  placeholder={t("metadata.authorPlaceholder")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="project">Projekt *</Label>
+                <Label htmlFor="project">{t("metadata.project")} *</Label>
                 <Input
                   id="project"
                   value={project}
                   onChange={(e) =>
                     useStore.getState().setProject(e.target.value)
                   }
-                  placeholder="Projektname"
+                  placeholder={t("metadata.projectPlaceholder")}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Beschreibung</Label>
+              <Label htmlFor="description">
+                {t("metadata.datasetDescription")}
+              </Label>
               <Input
                 id="description"
                 value={description}
                 onChange={(e) =>
                   useStore.getState().setDescription(e.target.value)
                 }
-                placeholder="Kurze Beschreibung des Datensatzes (optional)"
+                placeholder={t("metadata.datasetDescriptionPlaceholder")}
               />
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              Diese Metadaten gelten für alle Annotationen und Dokumente.
-              Der Export enthält sowohl Annotationen als auch Dokumente.
+              {t("metadata.metadataInfo")}
             </p>
           </CardContent>
         </Card>
@@ -116,13 +118,13 @@ export default function App() {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6">
             <TabsTrigger value="new">
-              {editingId ? "Bearbeiten" : "Neue Annotation"}
+              {editingId ? t("tabs.editing") : t("tabs.newAnnotation")}
             </TabsTrigger>
             <TabsTrigger value="manage">
-              Annotationen ({annotationCount})
+              {t("tabs.annotations", { count: annotationCount })}
             </TabsTrigger>
             <TabsTrigger value="documents">
-              Dokumente ({documentCount})
+              {t("tabs.documents", { count: documentCount })}
             </TabsTrigger>
           </TabsList>
 

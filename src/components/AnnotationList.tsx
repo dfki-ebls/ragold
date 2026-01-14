@@ -9,10 +9,10 @@ import {
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Annotation } from "@/lib/types";
-import { QUERY_TYPE_LABELS } from "@/lib/types";
+import type { Annotation, QueryType } from "@/lib/types";
 
 interface AnnotationListProps {
   annotations: Record<string, Annotation>;
@@ -33,6 +33,7 @@ function AnnotationCard({
   onDelete: () => void;
   deleteConfirm: boolean;
 }) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const distractorCount = annotation.distractorDocs?.length ?? 0;
 
@@ -47,7 +48,7 @@ function AnnotationCard({
             <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground flex-wrap">
               {annotation.queryType && (
                 <span className="px-2 py-0.5 bg-muted rounded text-xs">
-                  {QUERY_TYPE_LABELS[annotation.queryType]}
+                  {t(`queryTypes.${annotation.queryType as QueryType}.label`)}
                 </span>
               )}
               <span className="flex items-center gap-1 text-green-600">
@@ -80,7 +81,7 @@ function AnnotationCard({
           <div className="flex items-center gap-1 shrink-0">
             {deleteConfirm && (
               <span className="text-xs text-destructive mr-2">
-                Nochmal klicken
+                {t("annotationList.clickAgain")}
               </span>
             )}
             <Button
@@ -112,12 +113,12 @@ function AnnotationCard({
           {isExpanded ? (
             <>
               <ChevronUp className="w-4 h-4 mr-1" />
-              Weniger anzeigen
+              {t("annotationList.hideDetails")}
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4 mr-1" />
-              Details anzeigen
+              {t("annotationList.showDetails")}
             </>
           )}
         </Button>
@@ -125,7 +126,9 @@ function AnnotationCard({
         {isExpanded && (
           <div className="mt-4 space-y-4">
             <div>
-              <h4 className="text-sm font-medium mb-1">Erwartete Antwort</h4>
+              <h4 className="text-sm font-medium mb-1">
+                {t("annotationList.expectedResponse")}
+              </h4>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                 {annotation.response}
               </p>
@@ -133,7 +136,9 @@ function AnnotationCard({
 
             <div>
               <h4 className="text-sm font-medium mb-1">
-                Relevante Dokumentpassagen ({annotation.relevantDocs.length})
+                {t("annotationList.relevantDocs", {
+                  count: annotation.relevantDocs.length,
+                })}
               </h4>
               <div className="space-y-2">
                 {annotation.relevantDocs.map((doc, i) => (
@@ -154,8 +159,9 @@ function AnnotationCard({
               annotation.distractorDocs.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-1">
-                    Irrelevante Dokumentpassagen (
-                    {annotation.distractorDocs.length})
+                    {t("annotationList.distractorDocs", {
+                      count: annotation.distractorDocs.length,
+                    })}
                   </h4>
                   <div className="space-y-2">
                     {annotation.distractorDocs.map((doc, i) => (
@@ -177,7 +183,9 @@ function AnnotationCard({
 
             {annotation.notes && (
               <div>
-                <h4 className="text-sm font-medium mb-1">Anmerkungen</h4>
+                <h4 className="text-sm font-medium mb-1">
+                  {t("annotationList.notes")}
+                </h4>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {annotation.notes}
                 </p>
@@ -195,6 +203,7 @@ export function AnnotationList({
   onEdit,
   onDelete,
 }: AnnotationListProps) {
+  const { t } = useTranslation();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const entries = Object.entries(annotations);
@@ -214,11 +223,9 @@ export function AnnotationList({
       <Card>
         <CardContent className="py-12 text-center">
           <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground">
-            Noch keine Annotationen vorhanden.
-          </p>
+          <p className="text-muted-foreground">{t("annotationList.empty")}</p>
           <p className="text-sm text-muted-foreground/60 mt-1">
-            Erstellen Sie Ihre erste Annotation über den Tab "Neue Annotation".
+            {t("annotationList.emptyHint")}
           </p>
         </CardContent>
       </Card>
@@ -228,7 +235,7 @@ export function AnnotationList({
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        {entries.length} Annotation(en)
+        {t("annotationList.count", { count: entries.length })}
       </p>
       {entries.map(([id, annotation]) => (
         <AnnotationCard

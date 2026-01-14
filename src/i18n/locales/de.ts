@@ -1,0 +1,148 @@
+import type { TranslationKeys } from "./en";
+
+export const de: TranslationKeys = {
+  common: {
+    save: "Speichern",
+    cancel: "Abbrechen",
+    edit: "Bearbeiten",
+    delete: "Löschen",
+    confirm: "Bestätigen",
+    reset: "Reset",
+    import: "Import",
+    export: "Export",
+    add: "Hinzufügen",
+    update: "Aktualisieren",
+  },
+  header: {
+    title: "RAGold",
+    importTooltip: "Importiert Annotationen und Dokumente aus JSON",
+    exportTooltip: "Exportiert Annotationen und Dokumente als JSON",
+    exportDisabledMeta: "Autor und Projekt müssen ausgefüllt sein",
+    exportDisabledEmpty: "Keine Annotationen vorhanden",
+    resetTooltip: "Löscht alle Annotationen und Dokumente",
+    resetDisabled: "Keine Daten vorhanden",
+    importSuccess:
+      "{{count}} neue Annotation(en) importiert. Dokumente wurden ebenfalls importiert.",
+    importEmpty:
+      "Keine neuen Annotationen gefunden (alle bereits vorhanden). Dokumente wurden ggf. importiert.",
+    importError: "Import fehlgeschlagen: {{message}}",
+  },
+  metadata: {
+    title: "Annotation von RAG-Beispielen",
+    description:
+      "Erstellen Sie Beispiele für Nutzeranfragen an ein Chat-System, das Antworten basierend auf Dokumenteninhalten generiert (Retrieval-Augmented Generation).",
+    author: "Autor",
+    authorPlaceholder: "Name des Annotators",
+    project: "Projekt",
+    projectPlaceholder: "Projektname",
+    datasetDescription: "Beschreibung",
+    datasetDescriptionPlaceholder:
+      "Kurze Beschreibung des Datensatzes (optional)",
+    metadataInfo:
+      "Diese Metadaten gelten für alle Annotationen und Dokumente. Der Export enthält sowohl Annotationen als auch Dokumente.",
+  },
+  tabs: {
+    newAnnotation: "Neue Annotation",
+    editing: "Bearbeiten",
+    annotations: "Annotationen ({{count}})",
+    documents: "Dokumente ({{count}})",
+  },
+  form: {
+    titleNew: "Neue Annotation erstellen",
+    titleEdit: "Annotation bearbeiten",
+    description:
+      "Erstellen Sie ein Beispiel für eine Nutzeranfrage an ein RAG-System mit den relevanten Dokumenten und der erwarteten Antwort.",
+    query: "Nutzeranfrage",
+    queryDescription:
+      "Formulieren Sie die Frage so, wie ein Nutzer sie in ein Chat-System eingeben würde.",
+    queryPlaceholder: "Wie beantrage ich Urlaub im Self-Service-Portal?",
+    queryError: "Nutzeranfrage ist erforderlich",
+    queryType: "Fragetyp",
+    queryTypeDescription: "Wie wird die Frage durch den Kontext beantwortet?",
+    response: "Erwartete Antwort",
+    responseDescription:
+      "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
+    responsePlaceholder: "Antwort auf die Nutzeranfrage...",
+    responseError: "Erwartete Antwort ist erforderlich",
+    complexity: "Komplexität der Aufgabe",
+    complexityDescription:
+      "Wie schwierig ist diese Aufgabe für ein RAG-System?",
+    complexityError: "Komplexität (1-5 Sterne) ist erforderlich",
+    complexityLevel1:
+      "Einfache Faktenabfrage, Antwort steht wörtlich im Dokument",
+    complexityLevel2: "Leichte Umformulierung oder Filterung nötig",
+    complexityLevel3: "Informationen aus mehreren Absätzen kombinieren",
+    complexityLevel4:
+      "Komplexe Zusammenhänge verstehen, implizites Wissen nutzen",
+    complexityLevel5: "Sehr anspruchsvoll, erfordert tiefes Verständnis",
+    notes: "Anmerkungen (optional)",
+    notesDescription:
+      "Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit, besondere Formulierungen.",
+    notesPlaceholder: "Optionale Hinweise...",
+    unsavedChanges:
+      "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?",
+  },
+  queryTypes: {
+    fact_single: {
+      label: "Einzelfakt",
+      description:
+        "Antwort ist im Kontext vorhanden, eine einzelne Informationseinheit.",
+    },
+    summary: {
+      label: "Zusammenfassung",
+      description:
+        "Antwort ist im Kontext vorhanden, erfordert Zusammenfassung mehrerer Informationen.",
+    },
+    reasoning: {
+      label: "Schlussfolgerung",
+      description:
+        "Antwort ist nicht explizit im Kontext, kann aber durch Schlussfolgerung abgeleitet werden.",
+    },
+    unanswerable: {
+      label: "Unbeantwortbar",
+      description: "Antwort ist weder im Kontext vorhanden noch ableitbar.",
+    },
+  },
+  docs: {
+    relevantLabel: "Relevante Dokumenteninhalte",
+    relevantDescription:
+      "Tragen Sie die Textpassagen ein, die das System finden müsste, um die Frage korrekt zu beantworten.",
+    relevantPlaceholder: "Dokumentpassage",
+    relevantError: "Mindestens eine Dokumentpassage ist erforderlich",
+    distractorLabel: "Irrelevante Dokumenteninhalte (optional)",
+    distractorDescription:
+      "Textpassagen, die relevant erscheinen, aber nicht zur Beantwortung verwendet werden sollten.",
+    distractorPlaceholder: "Ablenkende Passage",
+    addPassage: "Weitere Passage hinzufügen",
+    noDocuments: "Keine Dokumente vorhanden",
+    manualEntry: "Manueller Eintrag",
+    addDocsHint:
+      'Fügen Sie Dokumente im Tab "Dokumente" hinzu, um sie hier auszuwählen.',
+  },
+  annotationList: {
+    count: "{{count}} Annotation(en)",
+    empty: "Noch keine Annotationen vorhanden.",
+    emptyHint:
+      'Erstellen Sie Ihre erste Annotation über den Tab "Neue Annotation".',
+    showDetails: "Details anzeigen",
+    hideDetails: "Weniger anzeigen",
+    expectedResponse: "Erwartete Antwort",
+    relevantDocs: "Relevante Dokumentpassagen ({{count}})",
+    distractorDocs: "Irrelevante Dokumentpassagen ({{count}})",
+    notes: "Anmerkungen",
+    clickAgain: "Nochmal klicken",
+  },
+  documentManager: {
+    titleNew: "Neues Dokument",
+    titleEdit: "Dokument bearbeiten",
+    filename: "Dateiname",
+    filenamePlaceholder: "dokument.txt",
+    description: "Beschreibung",
+    descriptionPlaceholder: "Beschreibung des Dokuments...",
+    library: "Dokumentbibliothek ({{count}})",
+    empty: "Noch keine Dokumente vorhanden. Fügen Sie oben ein Dokument hinzu.",
+  },
+  starRating: {
+    ariaLabel: "{{value}} von {{max}} Sternen",
+  },
+};

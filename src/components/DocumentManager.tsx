@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { FileText, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ const emptyForm: DocumentFormData = {
 };
 
 export function DocumentManager() {
+  const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const addDocument = useStore((s) => s.addDocument);
   const updateDocument = useStore((s) => s.updateDocument);
@@ -80,44 +82,52 @@ export function DocumentManager() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {editingId ? "Dokument bearbeiten" : "Neues Dokument"}
+            {editingId
+              ? t("documentManager.titleEdit")
+              : t("documentManager.titleNew")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="filename">Dateiname *</Label>
+              <Label htmlFor="filename">
+                {t("documentManager.filename")} *
+              </Label>
               <Input
                 id="filename"
                 value={formData.filename}
                 onChange={(e) =>
                   setFormData({ ...formData, filename: e.target.value })
                 }
-                placeholder="dokument.txt"
+                placeholder={t("documentManager.filenamePlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="doc-description">Beschreibung *</Label>
+              <Label htmlFor="doc-description">
+                {t("documentManager.description")} *
+              </Label>
               <Textarea
                 id="doc-description"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                placeholder="Beschreibung des Dokuments..."
+                placeholder={t("documentManager.descriptionPlaceholder")}
                 rows={4}
               />
             </div>
             <div className="flex gap-2">
               <Button
                 type="submit"
-                disabled={!formData.filename.trim() || !formData.description.trim()}
+                disabled={
+                  !formData.filename.trim() || !formData.description.trim()
+                }
               >
-                {editingId ? "Aktualisieren" : "Hinzufügen"}
+                {editingId ? t("common.update") : t("common.add")}
               </Button>
               {editingId && (
                 <Button type="button" variant="outline" onClick={handleCancel}>
-                  Abbrechen
+                  {t("common.cancel")}
                 </Button>
               )}
             </div>
@@ -127,13 +137,14 @@ export function DocumentManager() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dokumentbibliothek ({documentList.length})</CardTitle>
+          <CardTitle>
+            {t("documentManager.library", { count: documentList.length })}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {documentList.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              Noch keine Dokumente vorhanden.
-              Fügen Sie oben ein Dokument hinzu.
+              {t("documentManager.empty")}
             </p>
           ) : (
             <div className="space-y-3">

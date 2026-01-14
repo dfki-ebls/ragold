@@ -1,6 +1,7 @@
 import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
 import type {
   Annotation,
   AnnotationData,
@@ -21,6 +22,7 @@ interface AppState extends AnnotationData {
   setAuthor: (author: string) => void;
   setProject: (project: string) => void;
   setDescription: (description: string) => void;
+  setLanguage: (language: SupportedLanguage) => void;
 
   exportAnnotations: () => void;
   importAnnotations: (file: File) => Promise<number>;
@@ -32,6 +34,7 @@ function createEmptyState(): AnnotationData {
     author: "",
     project: "",
     description: "",
+    language: i18n.language as SupportedLanguage,
     createdAt: now,
     updatedAt: now,
     annotations: {},
@@ -105,6 +108,10 @@ export const useStore = create<AppState>()(
       setAuthor: (author) => set({ author }),
       setProject: (project) => set({ project }),
       setDescription: (description) => set({ description }),
+      setLanguage: (language) => {
+        i18n.changeLanguage(language);
+        set({ language });
+      },
 
       exportAnnotations: () => {
         const {
@@ -113,6 +120,7 @@ export const useStore = create<AppState>()(
           author,
           project,
           description,
+          language,
           createdAt,
         } = get();
         const now = new Date().toISOString();
@@ -121,6 +129,7 @@ export const useStore = create<AppState>()(
           author,
           project,
           description,
+          language,
           createdAt,
           updatedAt: now,
           annotations,
@@ -194,6 +203,11 @@ export const useStore = create<AppState>()(
           Object.entries(importedDocs).filter(([id]) => !currentDocIds.has(id)),
         );
 
+        const importedLanguage: SupportedLanguage =
+          parsed.language && supportedLanguages.includes(parsed.language)
+            ? parsed.language
+            : get().language;
+
         set((state) => ({
           annotations: { ...state.annotations, ...newAnnotations },
           documents: { ...state.documents, ...newDocuments },
@@ -202,7 +216,10 @@ export const useStore = create<AppState>()(
           author: parsed.author || state.author,
           project: parsed.project || state.project,
           description: parsed.description || state.description,
+          language: importedLanguage,
         }));
+
+        i18n.changeLanguage(importedLanguage);
 
         return Object.keys(newAnnotations).length;
       },
@@ -213,11 +230,17 @@ export const useStore = create<AppState>()(
         author: state.author,
         project: state.project,
         description: state.description,
+        language: state.language,
         createdAt: state.createdAt,
         updatedAt: state.updatedAt,
         annotations: state.annotations,
         documents: state.documents,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state?.language) {
+          i18n.changeLanguage(state.language);
+        }
+      },
     },
   ),
 );

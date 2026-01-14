@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectOption } from "@/components/ui/select";
@@ -10,21 +11,31 @@ interface DocsInputProps {
   docs: DocChunk[];
   onChange: (docs: DocChunk[]) => void;
   disabled?: boolean;
-  label?: string;
-  description?: string;
-  placeholder?: string;
+  variant?: "relevant" | "distractor";
 }
 
 export function DocsInput({
   docs,
   onChange,
   disabled = false,
-  label = "Relevante Dokumenteninhalte",
-  description = "Tragen Sie die Textpassagen ein, die das System finden müsste, um die Frage korrekt zu beantworten.",
-  placeholder = "Dokumentpassage",
+  variant = "relevant",
 }: DocsInputProps) {
+  const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const documentList = Object.entries(documents);
+
+  const label =
+    variant === "relevant"
+      ? t("docs.relevantLabel")
+      : t("docs.distractorLabel");
+  const description =
+    variant === "relevant"
+      ? t("docs.relevantDescription")
+      : t("docs.distractorDescription");
+  const placeholder =
+    variant === "relevant"
+      ? t("docs.relevantPlaceholder")
+      : t("docs.distractorPlaceholder");
 
   const addDoc = () => {
     onChange([...docs, { content: "" }]);
@@ -62,10 +73,10 @@ export function DocsInput({
               disabled={disabled || documentList.length === 0}
             >
               {documentList.length === 0 ? (
-                <SelectOption value="">Keine Dokumente vorhanden</SelectOption>
+                <SelectOption value="">{t("docs.noDocuments")}</SelectOption>
               ) : (
                 <>
-                  <SelectOption value="">Manueller Eintrag</SelectOption>
+                  <SelectOption value="">{t("docs.manualEntry")}</SelectOption>
                   {documentList.map(([id, d]) => (
                     <SelectOption key={id} value={id}>
                       {d.filename}
@@ -76,7 +87,7 @@ export function DocsInput({
             </Select>
             {documentList.length === 0 && index === 0 && (
               <p className="text-xs text-muted-foreground">
-                Fügen Sie Dokumente im Tab "Dokumente" hinzu, um sie hier auszuwählen.
+                {t("docs.addDocsHint")}
               </p>
             )}
           </div>
@@ -111,7 +122,7 @@ export function DocsInput({
         disabled={disabled}
       >
         <Plus className="w-4 h-4 mr-2" />
-        Weitere Passage hinzufügen
+        {t("docs.addPassage")}
       </Button>
     </div>
   );

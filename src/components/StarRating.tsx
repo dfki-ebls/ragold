@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface StarRatingProps {
@@ -14,6 +15,8 @@ export function StarRating({
   max = 5,
   disabled = false,
 }: StarRatingProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex gap-1">
       {Array.from({ length: max }, (_, i) => i + 1).map((star) => (
@@ -28,7 +31,7 @@ export function StarRating({
               ? "cursor-not-allowed opacity-50"
               : "cursor-pointer hover:scale-110",
           )}
-          aria-label={`${star} von ${max} Sternen`}
+          aria-label={t("starRating.ariaLabel", { value: star, max })}
         >
           <Star
             className={cn(

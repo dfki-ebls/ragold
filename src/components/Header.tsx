@@ -1,13 +1,23 @@
-import { Download, RotateCcw, Upload } from "lucide-react";
+import { Download, Globe, RotateCcw, Upload } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import type { SupportedLanguage } from "@/i18n";
 import { useStore } from "@/lib/store";
 
+const languageLabels: Record<SupportedLanguage, string> = {
+  de: "DE",
+  en: "EN",
+};
+
 export default function Header() {
+  const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
   const author = useStore((s) => s.author);
   const project = useStore((s) => s.project);
+  const language = useStore((s) => s.language);
+  const setLanguage = useStore((s) => s.setLanguage);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [clearConfirm, setClearConfirm] = useState(false);
 
@@ -34,13 +44,15 @@ export default function Header() {
     try {
       const count = await useStore.getState().importAnnotations(file);
       if (count > 0) {
-        alert(`${count} neue Annotation(en) importiert. Dokumente wurden ebenfalls importiert.`);
+        alert(t("header.importSuccess", { count }));
       } else {
-        alert("Keine neuen Annotationen gefunden (alle bereits vorhanden). Dokumente wurden ggf. importiert.");
+        alert(t("header.importEmpty"));
       }
     } catch (err) {
       alert(
-        `Import fehlgeschlagen: ${err instanceof Error ? err.message : "Unbekannter Fehler"}`,
+        t("header.importError", {
+          message: err instanceof Error ? err.message : "Unknown error",
+        }),
       );
     }
 
@@ -54,12 +66,28 @@ export default function Header() {
     useStore.getState().exportAnnotations();
   };
 
+  const toggleLanguage = () => {
+    const next: SupportedLanguage = language === "de" ? "en" : "de";
+    setLanguage(next);
+  };
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-semibold">RAGold</h1>
+        <h1 className="text-lg font-semibold">{t("header.title")}</h1>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleLanguage}
+            title={
+              language === "de" ? "Switch to English" : "Auf Deutsch wechseln"
+            }
+          >
+            <Globe className="w-4 h-4 mr-2" />
+            {languageLabels[language]}
+          </Button>
           <input
             ref={fileInputRef}
             type="file"
@@ -72,10 +100,10 @@ export default function Header() {
             variant="outline"
             size="sm"
             onClick={() => fileInputRef.current?.click()}
-            title="Importiert Annotationen und Dokumente aus JSON"
+            title={t("header.importTooltip")}
           >
             <Upload className="w-4 h-4 mr-2" />
-            Import
+            {t("common.import")}
           </Button>
           <Button
             variant="outline"
@@ -84,14 +112,14 @@ export default function Header() {
             disabled={!canExport}
             title={
               !isMetadataComplete
-                ? "Autor und Projekt müssen ausgefüllt sein"
+                ? t("header.exportDisabledMeta")
                 : annotationCount === 0
-                  ? "Keine Annotationen vorhanden"
-                  : "Exportiert Annotationen und Dokumente als JSON"
+                  ? t("header.exportDisabledEmpty")
+                  : t("header.exportTooltip")
             }
           >
             <Download className="w-4 h-4 mr-2" />
-            Export ({annotationCount})
+            {t("common.export")} ({annotationCount})
           </Button>
           <Button
             variant={clearConfirm ? "destructive" : "ghost"}
@@ -100,12 +128,12 @@ export default function Header() {
             disabled={totalCount === 0}
             title={
               totalCount === 0
-                ? "Keine Daten vorhanden"
-                : "Löscht alle Annotationen und Dokumente"
+                ? t("header.resetDisabled")
+                : t("header.resetTooltip")
             }
           >
             <RotateCcw className="w-4 h-4 mr-2" />
-            {clearConfirm ? "Bestätigen" : "Reset"}
+            {clearConfirm ? t("common.confirm") : t("common.reset")}
           </Button>
         </div>
       </div>

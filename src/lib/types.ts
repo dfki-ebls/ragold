@@ -1,3 +1,5 @@
+import type { SupportedLanguage } from "@/i18n";
+
 export interface DocChunk {
   content: string;
   documentId?: string;
@@ -23,23 +25,6 @@ export type QueryType =
   | "reasoning"
   | "unanswerable";
 
-export const QUERY_TYPE_LABELS: Record<QueryType, string> = {
-  fact_single: "Einzelfakt",
-  summary: "Zusammenfassung",
-  reasoning: "Schlussfolgerung",
-  unanswerable: "Unbeantwortbar",
-};
-
-export const QUERY_TYPE_DESCRIPTIONS: Record<QueryType, string> = {
-  fact_single:
-    "Antwort ist im Kontext vorhanden, eine einzelne Informationseinheit.",
-  summary:
-    "Antwort ist im Kontext vorhanden, erfordert Zusammenfassung mehrerer Informationen.",
-  reasoning:
-    "Antwort ist nicht explizit im Kontext, kann aber durch Schlussfolgerung abgeleitet werden.",
-  unanswerable: "Antwort ist weder im Kontext vorhanden noch ableitbar.",
-};
-
 /**
  * A single annotation without metadata.
  * The ID is stored as the key in the annotations record.
@@ -62,6 +47,7 @@ export interface AnnotationData {
   author: string;
   project: string;
   description: string;
+  language: SupportedLanguage;
   createdAt: string;
   updatedAt: string;
   annotations: Record<string, Annotation>;
