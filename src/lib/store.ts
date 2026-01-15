@@ -5,7 +5,7 @@ import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
 import type {
   Annotation,
   AnnotationData,
-  DocChunk,
+  Chunk,
   Document,
 } from "@/lib/types";
 
@@ -167,10 +167,9 @@ export const useStore = create<AppState>()(
                 query: String(a.query ?? ""),
                 queryType:
                   (a.queryType as Annotation["queryType"]) ?? "fact_single",
-                relevantDocs: (a.relevantDocs as DocChunk[]) ?? [],
-                distractorDocs: (a.distractorDocs as DocChunk[]) ?? [],
+                relevantChunks: (a.relevantChunks as Chunk[]) ?? [],
+                distractingChunks: (a.distractingChunks as Chunk[]) ?? [],
                 response: String(a.response ?? ""),
-                complexity: Number(a.complexity ?? 0),
                 notes: String(a.notes ?? ""),
               },
             ];

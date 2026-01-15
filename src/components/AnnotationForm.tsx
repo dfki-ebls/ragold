@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { MessageSquare, Search, StickyNote, Tags } from "lucide-react";
-import { DocsInput } from "@/components/DocsInput";
+import { ChunksInput } from "@/components/ChunksInput";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,8 +40,8 @@ export interface AnnotationFormRef {
 const emptyFormData: Annotation = {
   query: "",
   queryType: "fact_single",
-  relevantDocs: [{ content: "" }],
-  distractorDocs: [{ content: "" }],
+  relevantChunks: [{ content: "" }],
+  distractingChunks: [{ content: "" }],
   response: "",
   notes: "",
 };
@@ -70,13 +70,13 @@ export const AnnotationForm = forwardRef<
       ? {
           query: annotation.query,
           queryType: annotation.queryType ?? "fact_single",
-          relevantDocs:
-            annotation.relevantDocs.length > 0
-              ? annotation.relevantDocs
+          relevantChunks:
+            annotation.relevantChunks.length > 0
+              ? annotation.relevantChunks
               : [{ content: "" }],
-          distractorDocs:
-            annotation.distractorDocs?.length > 0
-              ? annotation.distractorDocs
+          distractingChunks:
+            annotation.distractingChunks?.length > 0
+              ? annotation.distractingChunks
               : [{ content: "" }],
           response: annotation.response,
           notes: annotation.notes,
@@ -98,9 +98,9 @@ export const AnnotationForm = forwardRef<
 
     if (
       !isUnanswerable &&
-      formData.relevantDocs.every((doc) => !doc.content.trim())
+      formData.relevantChunks.every((chunk) => !chunk.content.trim())
     ) {
-      newErrors.relevantDocs = t("docs.relevantError");
+      newErrors.relevantChunks = t("chunks.relevantError");
     }
 
     if (!isUnanswerable && !formData.response.trim()) {
@@ -116,9 +116,11 @@ export const AnnotationForm = forwardRef<
     if (validate()) {
       const cleanedData: Annotation = {
         ...formData,
-        relevantDocs: formData.relevantDocs.filter((doc) => doc.content.trim()),
-        distractorDocs: formData.distractorDocs.filter((doc) =>
-          doc.content.trim(),
+        relevantChunks: formData.relevantChunks.filter((chunk) =>
+          chunk.content.trim(),
+        ),
+        distractingChunks: formData.distractingChunks.filter((chunk) =>
+          chunk.content.trim(),
         ),
       };
       onSubmit(cleanedData);
@@ -196,26 +198,26 @@ export const AnnotationForm = forwardRef<
           {!isUnanswerable && (
             <>
               <div className="space-y-2">
-                <DocsInput
-                  docs={formData.relevantDocs}
-                  onChange={(relevantDocs) =>
-                    setFormData({ ...formData, relevantDocs })
+                <ChunksInput
+                  chunks={formData.relevantChunks}
+                  onChange={(relevantChunks) =>
+                    setFormData({ ...formData, relevantChunks })
                   }
                 />
-                {errors.relevantDocs && (
+                {errors.relevantChunks && (
                   <p className="text-sm text-destructive">
-                    {errors.relevantDocs}
+                    {errors.relevantChunks}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <DocsInput
-                  docs={formData.distractorDocs}
-                  onChange={(distractorDocs) =>
-                    setFormData({ ...formData, distractorDocs })
+                <ChunksInput
+                  chunks={formData.distractingChunks}
+                  onChange={(distractingChunks) =>
+                    setFormData({ ...formData, distractingChunks })
                   }
-                  variant="distractor"
+                  variant="distracting"
                 />
               </div>
 

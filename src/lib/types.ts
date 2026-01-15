@@ -1,6 +1,6 @@
 import type { SupportedLanguage } from "@/i18n";
 
-export interface DocChunk {
+export interface Chunk {
   content: string;
   documentId?: string;
 }
@@ -16,7 +16,7 @@ export interface Document {
 }
 
 /**
- * Query type taxonomy based on "Know Your RAG" (arXiv:2411.19710).
+ * Query type taxonomy based on "Know Your RAG" (https://aclanthology.org/2025.coling-industry.4/).
  * Classifies how the context answers the question.
  */
 export type QueryType =
@@ -32,8 +32,8 @@ export type QueryType =
 export interface Annotation {
   query: string;
   queryType: QueryType;
-  relevantDocs: DocChunk[];
-  distractorDocs: DocChunk[];
+  relevantChunks: Chunk[];
+  distractingChunks: Chunk[];
   response: string;
   notes: string;
 }

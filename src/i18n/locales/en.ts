@@ -90,20 +90,20 @@ export const en = {
       description: "Answer is neither present in the context nor derivable.",
     },
   },
-  docs: {
-    relevantLabel: "Relevant Document Contents",
+  chunks: {
+    relevantLabel: "Relevant Document Chunks",
     relevantDescription:
-      "Enter the text passages that the system would need to find to correctly answer the question.",
-    relevantPlaceholder: "Document passage",
-    relevantError: "At least one document passage is required",
-    distractorLabel: "Irrelevant Document Contents (optional)",
-    distractorDescription:
-      "Text passages that appear relevant but should not be used to answer the question.",
-    distractorPlaceholder: "Distracting passage",
-    addPassage: "Add another passage",
+      "Enter text chunks from documents that the system would need to retrieve to correctly answer the question.",
+    relevantPlaceholder: "Document chunk",
+    relevantError: "At least one document chunk is required",
+    distractingLabel: "Distracting Document Chunks (optional)",
+    distractingDescription:
+      "Text chunks that might seem relevant but could mislead the system or worsen the answer if retrieved.",
+    distractingPlaceholder: "Distracting chunk",
+    addChunk: "Add another chunk",
     noDocuments: "No documents available",
     manualEntry: "Manual entry",
-    addDocsHint: 'Add documents in the "Documents" tab to select them here.',
+    addChunksHint: 'Add documents in the "Documents" tab to select them here.',
   },
   annotationList: {
     count: "{{count}} annotation(s)",
@@ -112,8 +112,8 @@ export const en = {
     showDetails: "Show details",
     hideDetails: "Show less",
     expectedResponse: "Expected Answer",
-    relevantDocs: "Relevant Document Passages ({{count}})",
-    distractorDocs: "Irrelevant Document Passages ({{count}})",
+    relevantChunks: "Relevant Document Chunks ({{count}})",
+    distractingChunks: "Distracting Document Chunks ({{count}})",
     notes: "Notes",
     clickAgain: "Click again",
   },

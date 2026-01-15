@@ -93,20 +93,20 @@ export const de: TranslationKeys = {
       description: "Antwort ist weder im Kontext vorhanden noch ableitbar.",
     },
   },
-  docs: {
-    relevantLabel: "Relevante Dokumenteninhalte",
+  chunks: {
+    relevantLabel: "Relevante Dokumentausschnitte",
     relevantDescription:
-      "Tragen Sie die Textpassagen ein, die das System finden müsste, um die Frage korrekt zu beantworten.",
-    relevantPlaceholder: "Dokumentpassage",
-    relevantError: "Mindestens eine Dokumentpassage ist erforderlich",
-    distractorLabel: "Irrelevante Dokumenteninhalte (optional)",
-    distractorDescription:
-      "Textpassagen, die relevant erscheinen, aber nicht zur Beantwortung verwendet werden sollten.",
-    distractorPlaceholder: "Ablenkende Passage",
-    addPassage: "Weitere Passage hinzufügen",
+      "Tragen Sie Textausschnitte aus Dokumenten ein, die das System finden müsste, um die Frage korrekt zu beantworten.",
+    relevantPlaceholder: "Dokumentausschnitt",
+    relevantError: "Mindestens ein Dokumentausschnitt ist erforderlich",
+    distractingLabel: "Ablenkende Dokumentausschnitte (optional)",
+    distractingDescription:
+      "Textausschnitte, die relevant erscheinen könnten, aber das System irreführen oder die Antwort verschlechtern würden.",
+    distractingPlaceholder: "Ablenkender Ausschnitt",
+    addChunk: "Weiteren Ausschnitt hinzufügen",
     noDocuments: "Keine Dokumente vorhanden",
     manualEntry: "Manueller Eintrag",
-    addDocsHint:
+    addChunksHint:
       'Fügen Sie Dokumente im Tab "Dokumente" hinzu, um sie hier auszuwählen.',
   },
   annotationList: {
@@ -117,8 +117,8 @@ export const de: TranslationKeys = {
     showDetails: "Details anzeigen",
     hideDetails: "Weniger anzeigen",
     expectedResponse: "Erwartete Antwort",
-    relevantDocs: "Relevante Dokumentpassagen ({{count}})",
-    distractorDocs: "Irrelevante Dokumentpassagen ({{count}})",
+    relevantChunks: "Relevante Dokumentausschnitte ({{count}})",
+    distractingChunks: "Ablenkende Dokumentausschnitte ({{count}})",
     notes: "Anmerkungen",
     clickAgain: "Nochmal klicken",
   },

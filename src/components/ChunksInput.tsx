@@ -5,57 +5,57 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectOption } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/store";
-import type { DocChunk } from "@/lib/types";
+import type { Chunk } from "@/lib/types";
 
-interface DocsInputProps {
-  docs: DocChunk[];
-  onChange: (docs: DocChunk[]) => void;
+interface ChunksInputProps {
+  chunks: Chunk[];
+  onChange: (chunks: Chunk[]) => void;
   disabled?: boolean;
-  variant?: "relevant" | "distractor";
+  variant?: "relevant" | "distracting";
 }
 
-export function DocsInput({
-  docs,
+export function ChunksInput({
+  chunks,
   onChange,
   disabled = false,
   variant = "relevant",
-}: DocsInputProps) {
+}: ChunksInputProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const documentList = Object.entries(documents);
 
   const label =
     variant === "relevant"
-      ? t("docs.relevantLabel")
-      : t("docs.distractorLabel");
+      ? t("chunks.relevantLabel")
+      : t("chunks.distractingLabel");
   const description =
     variant === "relevant"
-      ? t("docs.relevantDescription")
-      : t("docs.distractorDescription");
+      ? t("chunks.relevantDescription")
+      : t("chunks.distractingDescription");
   const placeholder =
     variant === "relevant"
-      ? t("docs.relevantPlaceholder")
-      : t("docs.distractorPlaceholder");
+      ? t("chunks.relevantPlaceholder")
+      : t("chunks.distractingPlaceholder");
 
-  const addDoc = () => {
-    onChange([...docs, { content: "" }]);
+  const addChunk = () => {
+    onChange([...chunks, { content: "" }]);
   };
 
-  const removeDoc = (index: number) => {
-    onChange(docs.filter((_, i) => i !== index));
+  const removeChunk = (index: number) => {
+    onChange(chunks.filter((_, i) => i !== index));
   };
 
-  const updateDoc = (index: number, content: string, documentId?: string) => {
-    const updated = [...docs];
+  const updateChunk = (index: number, content: string, documentId?: string) => {
+    const updated = [...chunks];
     updated[index] = { content, documentId };
     onChange(updated);
   };
 
   const handleDocumentSelect = (index: number, documentId: string) => {
     if (documentId === "") {
-      updateDoc(index, docs[index].content, undefined);
+      updateChunk(index, chunks[index].content, undefined);
     } else {
-      updateDoc(index, docs[index].content, documentId);
+      updateChunk(index, chunks[index].content, documentId);
     }
   };
 
@@ -69,21 +69,21 @@ export function DocsInput({
       </Label>
       <p className="text-sm text-muted-foreground">{description}</p>
 
-      {docs.map((doc, index) => (
+      {chunks.map((chunk, index) => (
         <div key={index} className="flex gap-2">
           <div className="flex-1 space-y-2">
             <div className="space-y-1">
               <Select
-                value={doc.documentId ?? ""}
+                value={chunk.documentId ?? ""}
                 onChange={(e) => handleDocumentSelect(index, e.target.value)}
                 disabled={disabled || documentList.length === 0}
                 className="w-fit"
               >
                 {documentList.length === 0 ? (
-                  <SelectOption value="">{t("docs.noDocuments")}</SelectOption>
+                  <SelectOption value="">{t("chunks.noDocuments")}</SelectOption>
                 ) : (
                   <>
-                    <SelectOption value="">{t("docs.manualEntry")}</SelectOption>
+                    <SelectOption value="">{t("chunks.manualEntry")}</SelectOption>
                     {documentList.map(([id, d]) => (
                       <SelectOption key={id} value={id}>
                         {d.filename}
@@ -94,13 +94,13 @@ export function DocsInput({
               </Select>
               {documentList.length === 0 && index === 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {t("docs.addDocsHint")}
+                  {t("chunks.addChunksHint")}
                 </p>
               )}
             </div>
             <Textarea
-              value={doc.content}
-              onChange={(e) => updateDoc(index, e.target.value, doc.documentId)}
+              value={chunk.content}
+              onChange={(e) => updateChunk(index, e.target.value, chunk.documentId)}
               placeholder={`${placeholder} ${index + 1}...`}
               rows={3}
               disabled={disabled}
@@ -110,8 +110,8 @@ export function DocsInput({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={() => removeDoc(index)}
-            disabled={disabled || docs.length <= 1}
+            onClick={() => removeChunk(index)}
+            disabled={disabled || chunks.length <= 1}
             className="shrink-0 self-center"
           >
             <Trash2 className="w-4 h-4" />
@@ -123,11 +123,11 @@ export function DocsInput({
         type="button"
         variant="ghost"
         size="sm"
-        onClick={addDoc}
+        onClick={addChunk}
         disabled={disabled}
       >
         <Plus className="w-4 h-4 mr-2" />
-        {t("docs.addPassage")}
+        {t("chunks.addChunk")}
       </Button>
     </div>
   );

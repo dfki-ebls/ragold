@@ -34,7 +34,7 @@ function AnnotationCard({
 }) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const distractorCount = annotation.distractorDocs?.length ?? 0;
+  const distractingCount = annotation.distractingChunks?.length ?? 0;
 
   return (
     <Card>
@@ -52,12 +52,12 @@ function AnnotationCard({
               )}
               <span className="flex items-center gap-1 text-green-600">
                 <CheckCircle className="w-3.5 h-3.5" />
-                {annotation.relevantDocs.length}
+                {annotation.relevantChunks.length}
               </span>
-              {distractorCount > 0 && (
+              {distractingCount > 0 && (
                 <span className="flex items-center gap-1 text-red-600">
                   <XCircle className="w-3.5 h-3.5" />
-                  {distractorCount}
+                  {distractingCount}
                 </span>
               )}
               <span className="text-xs text-muted-foreground/50 font-mono">
@@ -123,12 +123,12 @@ function AnnotationCard({
 
             <div>
               <h4 className="text-sm font-medium mb-1">
-                {t("annotationList.relevantDocs", {
-                  count: annotation.relevantDocs.length,
+                {t("annotationList.relevantChunks", {
+                  count: annotation.relevantChunks.length,
                 })}
               </h4>
               <div className="space-y-2">
-                {annotation.relevantDocs.map((doc, i) => (
+                {annotation.relevantChunks.map((chunk, i) => (
                   <div
                     key={i}
                     className="text-sm text-muted-foreground bg-muted p-2 rounded"
@@ -136,22 +136,22 @@ function AnnotationCard({
                     <span className="text-muted-foreground/60 mr-2">
                       [{i + 1}]
                     </span>
-                    <span className="whitespace-pre-wrap">{doc.content}</span>
+                    <span className="whitespace-pre-wrap">{chunk.content}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {annotation.distractorDocs &&
-              annotation.distractorDocs.length > 0 && (
+            {annotation.distractingChunks &&
+              annotation.distractingChunks.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-1">
-                    {t("annotationList.distractorDocs", {
-                      count: annotation.distractorDocs.length,
+                    {t("annotationList.distractingChunks", {
+                      count: annotation.distractingChunks.length,
                     })}
                   </h4>
                   <div className="space-y-2">
-                    {annotation.distractorDocs.map((doc, i) => (
+                    {annotation.distractingChunks.map((chunk, i) => (
                       <div
                         key={i}
                         className="text-sm text-muted-foreground bg-destructive/10 p-2 rounded"
@@ -160,7 +160,7 @@ function AnnotationCard({
                           [{i + 1}]
                         </span>
                         <span className="whitespace-pre-wrap">
-                          {doc.content}
+                          {chunk.content}
                         </span>
                       </div>
                     ))}
