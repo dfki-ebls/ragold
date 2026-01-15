@@ -35,7 +35,6 @@ export interface Annotation {
   relevantDocs: DocChunk[];
   distractorDocs: DocChunk[];
   response: string;
-  complexity: number;
   notes: string;
 }
 

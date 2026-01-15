@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from "lucide-react";
+import { CircleCheck, CircleX, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -59,58 +59,63 @@ export function DocsInput({
     }
   };
 
+  const Icon = variant === "relevant" ? CircleCheck : CircleX;
+
   return (
     <div className="space-y-3">
-      <Label>{label}</Label>
+      <Label className="flex items-center gap-2">
+        <Icon className="w-4 h-4" />
+        {label}
+      </Label>
       <p className="text-sm text-muted-foreground">{description}</p>
 
       {docs.map((doc, index) => (
-        <div key={index} className="space-y-2">
-          <div className="space-y-1">
-            <Select
-              value={doc.documentId ?? ""}
-              onChange={(e) => handleDocumentSelect(index, e.target.value)}
-              disabled={disabled || documentList.length === 0}
-            >
-              {documentList.length === 0 ? (
-                <SelectOption value="">{t("docs.noDocuments")}</SelectOption>
-              ) : (
-                <>
-                  <SelectOption value="">{t("docs.manualEntry")}</SelectOption>
-                  {documentList.map(([id, d]) => (
-                    <SelectOption key={id} value={id}>
-                      {d.filename}
-                    </SelectOption>
-                  ))}
-                </>
+        <div key={index} className="flex gap-2">
+          <div className="flex-1 space-y-2">
+            <div className="space-y-1">
+              <Select
+                value={doc.documentId ?? ""}
+                onChange={(e) => handleDocumentSelect(index, e.target.value)}
+                disabled={disabled || documentList.length === 0}
+                className="w-fit"
+              >
+                {documentList.length === 0 ? (
+                  <SelectOption value="">{t("docs.noDocuments")}</SelectOption>
+                ) : (
+                  <>
+                    <SelectOption value="">{t("docs.manualEntry")}</SelectOption>
+                    {documentList.map(([id, d]) => (
+                      <SelectOption key={id} value={id}>
+                        {d.filename}
+                      </SelectOption>
+                    ))}
+                  </>
+                )}
+              </Select>
+              {documentList.length === 0 && index === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {t("docs.addDocsHint")}
+                </p>
               )}
-            </Select>
-            {documentList.length === 0 && index === 0 && (
-              <p className="text-xs text-muted-foreground">
-                {t("docs.addDocsHint")}
-              </p>
-            )}
-          </div>
-          <div className="flex gap-2">
+            </div>
             <Textarea
               value={doc.content}
               onChange={(e) => updateDoc(index, e.target.value, doc.documentId)}
               placeholder={`${placeholder} ${index + 1}...`}
               rows={3}
               disabled={disabled}
-              className="flex-1"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => removeDoc(index)}
-              disabled={disabled || docs.length <= 1}
-              className="shrink-0"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => removeDoc(index)}
+            disabled={disabled || docs.length <= 1}
+            className="shrink-0 self-center"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       ))}
 

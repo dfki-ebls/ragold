@@ -44,6 +44,7 @@ export const en = {
     editing: "Edit",
     annotations: "Annotations ({{count}})",
     documents: "Documents ({{count}})",
+    faq: "FAQ",
   },
   form: {
     titleNew: "Create New Annotation",
@@ -62,17 +63,6 @@ export const en = {
       "Write the ideal answer that the chat system should provide.",
     responsePlaceholder: "Answer to the user query...",
     responseError: "Expected answer is required",
-    complexity: "Task Complexity",
-    complexityDescription: "How difficult is this task for a RAG system?",
-    complexityError: "Complexity (1-5 stars) is required",
-    complexityLevel1:
-      "Simple fact lookup, answer is stated verbatim in the document",
-    complexityLevel2: "Minor rephrasing or filtering required",
-    complexityLevel3:
-      "Information from multiple paragraphs needs to be combined",
-    complexityLevel4:
-      "Complex relationships to understand, implicit knowledge required",
-    complexityLevel5: "Very challenging, requires deep understanding",
     notes: "Notes (optional)",
     notesDescription:
       "Special considerations such as ambiguous terms, time dependencies, or special phrasings.",
@@ -136,9 +126,6 @@ export const en = {
     descriptionPlaceholder: "Description of the document...",
     library: "Document Library ({{count}})",
     empty: "No documents yet. Add a document above.",
-  },
-  starRating: {
-    ariaLabel: "{{value}} of {{max}} stars",
   },
 };
 

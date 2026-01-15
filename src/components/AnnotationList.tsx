@@ -4,7 +4,6 @@ import {
   ChevronUp,
   FileText,
   Pencil,
-  Star,
   Trash2,
   XCircle,
 } from "lucide-react";
@@ -61,18 +60,6 @@ function AnnotationCard({
                   {distractorCount}
                 </span>
               )}
-              <span className="flex items-center gap-1">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3.5 h-3.5 ${
-                      i < annotation.complexity
-                        ? "fill-yellow-400 text-yellow-400"
-                        : "text-muted-foreground/30"
-                    }`}
-                  />
-                ))}
-              </span>
               <span className="text-xs text-muted-foreground/50 font-mono">
                 {id.slice(0, 8)}
               </span>

@@ -6,6 +6,7 @@ import {
 } from "@/components/AnnotationForm";
 import { AnnotationList } from "@/components/AnnotationList";
 import { DocumentManager } from "@/components/DocumentManager";
+import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -126,6 +127,7 @@ export default function App() {
             <TabsTrigger value="documents">
               {t("tabs.documents", { count: documentCount })}
             </TabsTrigger>
+            <TabsTrigger value="faq">{t("tabs.faq")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="new">
@@ -150,6 +152,10 @@ export default function App() {
 
           <TabsContent value="documents">
             <DocumentManager />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <FaqPage />
           </TabsContent>
         </Tabs>
       </main>

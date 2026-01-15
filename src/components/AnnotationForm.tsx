@@ -6,8 +6,8 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { MessageSquare, Search, StickyNote, Tags } from "lucide-react";
 import { DocsInput } from "@/components/DocsInput";
-import { StarRating } from "@/components/StarRating";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -43,7 +43,6 @@ const emptyFormData: Annotation = {
   relevantDocs: [{ content: "" }],
   distractorDocs: [{ content: "" }],
   response: "",
-  complexity: 0,
   notes: "",
 };
 
@@ -80,7 +79,6 @@ export const AnnotationForm = forwardRef<
               ? annotation.distractorDocs
               : [{ content: "" }],
           response: annotation.response,
-          complexity: annotation.complexity,
           notes: annotation.notes,
         }
       : emptyFormData;
@@ -89,6 +87,8 @@ export const AnnotationForm = forwardRef<
     setErrors({});
   }, [annotation]);
 
+  const isUnanswerable = formData.queryType === "unanswerable";
+
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof Annotation, string>> = {};
 
@@ -96,16 +96,15 @@ export const AnnotationForm = forwardRef<
       newErrors.query = t("form.queryError");
     }
 
-    if (formData.relevantDocs.every((doc) => !doc.content.trim())) {
+    if (
+      !isUnanswerable &&
+      formData.relevantDocs.every((doc) => !doc.content.trim())
+    ) {
       newErrors.relevantDocs = t("docs.relevantError");
     }
 
-    if (!formData.response.trim()) {
+    if (!isUnanswerable && !formData.response.trim()) {
       newErrors.response = t("form.responseError");
-    }
-
-    if (formData.complexity < 1 || formData.complexity > 5) {
-      newErrors.complexity = t("form.complexityError");
     }
 
     setErrors(newErrors);
@@ -142,7 +141,10 @@ export const AnnotationForm = forwardRef<
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="query">{t("form.query")} *</Label>
+            <Label htmlFor="query" className="flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              {t("form.query")} *
+            </Label>
             <p className="text-sm text-muted-foreground">
               {t("form.queryDescription")}
             </p>
@@ -161,7 +163,10 @@ export const AnnotationForm = forwardRef<
           </div>
 
           <div className="space-y-2">
-            <Label>{t("form.queryType")} *</Label>
+            <Label className="flex items-center gap-2">
+              <Tags className="w-4 h-4" />
+              {t("form.queryType")} *
+            </Label>
             <p className="text-sm text-muted-foreground">
               {t("form.queryTypeDescription")}
             </p>
@@ -188,72 +193,61 @@ export const AnnotationForm = forwardRef<
             </div>
           </div>
 
-          <div className="space-y-2">
-            <DocsInput
-              docs={formData.relevantDocs}
-              onChange={(relevantDocs) =>
-                setFormData({ ...formData, relevantDocs })
-              }
-            />
-            {errors.relevantDocs && (
-              <p className="text-sm text-destructive">{errors.relevantDocs}</p>
-            )}
-          </div>
+          {!isUnanswerable && (
+            <>
+              <div className="space-y-2">
+                <DocsInput
+                  docs={formData.relevantDocs}
+                  onChange={(relevantDocs) =>
+                    setFormData({ ...formData, relevantDocs })
+                  }
+                />
+                {errors.relevantDocs && (
+                  <p className="text-sm text-destructive">
+                    {errors.relevantDocs}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <DocsInput
+                  docs={formData.distractorDocs}
+                  onChange={(distractorDocs) =>
+                    setFormData({ ...formData, distractorDocs })
+                  }
+                  variant="distractor"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="response" className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  {t("form.response")} *
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("form.responseDescription")}
+                </p>
+                <Textarea
+                  id="response"
+                  value={formData.response}
+                  onChange={(e) =>
+                    setFormData({ ...formData, response: e.target.value })
+                  }
+                  placeholder={t("form.responsePlaceholder")}
+                  rows={4}
+                />
+                {errors.response && (
+                  <p className="text-sm text-destructive">{errors.response}</p>
+                )}
+              </div>
+            </>
+          )}
 
           <div className="space-y-2">
-            <DocsInput
-              docs={formData.distractorDocs}
-              onChange={(distractorDocs) =>
-                setFormData({ ...formData, distractorDocs })
-              }
-              variant="distractor"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="response">{t("form.response")} *</Label>
-            <p className="text-sm text-muted-foreground">
-              {t("form.responseDescription")}
-            </p>
-            <Textarea
-              id="response"
-              value={formData.response}
-              onChange={(e) =>
-                setFormData({ ...formData, response: e.target.value })
-              }
-              placeholder={t("form.responsePlaceholder")}
-              rows={4}
-            />
-            {errors.response && (
-              <p className="text-sm text-destructive">{errors.response}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("form.complexity")} *</Label>
-            <p className="text-sm text-muted-foreground">
-              {t("form.complexityDescription")}
-            </p>
-            <div className="text-xs text-muted-foreground space-y-0.5 mb-2">
-              <p>1: {t("form.complexityLevel1")}</p>
-              <p>2: {t("form.complexityLevel2")}</p>
-              <p>3: {t("form.complexityLevel3")}</p>
-              <p>4: {t("form.complexityLevel4")}</p>
-              <p>5: {t("form.complexityLevel5")}</p>
-            </div>
-            <StarRating
-              value={formData.complexity}
-              onChange={(complexity) =>
-                setFormData({ ...formData, complexity })
-              }
-            />
-            {errors.complexity && (
-              <p className="text-sm text-destructive">{errors.complexity}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">{t("form.notes")}</Label>
+            <Label htmlFor="notes" className="flex items-center gap-2">
+              <StickyNote className="w-4 h-4" />
+              {t("form.notes")}
+            </Label>
             <p className="text-sm text-muted-foreground">
               {t("form.notesDescription")}
             </p>

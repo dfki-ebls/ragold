@@ -46,6 +46,7 @@ export const de: TranslationKeys = {
     editing: "Bearbeiten",
     annotations: "Annotationen ({{count}})",
     documents: "Dokumente ({{count}})",
+    faq: "FAQ",
   },
   form: {
     titleNew: "Neue Annotation erstellen",
@@ -64,17 +65,6 @@ export const de: TranslationKeys = {
       "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
     responsePlaceholder: "Antwort auf die Nutzeranfrage...",
     responseError: "Erwartete Antwort ist erforderlich",
-    complexity: "Komplexität der Aufgabe",
-    complexityDescription:
-      "Wie schwierig ist diese Aufgabe für ein RAG-System?",
-    complexityError: "Komplexität (1-5 Sterne) ist erforderlich",
-    complexityLevel1:
-      "Einfache Faktenabfrage, Antwort steht wörtlich im Dokument",
-    complexityLevel2: "Leichte Umformulierung oder Filterung nötig",
-    complexityLevel3: "Informationen aus mehreren Absätzen kombinieren",
-    complexityLevel4:
-      "Komplexe Zusammenhänge verstehen, implizites Wissen nutzen",
-    complexityLevel5: "Sehr anspruchsvoll, erfordert tiefes Verständnis",
     notes: "Anmerkungen (optional)",
     notesDescription:
       "Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit, besondere Formulierungen.",
@@ -141,8 +131,5 @@ export const de: TranslationKeys = {
     descriptionPlaceholder: "Beschreibung des Dokuments...",
     library: "Dokumentbibliothek ({{count}})",
     empty: "Noch keine Dokumente vorhanden. Fügen Sie oben ein Dokument hinzu.",
-  },
-  starRating: {
-    ariaLabel: "{{value}} von {{max}} Sternen",
   },
 };
