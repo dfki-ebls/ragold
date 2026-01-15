@@ -1,3 +1,4 @@
+import { AlignLeft, Folder, User } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -75,7 +76,10 @@ export default function App() {
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="space-y-2">
-                <Label htmlFor="author">{t("metadata.author")} *</Label>
+                <Label htmlFor="author" className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {t("metadata.author")} *
+                </Label>
                 <Input
                   id="author"
                   value={author}
@@ -86,7 +90,10 @@ export default function App() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="project">{t("metadata.project")} *</Label>
+                <Label htmlFor="project" className="flex items-center gap-2">
+                  <Folder className="w-4 h-4" />
+                  {t("metadata.project")} *
+                </Label>
                 <Input
                   id="project"
                   value={project}
@@ -98,7 +105,8 @@ export default function App() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">
+              <Label htmlFor="description" className="flex items-center gap-2">
+                <AlignLeft className="w-4 h-4" />
                 {t("metadata.datasetDescription")}
               </Label>
               <Input

@@ -125,7 +125,8 @@ export const en = {
     description: "Description",
     descriptionPlaceholder: "Description of the document...",
     library: "Document Library ({{count}})",
-    empty: "No documents yet. Add a document above.",
+    empty: "No documents yet.",
+    emptyHint: "Add a document using the form above.",
   },
 };
 

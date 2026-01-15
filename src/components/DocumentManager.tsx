@@ -1,4 +1,4 @@
-import { FileText, Pencil, Trash2 } from "lucide-react";
+import { AlignLeft, File, FileText, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -90,7 +90,8 @@ export function DocumentManager() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="filename">
+              <Label htmlFor="filename" className="flex items-center gap-2">
+                <File className="w-4 h-4" />
                 {t("documentManager.filename")} *
               </Label>
               <Input
@@ -103,7 +104,8 @@ export function DocumentManager() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="doc-description">
+              <Label htmlFor="doc-description" className="flex items-center gap-2">
+                <AlignLeft className="w-4 h-4" />
                 {t("documentManager.description")} *
               </Label>
               <Textarea
@@ -143,9 +145,13 @@ export function DocumentManager() {
         </CardHeader>
         <CardContent>
           {documentList.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              {t("documentManager.empty")}
-            </p>
+            <div className="py-12 text-center">
+              <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+              <p className="text-muted-foreground">{t("documentManager.empty")}</p>
+              <p className="text-sm text-muted-foreground/60 mt-1">
+                {t("documentManager.emptyHint")}
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
               {documentList.map(([id, doc]) => (

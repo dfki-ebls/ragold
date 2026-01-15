@@ -130,6 +130,7 @@ export const de: TranslationKeys = {
     description: "Beschreibung",
     descriptionPlaceholder: "Beschreibung des Dokuments...",
     library: "Dokumentbibliothek ({{count}})",
-    empty: "Noch keine Dokumente vorhanden. Fügen Sie oben ein Dokument hinzu.",
+    empty: "Noch keine Dokumente vorhanden.",
+    emptyHint: "Fügen Sie über das Formular oben ein Dokument hinzu.",
   },
 };

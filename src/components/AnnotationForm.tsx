@@ -6,7 +6,16 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { MessageSquare, Search, StickyNote, Tags } from "lucide-react";
+import {
+  CircleOff,
+  Lightbulb,
+  ListTree,
+  MessageSquare,
+  Search,
+  StickyNote,
+  Tags,
+  Target,
+} from "lucide-react";
 import { ChunksInput } from "@/components/ChunksInput";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +35,13 @@ const QUERY_TYPES: QueryType[] = [
   "reasoning",
   "unanswerable",
 ];
+
+const QUERY_TYPE_ICONS: Record<QueryType, React.ElementType> = {
+  fact_single: Target,
+  summary: ListTree,
+  reasoning: Lightbulb,
+  unanswerable: CircleOff,
+};
 
 interface AnnotationFormProps {
   annotation?: Annotation;
@@ -173,25 +189,29 @@ export const AnnotationForm = forwardRef<
               {t("form.queryTypeDescription")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {QUERY_TYPES.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => setFormData({ ...formData, queryType: type })}
-                  className={`p-3 text-left border rounded-md transition-colors ${
-                    formData.queryType === type
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  <div className="font-medium text-sm">
-                    {t(`queryTypes.${type}.label`)}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {t(`queryTypes.${type}.description`)}
-                  </div>
-                </button>
-              ))}
+              {QUERY_TYPES.map((type) => {
+                const Icon = QUERY_TYPE_ICONS[type];
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, queryType: type })}
+                    className={`p-3 text-left border rounded-md transition-colors ${
+                      formData.queryType === type
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="font-medium text-sm flex items-center gap-2">
+                      <Icon className="w-4 h-4" />
+                      {t(`queryTypes.${type}.label`)}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {t(`queryTypes.${type}.description`)}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
