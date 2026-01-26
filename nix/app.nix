@@ -3,7 +3,6 @@
   importNpmLock,
   lib,
   biome,
-  urlPrefix ? "/",
 }:
 buildNpmPackage (finalAttrs: {
   inherit (finalAttrs.npmDeps) pname version;
@@ -11,11 +10,7 @@ buildNpmPackage (finalAttrs: {
   npmDeps = importNpmLock { npmRoot = finalAttrs.src; };
 
   src = ./..;
-  npmBuildFlags = [
-    "--"
-    "--base"
-    urlPrefix
-  ];
+
   installPhase = ''
     runHook preInstall
 
