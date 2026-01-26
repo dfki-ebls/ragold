@@ -2,15 +2,14 @@
   treefmt,
   mkShell,
   nodejs,
-  uv,
+  lib,
 }:
 mkShell {
   shellHook = ''
-    npm install
+    ${lib.getExe' nodejs "npm"} install
   '';
   packages = [
     nodejs
     treefmt
-    uv
   ];
 }
