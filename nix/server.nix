@@ -16,12 +16,10 @@ let
 
     :${toString caddyPort} {
       root * ${app}
-      encode gzip
+      encode zstd gzip
 
-      handle {
-        try_files {path} /index.html
-        file_server
-      }
+      try_files {path} /index.html
+      file_server
     }
   '';
 in
