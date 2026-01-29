@@ -34,8 +34,8 @@ export default function App() {
 
   const handleTabChange = (value: string) => {
     if (
-      value === "manage" &&
       activeTab === "new" &&
+      value !== "new" &&
       formRef.current?.hasUnsavedChanges()
     ) {
       const confirmed = window.confirm(t("form.unsavedChanges"));
