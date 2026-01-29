@@ -25,7 +25,7 @@ export default function App() {
   const description = useStore((s) => s.description);
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("new");
+  const [activeTab, setActiveTab] = useState("guide");
   const formRef = useRef<AnnotationFormRef>(null);
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
@@ -126,6 +126,7 @@ export default function App() {
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6">
+            <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="new">
               {editingId ? t("tabs.editing") : t("tabs.newAnnotation")}
             </TabsTrigger>
@@ -135,7 +136,6 @@ export default function App() {
             <TabsTrigger value="documents">
               {t("tabs.documents", { count: documentCount })}
             </TabsTrigger>
-            <TabsTrigger value="faq">{t("tabs.faq")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="new">
@@ -162,7 +162,7 @@ export default function App() {
             <DocumentManager />
           </TabsContent>
 
-          <TabsContent value="faq">
+          <TabsContent value="guide">
             <FaqPage />
           </TabsContent>
         </Tabs>

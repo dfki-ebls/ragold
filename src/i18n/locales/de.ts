@@ -46,7 +46,7 @@ export const de: TranslationKeys = {
     editing: "Bearbeiten",
     annotations: "Annotationen ({{count}})",
     documents: "Dokumente ({{count}})",
-    faq: "FAQ",
+    guide: "Anleitung",
   },
   form: {
     titleNew: "Neue Annotation erstellen",

@@ -1,8 +1,90 @@
-# Frequently Asked Questions
+# User Guide
 
-## How do I start a new project?
+Welcome to RAGold!
+This tool helps you create training examples for Retrieval-Augmented Generation (RAG) systems.
+Follow these steps to create your first annotation.
 
-To start a new project, fill in the **Author** and **Project** fields at the top of the page.
+### Step 1: Set Up Your Project
+
+Fill in the **Author** and **Project** fields at the top of the page.
 These metadata fields are required before you can export your annotations.
 
-Once you've set your project metadata, you can begin creating annotations in the "New Annotation" tab.
+### Step 2: Add Documents (Optional)
+
+Go to the **Documents** tab to add reference documents.
+Documents help you organize which text chunks come from which source.
+You can skip this step and add chunks manually if preferred.
+
+### Step 3: Create an Annotation
+
+Switch to the **New Annotation** tab and fill in:
+
+1. **User Query**: Write a question as a user would ask it in a chat system.
+2. **Query Type**: Select how the question relates to the context:
+   - *Single Fact*: The answer is one piece of information in the document.
+   - *Summary*: The answer requires combining multiple pieces of information.
+   - *Reasoning*: The answer must be derived through logical reasoning.
+   - *Unanswerable*: The answer cannot be found or derived from the context.
+3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question.
+4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system.
+5. **Expected Answer**: Write the ideal response the system should provide.
+6. **Notes** (optional): Add any special considerations about this example.
+
+### Step 4: Review and Export
+
+Use the **Annotations** tab to review all your annotations.
+You can edit or delete annotations as needed.
+When ready, click **Export** in the header to download your dataset as JSON.
+
+## Import and Export
+
+### Exporting Your Work
+
+The **Export** button in the header downloads your complete dataset as a JSON file.
+The filename includes the current date (e.g., `ragold-2024-01-15.json`).
+
+Before you can export, you must:
+- Fill in the **Author** and **Project** fields
+- Create at least one annotation
+
+The exported file contains:
+- All project metadata (author, project, description)
+- All annotations with their queries, chunks, and responses
+- All documents from the document library
+
+### Importing Data
+
+The **Import** button allows you to load annotations from a previously exported JSON file.
+This is useful for:
+- Continuing work from a previous session
+- Collaborating with others by sharing export files
+- Merging datasets from multiple annotators
+
+When importing:
+- Select a `.json` file that was exported from RAGold
+- New annotations and documents will be added to your current data
+- Duplicate annotations (with the same ID) are automatically skipped
+- Existing annotations are not overwritten
+
+### Resetting Data
+
+The **Reset** button deletes all annotations and documents.
+Click once to see the confirmation prompt, then click again within 3 seconds to confirm.
+This action cannot be undone, so consider exporting first.
+
+## Tips for Good Annotations
+
+- Write queries in natural language as real users would phrase them.
+- Include enough context in chunks so the answer can actually be derived.
+- For unanswerable queries, the expected answer should explain why the question cannot be answered.
+- Use distracting chunks sparingly to create challenging examples.
+- Add notes when there are ambiguities or special considerations.
+
+## What are Query Types?
+
+The query types are based on the "Know Your RAG" taxonomy:
+
+- **Single Fact**: Simple lookup, answer is stated directly in one place.
+- **Summary**: Answer requires synthesizing information from multiple parts.
+- **Reasoning**: Answer is not explicit but can be logically derived.
+- **Unanswerable**: The information simply is not in the provided context.

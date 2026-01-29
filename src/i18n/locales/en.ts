@@ -44,7 +44,7 @@ export const en = {
     editing: "Edit",
     annotations: "Annotations ({{count}})",
     documents: "Documents ({{count}})",
-    faq: "FAQ",
+    guide: "Guide",
   },
   form: {
     titleNew: "Create New Annotation",
