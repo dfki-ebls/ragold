@@ -125,7 +125,7 @@ export default function App() {
         </Card>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="new">
               {editingId ? t("tabs.editing") : t("tabs.newAnnotation")}
