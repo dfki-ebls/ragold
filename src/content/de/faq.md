@@ -21,10 +21,10 @@ Wechseln Sie zum Tab **Neue Annotation** und füllen Sie aus:
 
 1. **Nutzeranfrage**: Schreiben Sie eine Frage, wie ein Nutzer sie in einem Chat-System stellen würde.
 2. **Fragetyp**: Wählen Sie, wie die Frage zum Kontext steht:
-   - *Einzelfakt*: Die Antwort ist eine einzelne Information im Dokument.
-   - *Zusammenfassung*: Die Antwort erfordert das Kombinieren mehrerer Informationen.
-   - *Schlussfolgerung*: Die Antwort muss durch logisches Schließen abgeleitet werden.
-   - *Unbeantwortbar*: Die Antwort kann nicht im Kontext gefunden oder abgeleitet werden.
+   - _Einzelfakt_: Die Antwort ist eine einzelne Information im Dokument.
+   - _Zusammenfassung_: Die Antwort erfordert das Kombinieren mehrerer Informationen.
+   - _Schlussfolgerung_: Die Antwort muss durch logisches Schließen abgeleitet werden.
+   - _Unbeantwortbar_: Die Antwort kann nicht im Kontext gefunden oder abgeleitet werden.
 3. **Relevante Dokumentausschnitte**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten.
 4. **Ablenkende Ausschnitte** (optional): Fügen Sie Passagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden.
 5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
@@ -44,10 +44,12 @@ Der **Export**-Button in der Kopfzeile lädt Ihren kompletten Datensatz als JSON
 Der Dateiname enthält das aktuelle Datum (z.B. `ragold-2024-01-15.json`).
 
 Bevor Sie exportieren können, müssen Sie:
+
 - Die Felder **Autor** und **Projekt** ausfüllen
 - Mindestens eine Annotation erstellen
 
 Die exportierte Datei enthält:
+
 - Alle Projektmetadaten (Autor, Projekt, Beschreibung)
 - Alle Annotationen mit ihren Anfragen, Ausschnitten und Antworten
 - Alle Dokumente aus der Dokumentbibliothek
@@ -56,11 +58,13 @@ Die exportierte Datei enthält:
 
 Der **Import**-Button ermöglicht das Laden von Annotationen aus einer zuvor exportierten JSON-Datei.
 Dies ist nützlich für:
+
 - Fortsetzung der Arbeit aus einer vorherigen Sitzung
 - Zusammenarbeit mit anderen durch Austausch von Exportdateien
 - Zusammenführen von Datensätzen mehrerer Annotatoren
 
 Beim Importieren:
+
 - Wählen Sie eine `.json`-Datei, die aus RAGold exportiert wurde
 - Neue Annotationen und Dokumente werden zu Ihren aktuellen Daten hinzugefügt
 - Doppelte Annotationen (mit derselben ID) werden automatisch übersprungen

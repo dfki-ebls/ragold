@@ -48,7 +48,7 @@
       treefmt = {
         projectRootFile = "flake.nix";
         programs = {
-          biome.enable = true;
+          prettier.enable = true;
           nixfmt.enable = true;
         };
       };

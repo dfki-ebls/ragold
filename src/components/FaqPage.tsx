@@ -1,8 +1,8 @@
-import Markdown from "react-markdown";
 import { useTranslation } from "react-i18next";
+import Markdown from "react-markdown";
 import { Card, CardContent } from "@/components/ui/card";
-import faqEn from "@/content/en/faq.md?raw";
 import faqDe from "@/content/de/faq.md?raw";
+import faqEn from "@/content/en/faq.md?raw";
 
 const faqContent: Record<string, string> = {
   en: faqEn,

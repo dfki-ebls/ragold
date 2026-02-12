@@ -2,11 +2,12 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
-import type {
-  Annotation,
-  AnnotationData,
-  Chunk,
-  Document,
+import {
+  type Annotation,
+  type AnnotationData,
+  annotationDataSchema,
+  type Document,
+  SCHEMA_VERSION,
 } from "@/lib/types";
 
 interface AppState extends AnnotationData {
@@ -30,16 +31,11 @@ interface AppState extends AnnotationData {
 
 function createEmptyState(): AnnotationData {
   const now = new Date().toISOString();
-  return {
-    author: "",
-    project: "",
-    description: "",
-    language: i18n.language as SupportedLanguage,
+  return annotationDataSchema.parse({
+    language: i18n.language,
     createdAt: now,
     updatedAt: now,
-    annotations: {},
-    documents: {},
-  };
+  });
 }
 
 export const useStore = create<AppState>()(
@@ -126,6 +122,7 @@ export const useStore = create<AppState>()(
         const now = new Date().toISOString();
 
         const exportData = {
+          version: SCHEMA_VERSION,
           author,
           project,
           description,
@@ -151,66 +148,47 @@ export const useStore = create<AppState>()(
 
       importAnnotations: async (file) => {
         const text = await file.text();
-        const parsed = JSON.parse(text);
-        const now = new Date().toISOString();
+        const raw = JSON.parse(text);
 
-        if (!parsed.annotations || typeof parsed.annotations !== "object") {
-          throw new Error("Invalid format: expected annotations object");
+        // Reject files from newer schema versions
+        if (typeof raw.version === "number" && raw.version > SCHEMA_VERSION) {
+          throw new Error(
+            `This file requires a newer version of RAGold (schema v${raw.version}, current v${SCHEMA_VERSION}). Please update the app.`,
+          );
         }
 
-        const imported: Record<string, Annotation> = Object.fromEntries(
-          Object.entries(parsed.annotations).map(([id, ann]) => {
-            const a = ann as Record<string, unknown>;
-            return [
-              id,
-              {
-                query: String(a.query ?? ""),
-                queryType:
-                  (a.queryType as Annotation["queryType"]) ?? "fact_single",
-                relevantChunks: (a.relevantChunks as Chunk[]) ?? [],
-                distractingChunks: (a.distractingChunks as Chunk[]) ?? [],
-                response: String(a.response ?? ""),
-                notes: String(a.notes ?? ""),
-              },
-            ];
-          }),
-        );
+        const result = annotationDataSchema.safeParse(raw);
+        if (!result.success) {
+          throw new Error("Invalid format: schema validation failed");
+        }
+
+        const parsed = result.data;
+        const now = new Date().toISOString();
 
         const currentIds = new Set(Object.keys(get().annotations));
         const newAnnotations = Object.fromEntries(
-          Object.entries(imported).filter(([id]) => !currentIds.has(id)),
+          Object.entries(parsed.annotations).filter(
+            ([id]) => !currentIds.has(id),
+          ),
         );
-
-        const importedDocs: Record<string, Document> =
-          parsed.documents && typeof parsed.documents === "object"
-            ? Object.fromEntries(
-                Object.entries(parsed.documents).map(([id, doc]) => {
-                  const d = doc as Record<string, unknown>;
-                  return [
-                    id,
-                    {
-                      filename: String(d.filename ?? ""),
-                      description: String(d.description ?? ""),
-                    },
-                  ];
-                }),
-              )
-            : {};
 
         const currentDocIds = new Set(Object.keys(get().documents));
         const newDocuments = Object.fromEntries(
-          Object.entries(importedDocs).filter(([id]) => !currentDocIds.has(id)),
+          Object.entries(parsed.documents).filter(
+            ([id]) => !currentDocIds.has(id),
+          ),
         );
 
-        const importedLanguage: SupportedLanguage =
-          parsed.language && supportedLanguages.includes(parsed.language)
-            ? parsed.language
-            : get().language;
+        const importedLanguage: SupportedLanguage = supportedLanguages.includes(
+          parsed.language as SupportedLanguage,
+        )
+          ? (parsed.language as SupportedLanguage)
+          : get().language;
 
         set((state) => ({
           annotations: { ...state.annotations, ...newAnnotations },
           documents: { ...state.documents, ...newDocuments },
-          createdAt: parsed.createdAt ?? state.createdAt,
+          createdAt: parsed.createdAt || state.createdAt,
           updatedAt: now,
           author: parsed.author || state.author,
           project: parsed.project || state.project,
@@ -226,6 +204,7 @@ export const useStore = create<AppState>()(
     {
       name: "ragold-store",
       partialize: (state) => ({
+        version: SCHEMA_VERSION,
         author: state.author,
         project: state.project,
         description: state.description,
@@ -235,6 +214,11 @@ export const useStore = create<AppState>()(
         annotations: state.annotations,
         documents: state.documents,
       }),
+      merge: (_persisted, current) => {
+        const result = annotationDataSchema.safeParse(_persisted);
+        if (!result.success) return current;
+        return { ...current, ...result.data };
+      },
       onRehydrateStorage: () => (state) => {
         if (state?.language) {
           i18n.changeLanguage(state.language);

@@ -21,10 +21,10 @@ Switch to the **New Annotation** tab and fill in:
 
 1. **User Query**: Write a question as a user would ask it in a chat system.
 2. **Query Type**: Select how the question relates to the context:
-   - *Single Fact*: The answer is one piece of information in the document.
-   - *Summary*: The answer requires combining multiple pieces of information.
-   - *Reasoning*: The answer must be derived through logical reasoning.
-   - *Unanswerable*: The answer cannot be found or derived from the context.
+   - _Single Fact_: The answer is one piece of information in the document.
+   - _Summary_: The answer requires combining multiple pieces of information.
+   - _Reasoning_: The answer must be derived through logical reasoning.
+   - _Unanswerable_: The answer cannot be found or derived from the context.
 3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question.
 4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system.
 5. **Expected Answer**: Write the ideal response the system should provide.
@@ -44,10 +44,12 @@ The **Export** button in the header downloads your complete dataset as a JSON fi
 The filename includes the current date (e.g., `ragold-2024-01-15.json`).
 
 Before you can export, you must:
+
 - Fill in the **Author** and **Project** fields
 - Create at least one annotation
 
 The exported file contains:
+
 - All project metadata (author, project, description)
 - All annotations with their queries, chunks, and responses
 - All documents from the document library
@@ -56,11 +58,13 @@ The exported file contains:
 
 The **Import** button allows you to load annotations from a previously exported JSON file.
 This is useful for:
+
 - Continuing work from a previous session
 - Collaborating with others by sharing export files
 - Merging datasets from multiple annotators
 
 When importing:
+
 - Select a `.json` file that was exported from RAGold
 - New annotations and documents will be added to your current data
 - Duplicate annotations (with the same ID) are automatically skipped

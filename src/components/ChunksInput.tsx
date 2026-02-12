@@ -47,7 +47,7 @@ export function ChunksInput({
 
   const updateChunk = (index: number, content: string, documentId?: string) => {
     const updated = [...chunks];
-    updated[index] = { content, documentId };
+    updated[index] = { ...chunks[index], content, documentId };
     onChange(updated);
   };
 
@@ -80,10 +80,14 @@ export function ChunksInput({
                 className="w-fit"
               >
                 {documentList.length === 0 ? (
-                  <SelectOption value="">{t("chunks.noDocuments")}</SelectOption>
+                  <SelectOption value="">
+                    {t("chunks.noDocuments")}
+                  </SelectOption>
                 ) : (
                   <>
-                    <SelectOption value="">{t("chunks.manualEntry")}</SelectOption>
+                    <SelectOption value="">
+                      {t("chunks.manualEntry")}
+                    </SelectOption>
                     {documentList.map(([id, d]) => (
                       <SelectOption key={id} value={id}>
                         {d.filename}
@@ -100,7 +104,9 @@ export function ChunksInput({
             </div>
             <Textarea
               value={chunk.content}
-              onChange={(e) => updateChunk(index, e.target.value, chunk.documentId)}
+              onChange={(e) =>
+                updateChunk(index, e.target.value, chunk.documentId)
+              }
               placeholder={`${placeholder} ${index + 1}...`}
               rows={3}
               disabled={disabled}

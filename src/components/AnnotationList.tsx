@@ -11,7 +11,11 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Annotation, QueryType } from "@/lib/types";
+import {
+  type Annotation,
+  KNOWN_QUERY_TYPES,
+  type KnownQueryType,
+} from "@/lib/types";
 
 interface AnnotationListProps {
   annotations: Record<string, Annotation>;
@@ -47,7 +51,13 @@ function AnnotationCard({
             <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground flex-wrap">
               {annotation.queryType && (
                 <span className="px-2 py-0.5 bg-muted rounded text-xs">
-                  {t(`queryTypes.${annotation.queryType as QueryType}.label`)}
+                  {(KNOWN_QUERY_TYPES as readonly string[]).includes(
+                    annotation.queryType,
+                  )
+                    ? t(
+                        `queryTypes.${annotation.queryType as KnownQueryType}.label`,
+                      )
+                    : annotation.queryType}
                 </span>
               )}
               <span className="flex items-center gap-1 text-green-600">

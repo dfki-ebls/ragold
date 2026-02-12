@@ -104,7 +104,10 @@ export function DocumentManager() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="doc-description" className="flex items-center gap-2">
+              <Label
+                htmlFor="doc-description"
+                className="flex items-center gap-2"
+              >
                 <AlignLeft className="w-4 h-4" />
                 {t("documentManager.description")} *
               </Label>
@@ -147,7 +150,9 @@ export function DocumentManager() {
           {documentList.length === 0 ? (
             <div className="py-12 text-center">
               <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground">{t("documentManager.empty")}</p>
+              <p className="text-muted-foreground">
+                {t("documentManager.empty")}
+              </p>
               <p className="text-sm text-muted-foreground/60 mt-1">
                 {t("documentManager.emptyHint")}
               </p>

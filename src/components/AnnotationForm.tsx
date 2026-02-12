@@ -1,12 +1,4 @@
 import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
-import { useTranslation } from "react-i18next";
-import {
   CircleOff,
   Lightbulb,
   ListTree,
@@ -16,6 +8,14 @@ import {
   Tags,
   Target,
 } from "lucide-react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
 import { ChunksInput } from "@/components/ChunksInput";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,16 +27,14 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Annotation, QueryType } from "@/lib/types";
+import {
+  type Annotation,
+  annotationSchema,
+  KNOWN_QUERY_TYPES,
+  type KnownQueryType,
+} from "@/lib/types";
 
-const QUERY_TYPES: QueryType[] = [
-  "fact_single",
-  "summary",
-  "reasoning",
-  "unanswerable",
-];
-
-const QUERY_TYPE_ICONS: Record<QueryType, React.ElementType> = {
+const QUERY_TYPE_ICONS: Record<KnownQueryType, React.ElementType> = {
   fact_single: Target,
   summary: ListTree,
   reasoning: Lightbulb,
@@ -54,12 +52,9 @@ export interface AnnotationFormRef {
 }
 
 const emptyFormData: Annotation = {
-  query: "",
-  queryType: "fact_single",
+  ...annotationSchema.parse({}),
   relevantChunks: [{ content: "" }],
   distractingChunks: [{ content: "" }],
-  response: "",
-  notes: "",
 };
 
 export const AnnotationForm = forwardRef<
@@ -189,13 +184,15 @@ export const AnnotationForm = forwardRef<
               {t("form.queryTypeDescription")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {QUERY_TYPES.map((type) => {
+              {KNOWN_QUERY_TYPES.map((type) => {
                 const Icon = QUERY_TYPE_ICONS[type];
                 return (
                   <button
                     key={type}
                     type="button"
-                    onClick={() => setFormData({ ...formData, queryType: type })}
+                    onClick={() =>
+                      setFormData({ ...formData, queryType: type })
+                    }
                     className={`p-3 text-left border rounded-md transition-colors ${
                       formData.queryType === type
                         ? "border-primary bg-primary/5"
