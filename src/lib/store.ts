@@ -165,40 +165,26 @@ export const useStore = create<AppState>()(
         const parsed = result.data;
         const now = new Date().toISOString();
 
-        const currentIds = new Set(Object.keys(get().annotations));
-        const newAnnotations = Object.fromEntries(
-          Object.entries(parsed.annotations).filter(
-            ([id]) => !currentIds.has(id),
-          ),
-        );
-
-        const currentDocIds = new Set(Object.keys(get().documents));
-        const newDocuments = Object.fromEntries(
-          Object.entries(parsed.documents).filter(
-            ([id]) => !currentDocIds.has(id),
-          ),
-        );
-
         const importedLanguage: SupportedLanguage = supportedLanguages.includes(
           parsed.language as SupportedLanguage,
         )
           ? (parsed.language as SupportedLanguage)
           : get().language;
 
-        set((state) => ({
-          annotations: { ...state.annotations, ...newAnnotations },
-          documents: { ...state.documents, ...newDocuments },
-          createdAt: parsed.createdAt || state.createdAt,
+        set({
+          annotations: parsed.annotations,
+          documents: parsed.documents,
+          createdAt: parsed.createdAt,
           updatedAt: now,
-          author: parsed.author || state.author,
-          project: parsed.project || state.project,
-          description: parsed.description || state.description,
+          author: parsed.author,
+          project: parsed.project,
+          description: parsed.description,
           language: importedLanguage,
-        }));
+        });
 
         i18n.changeLanguage(importedLanguage);
 
-        return Object.keys(newAnnotations).length;
+        return Object.keys(parsed.annotations).length;
       },
     }),
     {

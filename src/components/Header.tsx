@@ -41,6 +41,13 @@ export default function Header() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!window.confirm(t("header.importConfirm"))) {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
     try {
       const count = await useStore.getState().importAnnotations(file);
       if (count > 0) {

@@ -13,16 +13,16 @@ export const en = {
   },
   header: {
     title: "RAGold",
-    importTooltip: "Import annotations and documents from JSON",
+    importTooltip: "Import annotations and documents from JSON (replaces existing data)",
+    importConfirm:
+      "Importing will replace all existing annotations and documents. This cannot be undone. Continue?",
     exportTooltip: "Export annotations and documents as JSON",
     exportDisabledMeta: "Author and project must be filled in",
     exportDisabledEmpty: "No annotations available",
     resetTooltip: "Delete all annotations and documents",
     resetDisabled: "No data available",
-    importSuccess:
-      "{{count}} new annotation(s) imported. Documents were also imported.",
-    importEmpty:
-      "No new annotations found (all already exist). Documents may have been imported.",
+    importSuccess: "Import complete. {{count}} annotation(s) loaded.",
+    importEmpty: "Import complete. The file contained no annotations.",
     importError: "Import failed: {{message}}",
   },
   metadata: {
