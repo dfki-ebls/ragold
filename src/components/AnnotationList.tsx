@@ -126,9 +126,11 @@ function AnnotationCard({
               <h4 className="text-sm font-medium mb-1">
                 {t("annotationList.expectedResponse")}
               </h4>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {annotation.response}
-              </p>
+              <div className="max-h-40 overflow-y-auto">
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {annotation.response}
+                </p>
+              </div>
             </div>
 
             <div>
@@ -137,7 +139,7 @@ function AnnotationCard({
                   count: annotation.relevantChunks.length,
                 })}
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-40 overflow-y-auto">
                 {annotation.relevantChunks.map((chunk, i) => (
                   <div
                     key={i}
@@ -160,7 +162,7 @@ function AnnotationCard({
                       count: annotation.distractingChunks.length,
                     })}
                   </h4>
-                  <div className="space-y-2">
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
                     {annotation.distractingChunks.map((chunk, i) => (
                       <div
                         key={i}
@@ -183,9 +185,11 @@ function AnnotationCard({
                 <h4 className="text-sm font-medium mb-1">
                   {t("annotationList.notes")}
                 </h4>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {annotation.notes}
-                </p>
+                <div className="max-h-40 overflow-y-auto">
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                    {annotation.notes}
+                  </p>
+                </div>
               </div>
             )}
           </div>

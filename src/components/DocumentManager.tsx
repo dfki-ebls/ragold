@@ -1,5 +1,5 @@
 import { AlignLeft, File, FileText, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,12 +14,17 @@ interface DocumentFormData {
   description: string;
 }
 
+export interface DocumentManagerRef {
+  hasUnsavedChanges: () => boolean;
+}
+
 const emptyForm: DocumentFormData = {
   filename: "",
   description: "",
 };
 
-export function DocumentManager() {
+export const DocumentManager = forwardRef<DocumentManagerRef>(
+  function DocumentManager(_props, ref) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const addDocument = useStore((s) => s.addDocument);
@@ -29,6 +34,15 @@ export function DocumentManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<DocumentFormData>(emptyForm);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const initialFormData = useRef<DocumentFormData>(emptyForm);
+
+  useImperativeHandle(ref, () => ({
+    hasUnsavedChanges: () => {
+      return (
+        JSON.stringify(formData) !== JSON.stringify(initialFormData.current)
+      );
+    },
+  }));
 
   const documentList = Object.entries(documents);
 
@@ -198,4 +212,4 @@ export function DocumentManager() {
       </Card>
     </div>
   );
-}
+});

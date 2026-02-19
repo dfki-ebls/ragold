@@ -6,7 +6,10 @@ import {
   type AnnotationFormRef,
 } from "@/components/AnnotationForm";
 import { AnnotationList } from "@/components/AnnotationList";
-import { DocumentManager } from "@/components/DocumentManager";
+import {
+  DocumentManager,
+  type DocumentManagerRef,
+} from "@/components/DocumentManager";
 import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
 import { Card, CardContent } from "@/components/ui/card";
@@ -27,6 +30,7 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("guide");
   const formRef = useRef<AnnotationFormRef>(null);
+  const docFormRef = useRef<DocumentManagerRef>(null);
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
   const annotationCount = Object.keys(annotations).length;
@@ -37,6 +41,14 @@ export default function App() {
       activeTab === "new" &&
       value !== "new" &&
       formRef.current?.hasUnsavedChanges()
+    ) {
+      const confirmed = window.confirm(t("form.unsavedChanges"));
+      if (!confirmed) return;
+    }
+    if (
+      activeTab === "documents" &&
+      value !== "documents" &&
+      docFormRef.current?.hasUnsavedChanges()
     ) {
       const confirmed = window.confirm(t("form.unsavedChanges"));
       if (!confirmed) return;
@@ -60,6 +72,7 @@ export default function App() {
       setActiveTab("manage");
     } else {
       store.addAnnotation(data);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -159,7 +172,7 @@ export default function App() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <DocumentManager />
+            <DocumentManager ref={docFormRef} />
           </TabsContent>
 
           <TabsContent value="guide">
