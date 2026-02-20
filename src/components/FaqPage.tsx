@@ -15,7 +15,7 @@ export function FaqPage() {
 
   return (
     <Card>
-      <CardContent className="pt-6 prose prose-invert max-w-none">
+      <CardContent className="pt-6 prose dark:prose-invert max-w-none">
         <Markdown>{content}</Markdown>
       </CardContent>
     </Card>
