@@ -117,6 +117,18 @@ export const en = {
     notes: "Notes",
     clickAgain: "Click again",
   },
+  errorBoundary: {
+    title: "Something went wrong",
+    description:
+      "An unexpected error occurred. You can export your data before resetting the app.",
+    exportButton: "Export Data",
+    exportSuccess: "Data exported successfully.",
+    exportFailed: "Export failed. No data found.",
+    resetButton: "Reset App",
+    resetConfirm: "Confirm Reset",
+    resetDescription:
+      "Resetting clears all stored data and reloads the app.",
+  },
   documentManager: {
     titleNew: "New Document",
     titleEdit: "Edit Document",

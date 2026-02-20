@@ -123,6 +123,18 @@ export const de: TranslationKeys = {
     notes: "Anmerkungen",
     clickAgain: "Nochmal klicken",
   },
+  errorBoundary: {
+    title: "Etwas ist schiefgelaufen",
+    description:
+      "Ein unerwarteter Fehler ist aufgetreten. Sie können Ihre Daten exportieren, bevor Sie die App zurücksetzen.",
+    exportButton: "Daten exportieren",
+    exportSuccess: "Daten erfolgreich exportiert.",
+    exportFailed: "Export fehlgeschlagen. Keine Daten gefunden.",
+    resetButton: "App zurücksetzen",
+    resetConfirm: "Zurücksetzen bestätigen",
+    resetDescription:
+      "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
+  },
   documentManager: {
     titleNew: "Neues Dokument",
     titleEdit: "Dokument bearbeiten",
