@@ -212,55 +212,51 @@ export const AnnotationForm = forwardRef<
             </div>
           </div>
 
-          {!isUnanswerable && (
-            <>
-              <div className="space-y-2">
-                <ChunksInput
-                  chunks={formData.relevantChunks}
-                  onChange={(relevantChunks) =>
-                    setFormData({ ...formData, relevantChunks })
-                  }
-                />
-                {errors.relevantChunks && (
-                  <p className="text-sm text-destructive">
-                    {errors.relevantChunks}
-                  </p>
-                )}
-              </div>
+          <div className="space-y-2">
+            <ChunksInput
+              chunks={formData.relevantChunks}
+              onChange={(relevantChunks) =>
+                setFormData({ ...formData, relevantChunks })
+              }
+            />
+            {errors.relevantChunks && (
+              <p className="text-sm text-destructive">
+                {errors.relevantChunks}
+              </p>
+            )}
+          </div>
 
-              <div className="space-y-2">
-                <ChunksInput
-                  chunks={formData.distractingChunks}
-                  onChange={(distractingChunks) =>
-                    setFormData({ ...formData, distractingChunks })
-                  }
-                  variant="distracting"
-                />
-              </div>
+          <div className="space-y-2">
+            <ChunksInput
+              chunks={formData.distractingChunks}
+              onChange={(distractingChunks) =>
+                setFormData({ ...formData, distractingChunks })
+              }
+              variant="distracting"
+            />
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="response" className="flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  {t("form.response")} *
-                </Label>
-                <p className="text-sm text-muted-foreground">
-                  {t("form.responseDescription")}
-                </p>
-                <Textarea
-                  id="response"
-                  value={formData.response}
-                  onChange={(e) =>
-                    setFormData({ ...formData, response: e.target.value })
-                  }
-                  placeholder={t("form.responsePlaceholder")}
-                  rows={4}
-                />
-                {errors.response && (
-                  <p className="text-sm text-destructive">{errors.response}</p>
-                )}
-              </div>
-            </>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="response" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              {t("form.response")} {!isUnanswerable && "*"}
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {t("form.responseDescription")}
+            </p>
+            <Textarea
+              id="response"
+              value={formData.response}
+              onChange={(e) =>
+                setFormData({ ...formData, response: e.target.value })
+              }
+              placeholder={t("form.responsePlaceholder")}
+              rows={4}
+            />
+            {errors.response && (
+              <p className="text-sm text-destructive">{errors.response}</p>
+            )}
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2">
