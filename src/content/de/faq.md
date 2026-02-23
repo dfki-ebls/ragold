@@ -8,6 +8,7 @@ Folgen Sie diesen Schritten, um Ihre erste Annotation zu erstellen.
 
 Füllen Sie die Felder **Autor** und **Projekt** oben auf der Seite aus.
 Diese Metadaten sind erforderlich, bevor Sie Ihre Annotationen exportieren können.
+Optional können Sie auch eine **Beschreibung** für den Datensatz hinzufügen.
 
 ### Schritt 2: Dokumente hinzufügen (optional)
 
@@ -30,6 +31,8 @@ Wechseln Sie zum Tab **Neue Annotation** und füllen Sie aus:
 5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
 6. **Anmerkungen** (optional): Fügen Sie besondere Hinweise zu diesem Beispiel hinzu.
 
+Bei **unbeantwortbaren** Anfragen sind relevante Dokumentausschnitte und die erwartete Antwort optional.
+
 ### Schritt 4: Überprüfen und Exportieren
 
 Nutzen Sie den Tab **Annotationen**, um alle Ihre Annotationen zu überprüfen.
@@ -41,7 +44,7 @@ Wenn Sie fertig sind, klicken Sie auf **Export** in der Kopfzeile, um Ihren Date
 ### Arbeit exportieren
 
 Der **Export**-Button in der Kopfzeile lädt Ihren kompletten Datensatz als JSON-Datei herunter.
-Der Dateiname enthält das aktuelle Datum (z.B. `ragold-2024-01-15.json`).
+Der Dateiname enthält das aktuelle Datum und die Uhrzeit (`ragold-YYYYMMDD-HHMMSS.json`).
 
 Bevor Sie exportieren können, müssen Sie:
 
@@ -61,14 +64,14 @@ Dies ist nützlich für:
 
 - Fortsetzung der Arbeit aus einer vorherigen Sitzung
 - Zusammenarbeit mit anderen durch Austausch von Exportdateien
-- Zusammenführen von Datensätzen mehrerer Annotatoren
 
 Beim Importieren:
 
 - Wählen Sie eine `.json`-Datei, die aus RAGold exportiert wurde
-- Neue Annotationen und Dokumente werden zu Ihren aktuellen Daten hinzugefügt
-- Doppelte Annotationen (mit derselben ID) werden automatisch übersprungen
-- Bestehende Annotationen werden nicht überschrieben
+- Alle vorhandenen Annotationen und Dokumente werden durch die importierten Daten ersetzt
+- Projektmetadaten (Autor, Projekt, Beschreibung) werden ebenfalls ersetzt
+- Sie werden vor dem Import um Bestätigung gebeten
+- Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher Ihre aktuellen Daten exportieren
 
 ### Daten zurücksetzen
 

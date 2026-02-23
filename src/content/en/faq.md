@@ -8,6 +8,7 @@ Follow these steps to create your first annotation.
 
 Fill in the **Author** and **Project** fields at the top of the page.
 These metadata fields are required before you can export your annotations.
+You can also add an optional **Description** for the dataset.
 
 ### Step 2: Add Documents (Optional)
 
@@ -30,6 +31,8 @@ Switch to the **New Annotation** tab and fill in:
 5. **Expected Answer**: Write the ideal response the system should provide.
 6. **Notes** (optional): Add any special considerations about this example.
 
+For **Unanswerable** queries, relevant document chunks and the expected answer are optional.
+
 ### Step 4: Review and Export
 
 Use the **Annotations** tab to review all your annotations.
@@ -41,7 +44,7 @@ When ready, click **Export** in the header to download your dataset as JSON.
 ### Exporting Your Work
 
 The **Export** button in the header downloads your complete dataset as a JSON file.
-The filename includes the current date (e.g., `ragold-2024-01-15.json`).
+The filename includes the current date and time (`ragold-YYYYMMDD-HHMMSS.json`).
 
 Before you can export, you must:
 
@@ -61,14 +64,14 @@ This is useful for:
 
 - Continuing work from a previous session
 - Collaborating with others by sharing export files
-- Merging datasets from multiple annotators
 
 When importing:
 
 - Select a `.json` file that was exported from RAGold
-- New annotations and documents will be added to your current data
-- Duplicate annotations (with the same ID) are automatically skipped
-- Existing annotations are not overwritten
+- All existing annotations and documents will be replaced with the imported data
+- Project metadata (author, project, description) will also be replaced
+- You will be asked for confirmation before the import proceeds
+- This action cannot be undone, so consider exporting your current data first
 
 ### Resetting Data
 
