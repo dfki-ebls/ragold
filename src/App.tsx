@@ -154,13 +154,21 @@ export default function App() {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
-            <TabsTrigger value="annotations">
-              {t("tabs.annotations", { count: annotationCount })}
-            </TabsTrigger>
             <TabsTrigger value="documents">
               {t("tabs.documents", { count: documentCount })}
             </TabsTrigger>
+            <TabsTrigger value="annotations">
+              {t("tabs.annotations", { count: annotationCount })}
+            </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="guide">
+            <FaqPage />
+          </TabsContent>
+
+          <TabsContent value="documents">
+            <DocumentManager ref={docFormRef} />
+          </TabsContent>
 
           <TabsContent value="annotations">
             <div className="space-y-6">
@@ -184,14 +192,6 @@ export default function App() {
                 }}
               />
             </div>
-          </TabsContent>
-
-          <TabsContent value="documents">
-            <DocumentManager ref={docFormRef} />
-          </TabsContent>
-
-          <TabsContent value="guide">
-            <FaqPage />
           </TabsContent>
         </Tabs>
       </main>
