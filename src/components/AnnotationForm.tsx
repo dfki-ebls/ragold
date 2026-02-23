@@ -15,6 +15,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { FieldError } from "@/components/FieldError";
+import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
 import { ChunksInput } from "@/components/ChunksInput";
 import { Button } from "@/components/ui/button";
@@ -63,9 +65,8 @@ export const AnnotationForm = forwardRef<
 >(function AnnotationForm({ annotation, onSubmit, onCancel }, ref) {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof Annotation, string>>
-  >({});
+  const { errors, validate, clearErrors } =
+    useFormErrors<keyof Annotation>();
   const initialFormData = useRef<Annotation>(emptyFormData);
 
   useImperativeHandle(ref, () => ({
@@ -95,36 +96,28 @@ export const AnnotationForm = forwardRef<
       : emptyFormData;
     setFormData(newFormData);
     initialFormData.current = newFormData;
-    setErrors({});
+    clearErrors();
   }, [annotation]);
 
   const isUnanswerable = formData.queryType === "unanswerable";
 
-  const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof Annotation, string>> = {};
-
-    if (!formData.query.trim()) {
-      newErrors.query = t("form.queryError");
-    }
-
-    if (
-      !isUnanswerable &&
-      formData.relevantChunks.every((chunk) => !chunk.content.trim())
-    ) {
-      newErrors.relevantChunks = t("chunks.relevantError");
-    }
-
-    if (!isUnanswerable && !formData.response.trim()) {
-      newErrors.response = t("form.responseError");
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const handleValidate = (): boolean =>
+    validate({
+      query: !formData.query.trim() ? t("form.queryError") : undefined,
+      relevantChunks:
+        !isUnanswerable &&
+        formData.relevantChunks.every((chunk) => !chunk.content.trim())
+          ? t("chunks.relevantError")
+          : undefined,
+      response:
+        !isUnanswerable && !formData.response.trim()
+          ? t("form.responseError")
+          : undefined,
+    });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (handleValidate()) {
       const cleanedData: Annotation = {
         ...formData,
         relevantChunks: formData.relevantChunks.filter((chunk) =>
@@ -170,9 +163,7 @@ export const AnnotationForm = forwardRef<
               placeholder={t("form.queryPlaceholder")}
               rows={3}
             />
-            {errors.query && (
-              <p className="text-sm text-destructive">{errors.query}</p>
-            )}
+            <FieldError message={errors.query} />
           </div>
 
           <div className="space-y-2">
@@ -220,11 +211,7 @@ export const AnnotationForm = forwardRef<
               }
               required={!isUnanswerable}
             />
-            {errors.relevantChunks && (
-              <p className="text-sm text-destructive">
-                {errors.relevantChunks}
-              </p>
-            )}
+            <FieldError message={errors.relevantChunks} />
           </div>
 
           <div className="space-y-2">
@@ -254,9 +241,7 @@ export const AnnotationForm = forwardRef<
               placeholder={t("form.responsePlaceholder")}
               rows={4}
             />
-            {errors.response && (
-              <p className="text-sm text-destructive">{errors.response}</p>
-            )}
+            <FieldError message={errors.response} />
           </div>
 
           <div className="space-y-2">

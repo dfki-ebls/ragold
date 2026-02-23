@@ -144,6 +144,8 @@ export const de: TranslationKeys = {
     description: "Beschreibung",
     descriptionPlaceholder: "Beschreibung des Dokuments...",
     library: "Dokumentbibliothek ({{count}})",
+    filenameError: "Dateiname ist erforderlich",
+    descriptionError: "Beschreibung ist erforderlich",
     empty: "Noch keine Dokumente vorhanden.",
     emptyHint: "Fügen Sie über das Formular oben ein Dokument hinzu.",
   },

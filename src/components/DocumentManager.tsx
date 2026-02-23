@@ -1,5 +1,7 @@
 import { AlignLeft, File, FileText, Pencil, Trash2 } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { FieldError } from "@/components/FieldError";
+import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +35,8 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [formData, setFormData] = useState<DocumentFormData>(emptyForm);
+    const { errors, validate, clearErrors } =
+      useFormErrors<keyof DocumentFormData>();
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const initialFormData = useRef<DocumentFormData>(emptyForm);
 
@@ -46,8 +50,19 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
 
     const documentList = Object.entries(documents);
 
+    const handleValidate = (): boolean =>
+      validate({
+        filename: !formData.filename.trim()
+          ? t("documentManager.filenameError")
+          : undefined,
+        description: !formData.description.trim()
+          ? t("documentManager.descriptionError")
+          : undefined,
+      });
+
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
+      if (!handleValidate()) return;
 
       const doc: Document = {
         filename: formData.filename.trim(),
@@ -61,6 +76,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
         addDocument(doc);
       }
       setFormData(emptyForm);
+      clearErrors();
     };
 
     const handleEdit = (id: string, doc: Document) => {
@@ -114,8 +130,8 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                     setFormData({ ...formData, filename: e.target.value })
                   }
                   placeholder={t("documentManager.filenamePlaceholder")}
-                  required
                 />
+                <FieldError message={errors.filename} />
               </div>
               <div className="space-y-2">
                 <Label
@@ -133,8 +149,8 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                   }
                   placeholder={t("documentManager.descriptionPlaceholder")}
                   rows={4}
-                  required
                 />
+                <FieldError message={errors.description} />
               </div>
               <div className="flex gap-2">
                 <Button type="submit">
