@@ -12,8 +12,11 @@ import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirmAction } from "@/lib/useConfirmAction";
+import { useStore } from "@/lib/store";
 import {
   type Annotation,
+  type Chunk,
+  type Document,
   KNOWN_QUERY_TYPES,
   type KnownQueryType,
 } from "@/lib/types";
@@ -24,89 +27,83 @@ interface AnnotationManagerProps {
   onDelete: (id: string) => void;
 }
 
-function AnnotationCard({
-  id,
+function ChunkPreview({
+  chunk,
+  index,
+  documents,
+  className,
+}: {
+  chunk: Chunk;
+  index: number;
+  documents: Record<string, Document>;
+  className?: string;
+}) {
+  const { t } = useTranslation();
+  const doc = chunk.documentId ? documents[chunk.documentId] : undefined;
+
+  return (
+    <div className={`text-sm text-muted-foreground p-2 rounded ${className ?? "bg-muted"}`}>
+      <div className="flex items-baseline gap-2">
+        <span className="text-muted-foreground/60 shrink-0">[{index + 1}]</span>
+        <span className="text-xs font-medium text-foreground/70">
+          {doc ? doc.filename : t("chunks.manualEntry")}
+        </span>
+      </div>
+      <div className="whitespace-pre-wrap mt-1 line-clamp-3">{chunk.content}</div>
+    </div>
+  );
+}
+
+function AnnotationItem({
   annotation,
   onEdit,
   onDelete,
   deleteConfirm,
+  documents,
 }: {
-  id: string;
   annotation: Annotation;
   onEdit: () => void;
   onDelete: () => void;
   deleteConfirm: boolean;
+  documents: Record<string, Document>;
 }) {
   const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const distractingCount = annotation.distractingChunks?.length ?? 0;
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-base font-medium line-clamp-2">
-              {annotation.query}
-            </CardTitle>
-            <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground flex-wrap">
-              {annotation.queryType && (
-                <span className="px-2 py-0.5 bg-muted rounded text-xs">
-                  {(KNOWN_QUERY_TYPES as readonly string[]).includes(
-                    annotation.queryType,
+    <div className="flex items-start gap-3 p-3 rounded-lg border bg-card">
+      <div className="flex-1 min-w-0">
+        <div className="font-medium line-clamp-2">{annotation.query}</div>
+        <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
+          {annotation.queryType && (
+            <span className="px-2 py-0.5 bg-muted rounded text-xs">
+              {(KNOWN_QUERY_TYPES as readonly string[]).includes(
+                annotation.queryType,
+              )
+                ? t(
+                    `queryTypes.${annotation.queryType as KnownQueryType}.label`,
                   )
-                    ? t(
-                        `queryTypes.${annotation.queryType as KnownQueryType}.label`,
-                      )
-                    : annotation.queryType}
-                </span>
-              )}
-              <span className="flex items-center gap-1 text-green-600">
-                <CheckCircle className="w-3.5 h-3.5" />
-                {annotation.relevantChunks.length}
-              </span>
-              {distractingCount > 0 && (
-                <span className="flex items-center gap-1 text-red-600">
-                  <XCircle className="w-3.5 h-3.5" />
-                  {distractingCount}
-                </span>
-              )}
-              <span className="text-xs text-muted-foreground/50 font-mono">
-                {id.slice(0, 8)}
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            {deleteConfirm && (
-              <span className="text-xs text-destructive mr-2">
-                {t("annotationManager.clickAgain")}
-              </span>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onEdit}
-              className="h-8 w-8"
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={deleteConfirm ? "destructive" : "ghost"}
-              size="icon"
-              onClick={onDelete}
-              className="h-8 w-8"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </div>
+                : annotation.queryType}
+            </span>
+          )}
+          <span className="flex items-center gap-1 text-green-600">
+            <CheckCircle className="w-3.5 h-3.5" />
+            {annotation.relevantChunks.length}
+          </span>
+          {distractingCount > 0 && (
+            <span className="flex items-center gap-1 text-red-600">
+              <XCircle className="w-3.5 h-3.5" />
+              {distractingCount}
+            </span>
+          )}
         </div>
-      </CardHeader>
-      <CardContent className="pt-0">
+
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="h-auto p-0 text-muted-foreground hover:text-foreground"
+          className="h-auto p-0 mt-2 text-muted-foreground hover:text-foreground"
         >
           {isExpanded ? (
             <>
@@ -122,7 +119,7 @@ function AnnotationCard({
         </Button>
 
         {isExpanded && (
-          <div className="mt-4 space-y-4">
+          <div className="mt-3 space-y-4">
             <div>
               <h4 className="text-sm font-medium mb-1">
                 {t("annotationManager.expectedResponse")}
@@ -142,15 +139,12 @@ function AnnotationCard({
               </h4>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {annotation.relevantChunks.map((chunk, i) => (
-                  <div
+                  <ChunkPreview
                     key={i}
-                    className="text-sm text-muted-foreground bg-muted p-2 rounded"
-                  >
-                    <span className="text-muted-foreground/60 mr-2">
-                      [{i + 1}]
-                    </span>
-                    <span className="whitespace-pre-wrap">{chunk.content}</span>
-                  </div>
+                    chunk={chunk}
+                    index={i}
+                    documents={documents}
+                  />
                 ))}
               </div>
             </div>
@@ -165,17 +159,13 @@ function AnnotationCard({
                   </h4>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {annotation.distractingChunks.map((chunk, i) => (
-                      <div
+                      <ChunkPreview
                         key={i}
-                        className="text-sm text-muted-foreground bg-destructive/10 p-2 rounded"
-                      >
-                        <span className="text-muted-foreground/60 mr-2">
-                          [{i + 1}]
-                        </span>
-                        <span className="whitespace-pre-wrap">
-                          {chunk.content}
-                        </span>
-                      </div>
+                        chunk={chunk}
+                        index={i}
+                        documents={documents}
+                        className="bg-destructive/10"
+                      />
                     ))}
                   </div>
                 </div>
@@ -195,8 +185,29 @@ function AnnotationCard({
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+      <div className="flex items-center gap-1 shrink-0">
+        {deleteConfirm && (
+          <span className="text-xs text-destructive mr-2">
+            {t("annotationManager.clickAgain")}
+          </span>
+        )}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={onEdit}
+        >
+          <Pencil className="w-4 h-4" />
+        </Button>
+        <Button
+          variant={deleteConfirm ? "destructive" : "ghost"}
+          size="icon-sm"
+          onClick={onDelete}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -206,6 +217,7 @@ export function AnnotationManager({
   onDelete,
 }: AnnotationManagerProps) {
   const { t } = useTranslation();
+  const documents = useStore((s) => s.documents);
   const { isConfirming, confirm } = useConfirmAction();
 
   const entries = Object.entries(annotations);
@@ -214,43 +226,34 @@ export function AnnotationManager({
     confirm(id, () => onDelete(id));
   };
 
-  if (entries.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {t("annotationManager.library", { count: 0 })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {t("annotationManager.library", { count: entries.length })}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {entries.length === 0 ? (
           <EmptyState
             message={t("annotationManager.empty")}
             hint={t("annotationManager.emptyHint")}
           />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            {t("annotationManager.library", { count: entries.length })}
-          </CardTitle>
-        </CardHeader>
-      </Card>
-      {entries.map(([id, annotation]) => (
-        <AnnotationCard
-          key={id}
-          id={id}
-          annotation={annotation}
-          onEdit={() => onEdit(id)}
-          onDelete={() => handleDelete(id)}
-          deleteConfirm={isConfirming(id)}
-        />
-      ))}
-    </div>
+        ) : (
+          <div className="space-y-3">
+            {entries.map(([id, annotation]) => (
+              <AnnotationItem
+                key={id}
+                annotation={annotation}
+                onEdit={() => onEdit(id)}
+                onDelete={() => handleDelete(id)}
+                deleteConfirm={isConfirming(id)}
+                documents={documents}
+              />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

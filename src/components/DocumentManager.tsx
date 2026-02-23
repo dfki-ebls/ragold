@@ -189,9 +189,6 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                       <div className="text-sm text-muted-foreground mt-1 line-clamp-3">
                         {doc.description}
                       </div>
-                      <div className="text-xs text-muted-foreground/60 mt-1 font-mono">
-                        {id.slice(0, 8)}
-                      </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       {isConfirming(id) && (
