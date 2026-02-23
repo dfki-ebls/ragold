@@ -5,7 +5,7 @@ import {
   AnnotationForm,
   type AnnotationFormRef,
 } from "@/components/AnnotationForm";
-import { AnnotationList } from "@/components/AnnotationList";
+import { AnnotationManager } from "@/components/AnnotationManager";
 import {
   DocumentManager,
   type DocumentManagerRef,
@@ -178,7 +178,7 @@ export default function App() {
                 onSubmit={handleSubmit}
                 onCancel={editingId ? handleCancel : undefined}
               />
-              <AnnotationList
+              <AnnotationManager
                 annotations={annotations}
                 onEdit={(id) => {
                   setEditingId(id);

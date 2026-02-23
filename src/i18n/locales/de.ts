@@ -42,26 +42,6 @@ export const de: TranslationKeys = {
     guide: "Anleitung",
   },
   form: {
-    titleNew: "Neue Annotation erstellen",
-    titleEdit: "Annotation bearbeiten",
-    description:
-      "Erstellen Sie ein Beispiel für eine Nutzeranfrage an ein RAG-System mit den relevanten Dokumenten und der erwarteten Antwort.",
-    query: "Nutzeranfrage",
-    queryDescription:
-      "Formulieren Sie die Frage so, wie ein Nutzer sie in ein Chat-System eingeben würde.",
-    queryPlaceholder: "Wie beantrage ich Urlaub im Self-Service-Portal?",
-    queryError: "Nutzeranfrage ist erforderlich",
-    queryType: "Fragetyp",
-    queryTypeDescription: "Wie wird die Frage durch den Kontext beantwortet?",
-    response: "Erwartete Antwort",
-    responseDescription:
-      "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
-    responsePlaceholder: "Antwort auf die Nutzeranfrage...",
-    responseError: "Erwartete Antwort ist erforderlich",
-    notes: "Anmerkungen (optional)",
-    notesDescription:
-      "Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit, besondere Formulierungen.",
-    notesPlaceholder: "Optionale Hinweise...",
     unsavedChangesTitle: "Ungespeicherte Änderungen",
     unsavedChanges:
       "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?",
@@ -103,8 +83,27 @@ export const de: TranslationKeys = {
     addChunksHint:
       'Fügen Sie Dokumente im Tab "Dokumente" hinzu, um sie hier auszuwählen.',
   },
-  annotationList: {
-    count: "{{count}} Annotation(en)",
+  annotationManager: {
+    titleNew: "Neue Annotation",
+    titleEdit: "Annotation bearbeiten",
+
+    query: "Nutzeranfrage",
+    queryDescription:
+      "Formulieren Sie die Frage so, wie ein Nutzer sie in ein Chat-System eingeben würde.",
+    queryPlaceholder: "Wie beantrage ich Urlaub im Self-Service-Portal?",
+    queryError: "Nutzeranfrage ist erforderlich",
+    queryType: "Fragetyp",
+    queryTypeDescription: "Wie wird die Frage durch den Kontext beantwortet?",
+    response: "Erwartete Antwort",
+    responseDescription:
+      "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
+    responsePlaceholder: "Antwort auf die Nutzeranfrage...",
+    responseError: "Erwartete Antwort ist erforderlich",
+    notes: "Anmerkungen (optional)",
+    notesDescription:
+      "Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit, besondere Formulierungen.",
+    notesPlaceholder: "Optionale Hinweise...",
+    library: "Annotationsbibliothek ({{count}})",
     empty: "Noch keine Annotationen vorhanden.",
     emptyHint: "Erstellen Sie über das Formular oben eine Annotation.",
     showDetails: "Details anzeigen",
@@ -112,7 +111,7 @@ export const de: TranslationKeys = {
     expectedResponse: "Erwartete Antwort",
     relevantChunks: "Relevante Dokumentausschnitte ({{count}})",
     distractingChunks: "Ablenkende Dokumentausschnitte ({{count}})",
-    notes: "Anmerkungen",
+    listNotes: "Anmerkungen",
     clickAgain: "Nochmal klicken",
   },
   errorBoundary: {
@@ -133,6 +132,7 @@ export const de: TranslationKeys = {
   documentManager: {
     titleNew: "Neues Dokument",
     titleEdit: "Dokument bearbeiten",
+
     filename: "Dateiname",
     filenamePlaceholder: "dokument.txt",
     description: "Beschreibung",
@@ -142,5 +142,6 @@ export const de: TranslationKeys = {
     descriptionError: "Beschreibung ist erforderlich",
     empty: "Noch keine Dokumente vorhanden.",
     emptyHint: "Fügen Sie über das Formular oben ein Dokument hinzu.",
+    clickAgain: "Nochmal klicken",
   },
 };

@@ -17,7 +17,7 @@ import {
   type KnownQueryType,
 } from "@/lib/types";
 
-interface AnnotationListProps {
+interface AnnotationManagerProps {
   annotations: Record<string, Annotation>;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -78,7 +78,7 @@ function AnnotationCard({
           <div className="flex items-center gap-1 shrink-0">
             {deleteConfirm && (
               <span className="text-xs text-destructive mr-2">
-                {t("annotationList.clickAgain")}
+                {t("annotationManager.clickAgain")}
               </span>
             )}
             <Button
@@ -110,12 +110,12 @@ function AnnotationCard({
           {isExpanded ? (
             <>
               <ChevronUp className="w-4 h-4 mr-1" />
-              {t("annotationList.hideDetails")}
+              {t("annotationManager.hideDetails")}
             </>
           ) : (
             <>
               <ChevronDown className="w-4 h-4 mr-1" />
-              {t("annotationList.showDetails")}
+              {t("annotationManager.showDetails")}
             </>
           )}
         </Button>
@@ -124,7 +124,7 @@ function AnnotationCard({
           <div className="mt-4 space-y-4">
             <div>
               <h4 className="text-sm font-medium mb-1">
-                {t("annotationList.expectedResponse")}
+                {t("annotationManager.expectedResponse")}
               </h4>
               <div className="max-h-40 overflow-y-auto">
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -135,7 +135,7 @@ function AnnotationCard({
 
             <div>
               <h4 className="text-sm font-medium mb-1">
-                {t("annotationList.relevantChunks", {
+                {t("annotationManager.relevantChunks", {
                   count: annotation.relevantChunks.length,
                 })}
               </h4>
@@ -158,7 +158,7 @@ function AnnotationCard({
               annotation.distractingChunks.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-1">
-                    {t("annotationList.distractingChunks", {
+                    {t("annotationManager.distractingChunks", {
                       count: annotation.distractingChunks.length,
                     })}
                   </h4>
@@ -183,7 +183,7 @@ function AnnotationCard({
             {annotation.notes && (
               <div>
                 <h4 className="text-sm font-medium mb-1">
-                  {t("annotationList.notes")}
+                  {t("annotationManager.listNotes")}
                 </h4>
                 <div className="max-h-40 overflow-y-auto">
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -199,11 +199,11 @@ function AnnotationCard({
   );
 }
 
-export function AnnotationList({
+export function AnnotationManager({
   annotations,
   onEdit,
   onDelete,
-}: AnnotationListProps) {
+}: AnnotationManagerProps) {
   const { t } = useTranslation();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -222,12 +222,19 @@ export function AnnotationList({
   if (entries.length === 0) {
     return (
       <Card>
-        <CardContent className="py-12 text-center">
-          <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground">{t("annotationList.empty")}</p>
-          <p className="text-sm text-muted-foreground/60 mt-1">
-            {t("annotationList.emptyHint")}
-          </p>
+        <CardHeader>
+          <CardTitle>
+            {t("annotationManager.library", { count: 0 })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="py-12 text-center">
+            <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+            <p className="text-muted-foreground">{t("annotationManager.empty")}</p>
+            <p className="text-sm text-muted-foreground/60 mt-1">
+              {t("annotationManager.emptyHint")}
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -235,9 +242,13 @@ export function AnnotationList({
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        {t("annotationList.count", { count: entries.length })}
-      </p>
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {t("annotationManager.library", { count: entries.length })}
+          </CardTitle>
+        </CardHeader>
+      </Card>
       {entries.map(([id, annotation]) => (
         <AnnotationCard
           key={id}

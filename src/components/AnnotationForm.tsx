@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
+
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -103,7 +103,7 @@ export const AnnotationForm = forwardRef<
 
   const handleValidate = (): boolean =>
     validate({
-      query: !formData.query.trim() ? t("form.queryError") : undefined,
+      query: !formData.query.trim() ? t("annotationManager.queryError") : undefined,
       relevantChunks:
         !isUnanswerable &&
         formData.relevantChunks.every((chunk) => !chunk.content.trim())
@@ -111,7 +111,7 @@ export const AnnotationForm = forwardRef<
           : undefined,
       response:
         !isUnanswerable && !formData.response.trim()
-          ? t("form.responseError")
+          ? t("annotationManager.responseError")
           : undefined,
     });
 
@@ -140,19 +140,19 @@ export const AnnotationForm = forwardRef<
     <Card>
       <CardHeader>
         <CardTitle>
-          {isEditing ? t("form.titleEdit") : t("form.titleNew")}
+          {isEditing ? t("annotationManager.titleEdit") : t("annotationManager.titleNew")}
         </CardTitle>
-        <CardDescription>{t("form.description")}</CardDescription>
+
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="query" className="flex items-center gap-2">
               <Search className="w-4 h-4" />
-              {t("form.query")} *
+              {t("annotationManager.query")} *
             </Label>
             <p className="text-sm text-muted-foreground">
-              {t("form.queryDescription")}
+              {t("annotationManager.queryDescription")}
             </p>
             <Textarea
               id="query"
@@ -160,7 +160,7 @@ export const AnnotationForm = forwardRef<
               onChange={(e) =>
                 setFormData({ ...formData, query: e.target.value })
               }
-              placeholder={t("form.queryPlaceholder")}
+              placeholder={t("annotationManager.queryPlaceholder")}
               rows={3}
             />
             <FieldError message={errors.query} />
@@ -169,10 +169,10 @@ export const AnnotationForm = forwardRef<
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Tags className="w-4 h-4" />
-              {t("form.queryType")} *
+              {t("annotationManager.queryType")} *
             </Label>
             <p className="text-sm text-muted-foreground">
-              {t("form.queryTypeDescription")}
+              {t("annotationManager.queryTypeDescription")}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {KNOWN_QUERY_TYPES.map((type) => {
@@ -227,10 +227,10 @@ export const AnnotationForm = forwardRef<
           <div className="space-y-2">
             <Label htmlFor="response" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              {t("form.response")} {isUnanswerable ? "(optional)" : "*"}
+              {t("annotationManager.response")} {isUnanswerable ? "(optional)" : "*"}
             </Label>
             <p className="text-sm text-muted-foreground">
-              {t("form.responseDescription")}
+              {t("annotationManager.responseDescription")}
             </p>
             <Textarea
               id="response"
@@ -238,7 +238,7 @@ export const AnnotationForm = forwardRef<
               onChange={(e) =>
                 setFormData({ ...formData, response: e.target.value })
               }
-              placeholder={t("form.responsePlaceholder")}
+              placeholder={t("annotationManager.responsePlaceholder")}
               rows={4}
             />
             <FieldError message={errors.response} />
@@ -247,10 +247,10 @@ export const AnnotationForm = forwardRef<
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2">
               <StickyNote className="w-4 h-4" />
-              {t("form.notes")}
+              {t("annotationManager.notes")}
             </Label>
             <p className="text-sm text-muted-foreground">
-              {t("form.notesDescription")}
+              {t("annotationManager.notesDescription")}
             </p>
             <Textarea
               id="notes"
@@ -258,7 +258,7 @@ export const AnnotationForm = forwardRef<
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              placeholder={t("form.notesPlaceholder")}
+              placeholder={t("annotationManager.notesPlaceholder")}
               rows={3}
             />
           </div>

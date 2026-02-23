@@ -40,26 +40,6 @@ export const en = {
     guide: "Guide",
   },
   form: {
-    titleNew: "Create New Annotation",
-    titleEdit: "Edit Annotation",
-    description:
-      "Create an example of a user query for a RAG system with the relevant documents and expected answer.",
-    query: "User Query",
-    queryDescription:
-      "Phrase the question as a user would enter it into a chat system.",
-    queryPlaceholder: "How do I request vacation in the self-service portal?",
-    queryError: "User query is required",
-    queryType: "Query Type",
-    queryTypeDescription: "How is the question answered by the context?",
-    response: "Expected Answer",
-    responseDescription:
-      "Write the ideal answer that the chat system should provide.",
-    responsePlaceholder: "Answer to the user query...",
-    responseError: "Expected answer is required",
-    notes: "Notes (optional)",
-    notesDescription:
-      "Special considerations such as ambiguous terms, time dependencies, or special phrasings.",
-    notesPlaceholder: "Optional notes...",
     unsavedChangesTitle: "Unsaved Changes",
     unsavedChanges: "There are unsaved changes. Do you really want to switch?",
   },
@@ -99,8 +79,27 @@ export const en = {
     manualEntry: "Manual entry",
     addChunksHint: 'Add documents in the "Documents" tab to select them here.',
   },
-  annotationList: {
-    count: "{{count}} annotation(s)",
+  annotationManager: {
+    titleNew: "New Annotation",
+    titleEdit: "Edit Annotation",
+
+    query: "User Query",
+    queryDescription:
+      "Phrase the question as a user would enter it into a chat system.",
+    queryPlaceholder: "How do I request vacation in the self-service portal?",
+    queryError: "User query is required",
+    queryType: "Query Type",
+    queryTypeDescription: "How is the question answered by the context?",
+    response: "Expected Answer",
+    responseDescription:
+      "Write the ideal answer that the chat system should provide.",
+    responsePlaceholder: "Answer to the user query...",
+    responseError: "Expected answer is required",
+    notes: "Notes (optional)",
+    notesDescription:
+      "Special considerations such as ambiguous terms, time dependencies, or special phrasings.",
+    notesPlaceholder: "Optional notes...",
+    library: "Annotation Library ({{count}})",
     empty: "No annotations yet.",
     emptyHint: "Add an annotation using the form above.",
     showDetails: "Show details",
@@ -108,7 +107,7 @@ export const en = {
     expectedResponse: "Expected Answer",
     relevantChunks: "Relevant Document Chunks ({{count}})",
     distractingChunks: "Distracting Document Chunks ({{count}})",
-    notes: "Notes",
+    listNotes: "Notes",
     clickAgain: "Click again",
   },
   errorBoundary: {
@@ -128,6 +127,7 @@ export const en = {
   documentManager: {
     titleNew: "New Document",
     titleEdit: "Edit Document",
+
     filename: "Filename",
     filenamePlaceholder: "document.txt",
     description: "Description",
@@ -137,6 +137,7 @@ export const en = {
     descriptionError: "Description is required",
     empty: "No documents yet.",
     emptyHint: "Add a document using the form above.",
+    clickAgain: "Click again",
   },
 };
 

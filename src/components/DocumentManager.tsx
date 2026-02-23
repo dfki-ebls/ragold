@@ -115,9 +115,10 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                 ? t("documentManager.titleEdit")
                 : t("documentManager.titleNew")}
             </CardTitle>
+
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="filename" className="flex items-center gap-2">
                   <File className="w-4 h-4" />
@@ -152,7 +153,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                 />
                 <FieldError message={errors.description} />
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-3 pt-4">
                 <Button type="submit">
                   {editingId ? t("common.update") : t("common.add")}
                 </Button>
@@ -204,7 +205,12 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                         {id.slice(0, 8)}
                       </div>
                     </div>
-                    <div className="flex gap-1 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
+                      {deleteConfirm === id && (
+                        <span className="text-xs text-destructive mr-2">
+                          {t("documentManager.clickAgain")}
+                        </span>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon-sm"
