@@ -36,9 +36,8 @@ export const de: TranslationKeys = {
     authorPlaceholder: "Name des Annotators",
     project: "Projekt",
     projectPlaceholder: "Projektname",
-    datasetDescription: "Beschreibung",
-    datasetDescriptionPlaceholder:
-      "Kurze Beschreibung des Datensatzes (optional)",
+    datasetDescription: "Beschreibung (optional)",
+    datasetDescriptionPlaceholder: "Kurze Beschreibung des Datensatzes",
     metadataInfo:
       "Diese Metadaten gelten für alle Annotationen und Dokumente. Der Export enthält sowohl Annotationen als auch Dokumente.",
   },

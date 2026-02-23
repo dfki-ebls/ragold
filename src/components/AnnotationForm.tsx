@@ -218,6 +218,7 @@ export const AnnotationForm = forwardRef<
               onChange={(relevantChunks) =>
                 setFormData({ ...formData, relevantChunks })
               }
+              required={!isUnanswerable}
             />
             {errors.relevantChunks && (
               <p className="text-sm text-destructive">
@@ -239,7 +240,7 @@ export const AnnotationForm = forwardRef<
           <div className="space-y-2">
             <Label htmlFor="response" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              {t("form.response")} {!isUnanswerable && "*"}
+              {t("form.response")} {isUnanswerable ? "(optional)" : "*"}
             </Label>
             <p className="text-sm text-muted-foreground">
               {t("form.responseDescription")}

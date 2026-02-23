@@ -34,9 +34,8 @@ export const en = {
     authorPlaceholder: "Name of the annotator",
     project: "Project",
     projectPlaceholder: "Project name",
-    datasetDescription: "Description",
-    datasetDescriptionPlaceholder:
-      "Brief description of the dataset (optional)",
+    datasetDescription: "Description (optional)",
+    datasetDescriptionPlaceholder: "Brief description of the dataset",
     metadataInfo:
       "This metadata applies to all annotations and documents. The export includes both annotations and documents.",
   },

@@ -12,6 +12,7 @@ interface ChunksInputProps {
   onChange: (chunks: Chunk[]) => void;
   disabled?: boolean;
   variant?: "relevant" | "distracting";
+  required?: boolean;
 }
 
 export function ChunksInput({
@@ -19,6 +20,7 @@ export function ChunksInput({
   onChange,
   disabled = false,
   variant = "relevant",
+  required,
 }: ChunksInputProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
@@ -66,6 +68,8 @@ export function ChunksInput({
       <Label className="flex items-center gap-2">
         <Icon className="w-4 h-4" />
         {label}
+        {required === true && " *"}
+        {required === false && " (optional)"}
       </Label>
       <p className="text-sm text-muted-foreground">{description}</p>
 
