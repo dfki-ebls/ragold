@@ -13,19 +13,20 @@ Optional können Sie auch eine **Beschreibung** für den Datensatz hinzufügen.
 ### Schritt 2: Dokumente hinzufügen (optional)
 
 Gehen Sie zum Tab **Dokumente**, um Referenzdokumente hinzuzufügen.
-Dokumente helfen Ihnen zu organisieren, welche Textausschnitte aus welcher Quelle stammen.
+Jedes Dokument hat einen Dateinamen und eine Beschreibung.
+Wenn Sie später Ausschnitte erstellen, können Sie jeden Ausschnitt einem dieser Dokumente zuordnen.
 Sie können diesen Schritt überspringen und Ausschnitte manuell hinzufügen.
 
 ### Schritt 3: Annotation erstellen
 
-Wechseln Sie zum Tab **Neue Annotation** und füllen Sie aus:
+Wechseln Sie zum Tab **Annotationen** und füllen Sie aus:
 
 1. **Nutzeranfrage**: Schreiben Sie eine Frage, wie ein Nutzer sie in einem Chat-System stellen würde.
-2. **Fragetyp**: Wählen Sie, wie die Frage zum Kontext steht:
-   - _Einzelfakt_: Die Antwort ist eine einzelne Information im Dokument.
-   - _Zusammenfassung_: Die Antwort erfordert das Kombinieren mehrerer Informationen.
-   - _Schlussfolgerung_: Die Antwort muss durch logisches Schließen abgeleitet werden.
-   - _Unbeantwortbar_: Die Antwort kann nicht im Kontext gefunden oder abgeleitet werden.
+2. **Fragetyp**: Wählen Sie, wie die Frage zum Kontext steht (basierend auf der „Know Your RAG"-Taxonomie):
+   - _Einzelfakt_: Einfache Suche — die Antwort steht direkt an einer Stelle.
+   - _Zusammenfassung_: Die Antwort erfordert das Zusammenfassen von Informationen aus mehreren Teilen.
+   - _Schlussfolgerung_: Die Antwort ist nicht explizit, kann aber logisch abgeleitet werden.
+   - _Unbeantwortbar_: Die Information ist nicht im bereitgestellten Kontext vorhanden.
 3. **Relevante Dokumentausschnitte**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten.
 4. **Ablenkende Ausschnitte** (optional): Fügen Sie Passagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden.
 5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
@@ -35,49 +36,27 @@ Bei **unbeantwortbaren** Anfragen sind relevante Dokumentausschnitte und die erw
 
 ### Schritt 4: Überprüfen und Exportieren
 
-Nutzen Sie den Tab **Annotationen**, um alle Ihre Annotationen zu überprüfen.
-Sie können Annotationen nach Bedarf bearbeiten oder löschen.
+Ihre Annotationen erscheinen unterhalb des Formulars im Tab **Annotationen**.
+Sie können Annotationen aufklappen, bearbeiten und löschen.
 Wenn Sie fertig sind, klicken Sie auf **Export** in der Kopfzeile, um Ihren Datensatz als JSON herunterzuladen.
 
 ## Import und Export
 
 ### Arbeit exportieren
 
-Der **Export**-Button in der Kopfzeile lädt Ihren kompletten Datensatz als JSON-Datei herunter.
-Der Dateiname enthält das aktuelle Datum und die Uhrzeit (`ragold-YYYYMMDD-HHMMSS.json`).
-
-Bevor Sie exportieren können, müssen Sie:
-
-- Die Felder **Autor** und **Projekt** ausfüllen
-- Mindestens eine Annotation erstellen
-
-Die exportierte Datei enthält:
-
-- Alle Projektmetadaten (Autor, Projekt, Beschreibung)
-- Alle Annotationen mit ihren Anfragen, Ausschnitten und Antworten
-- Alle Dokumente aus der Dokumentbibliothek
+Die exportierte JSON-Datei (`ragold-YYYYMMDD-HHMMSS.json`) enthält alle Projektmetadaten, Annotationen und Dokumente.
+Sie müssen die Felder **Autor** und **Projekt** ausfüllen und mindestens eine Annotation erstellen, bevor Sie exportieren können.
 
 ### Daten importieren
 
-Der **Import**-Button ermöglicht das Laden von Annotationen aus einer zuvor exportierten JSON-Datei.
-Dies ist nützlich für:
-
-- Fortsetzung der Arbeit aus einer vorherigen Sitzung
-- Zusammenarbeit mit anderen durch Austausch von Exportdateien
-
-Beim Importieren:
-
-- Wählen Sie eine `.json`-Datei, die aus RAGold exportiert wurde
-- Alle vorhandenen Annotationen und Dokumente werden durch die importierten Daten ersetzt
-- Projektmetadaten (Autor, Projekt, Beschreibung) werden ebenfalls ersetzt
-- Sie werden vor dem Import um Bestätigung gebeten
-- Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher Ihre aktuellen Daten exportieren
+Der **Import**-Button lädt eine zuvor exportierte JSON-Datei und ersetzt dabei alle aktuellen Daten (Annotationen, Dokumente und Metadaten).
+Ein Bestätigungsdialog erscheint vor dem Import.
+Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher Ihre aktuellen Daten exportieren.
 
 ### Daten zurücksetzen
 
 Der **Reset**-Button löscht alle Annotationen und Dokumente.
 Klicken Sie einmal, um die Bestätigungsaufforderung zu sehen, dann klicken Sie innerhalb von 3 Sekunden erneut zur Bestätigung.
-Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher exportieren.
 
 ## Tipps für gute Annotationen
 
@@ -89,22 +68,6 @@ Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher ex
 
 ## KI-Tools zur Inspiration nutzen
 
-Wenn Sie noch nicht vertraut damit sind, wie KI-Systeme auf Fragen antworten, können Sie Tools wie [ChatGPT](https://chatgpt.com) nutzen, um eine grobe Vorstellung einer guten Antwort zu bekommen.
-Beachten Sie, dass ChatGPT nur verwendet werden darf, wenn dies von Ihrer Organisation erlaubt ist.
-Geben Sie einfach Ihre Nutzeranfrage ein und sehen Sie sich die generierte Antwort an.
-Passen Sie die Antwort dann an Ihre spezifischen Dokumente und Ihr Fachwissen an.
-
-Beachten Sie:
-
-- KI-generierte Antworten sind ein Ausgangspunkt, keine endgültige Antwort.
-- Passen Sie die Antwort so an, dass sie zu den Informationen in Ihren tatsächlichen Dokumentausschnitten passt.
-- Stellen Sie sicher, dass die erwartete Antwort korrekt und spezifisch für Ihren Kontext ist.
-
-## Was sind Fragetypen?
-
-Die Fragetypen basieren auf der "Know Your RAG"-Taxonomie:
-
-- **Einzelfakt**: Einfache Suche, die Antwort steht direkt an einer Stelle.
-- **Zusammenfassung**: Antwort erfordert das Zusammenfassen von Informationen aus mehreren Teilen.
-- **Schlussfolgerung**: Antwort ist nicht explizit, kann aber logisch abgeleitet werden.
-- **Unbeantwortbar**: Die Information ist einfach nicht im bereitgestellten Kontext vorhanden.
+Sie können Tools wie [ChatGPT](https://chatgpt.com) nutzen, um eine grobe Vorstellung einer guten Antwort zu bekommen (sofern von Ihrer Organisation erlaubt).
+Geben Sie Ihre Nutzeranfrage ein, sehen Sie sich die generierte Antwort an und passen Sie diese an Ihre spezifischen Dokumente und Ihr Fachwissen an.
+KI-generierte Antworten sind ein Ausgangspunkt — stellen Sie immer sicher, dass die erwartete Antwort korrekt ist und auf Ihren tatsächlichen Dokumentausschnitten basiert.
