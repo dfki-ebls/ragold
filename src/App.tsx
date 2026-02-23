@@ -92,8 +92,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <Card className="mb-8">
+      <main className="max-w-4xl mx-auto px-4 py-6">
+        <Card className="mb-4">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="space-y-2">
@@ -152,7 +152,7 @@ export default function App() {
         </Card>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="mb-6 flex w-fit flex-wrap gap-1 h-auto mx-auto">
+          <TabsList className="mb-4 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="documents">
               {t("tabs.documents", { count: documentCount })}

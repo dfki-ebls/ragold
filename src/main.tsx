@@ -19,7 +19,7 @@ createRoot(rootElement).render(
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
-      <Toaster richColors />
+      <Toaster richColors position="top-center" offset="4rem" />
     </ThemeProvider>
   </StrictMode>,
 );
