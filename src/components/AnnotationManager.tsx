@@ -2,15 +2,16 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  FileText,
   Pencil,
   Trash2,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useConfirmAction } from "@/lib/useConfirmAction";
 import {
   type Annotation,
   KNOWN_QUERY_TYPES,
@@ -205,18 +206,12 @@ export function AnnotationManager({
   onDelete,
 }: AnnotationManagerProps) {
   const { t } = useTranslation();
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const { isConfirming, confirm } = useConfirmAction();
 
   const entries = Object.entries(annotations);
 
   const handleDelete = (id: string) => {
-    if (deleteConfirm === id) {
-      onDelete(id);
-      setDeleteConfirm(null);
-    } else {
-      setDeleteConfirm(id);
-      setTimeout(() => setDeleteConfirm(null), 3000);
-    }
+    confirm(id, () => onDelete(id));
   };
 
   if (entries.length === 0) {
@@ -228,13 +223,10 @@ export function AnnotationManager({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="py-12 text-center">
-            <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-            <p className="text-muted-foreground">{t("annotationManager.empty")}</p>
-            <p className="text-sm text-muted-foreground/60 mt-1">
-              {t("annotationManager.emptyHint")}
-            </p>
-          </div>
+          <EmptyState
+            message={t("annotationManager.empty")}
+            hint={t("annotationManager.emptyHint")}
+          />
         </CardContent>
       </Card>
     );
@@ -256,7 +248,7 @@ export function AnnotationManager({
           annotation={annotation}
           onEdit={() => onEdit(id)}
           onDelete={() => handleDelete(id)}
-          deleteConfirm={deleteConfirm === id}
+          deleteConfirm={isConfirming(id)}
         />
       ))}
     </div>

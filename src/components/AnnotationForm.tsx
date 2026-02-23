@@ -12,10 +12,10 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from "react";
 import { FieldError } from "@/components/FieldError";
+import { useFormChangeTracking } from "@/lib/useFormChangeTracking";
 import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
 import { ChunksInput } from "@/components/ChunksInput";
@@ -67,15 +67,12 @@ export const AnnotationForm = forwardRef<
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const { errors, validate, clearErrors } =
     useFormErrors<keyof Annotation>();
-  const initialFormData = useRef<Annotation>(emptyFormData);
+  const { hasUnsavedChanges, resetTracking } = useFormChangeTracking(
+    formData,
+    emptyFormData,
+  );
 
-  useImperativeHandle(ref, () => ({
-    hasUnsavedChanges: () => {
-      return (
-        JSON.stringify(formData) !== JSON.stringify(initialFormData.current)
-      );
-    },
-  }));
+  useImperativeHandle(ref, () => ({ hasUnsavedChanges }));
 
   useEffect(() => {
     const newFormData = annotation
@@ -95,7 +92,7 @@ export const AnnotationForm = forwardRef<
         }
       : emptyFormData;
     setFormData(newFormData);
-    initialFormData.current = newFormData;
+    resetTracking(newFormData);
     clearErrors();
   }, [annotation]);
 

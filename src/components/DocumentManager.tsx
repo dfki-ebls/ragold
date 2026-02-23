@@ -1,6 +1,9 @@
 import { AlignLeft, File, FileText, Pencil, Trash2 } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { EmptyState } from "@/components/EmptyState";
 import { FieldError } from "@/components/FieldError";
+import { useConfirmAction } from "@/lib/useConfirmAction";
+import { useFormChangeTracking } from "@/lib/useFormChangeTracking";
 import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -37,16 +40,10 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
     const [formData, setFormData] = useState<DocumentFormData>(emptyForm);
     const { errors, validate, clearErrors } =
       useFormErrors<keyof DocumentFormData>();
-    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-    const initialFormData = useRef<DocumentFormData>(emptyForm);
+    const { isConfirming, confirm } = useConfirmAction();
+    const { hasUnsavedChanges } = useFormChangeTracking(formData, emptyForm);
 
-    useImperativeHandle(ref, () => ({
-      hasUnsavedChanges: () => {
-        return (
-          JSON.stringify(formData) !== JSON.stringify(initialFormData.current)
-        );
-      },
-    }));
+    useImperativeHandle(ref, () => ({ hasUnsavedChanges }));
 
     const documentList = Object.entries(documents);
 
@@ -88,17 +85,13 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
     };
 
     const handleDelete = (id: string) => {
-      if (deleteConfirm === id) {
+      confirm(id, () => {
         deleteDocument(id);
-        setDeleteConfirm(null);
         if (editingId === id) {
           setEditingId(null);
           setFormData(emptyForm);
         }
-      } else {
-        setDeleteConfirm(id);
-        setTimeout(() => setDeleteConfirm(null), 3000);
-      }
+      });
     };
 
     const handleCancel = () => {
@@ -179,15 +172,10 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
           </CardHeader>
           <CardContent>
             {documentList.length === 0 ? (
-              <div className="py-12 text-center">
-                <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-                <p className="text-muted-foreground">
-                  {t("documentManager.empty")}
-                </p>
-                <p className="text-sm text-muted-foreground/60 mt-1">
-                  {t("documentManager.emptyHint")}
-                </p>
-              </div>
+              <EmptyState
+                message={t("documentManager.empty")}
+                hint={t("documentManager.emptyHint")}
+              />
             ) : (
               <div className="space-y-3">
                 {documentList.map(([id, doc]) => (
@@ -206,7 +194,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      {deleteConfirm === id && (
+                      {isConfirming(id) && (
                         <span className="text-xs text-destructive mr-2">
                           {t("documentManager.clickAgain")}
                         </span>
@@ -219,7 +207,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                         <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
-                        variant={deleteConfirm === id ? "destructive" : "ghost"}
+                        variant={isConfirming(id) ? "destructive" : "ghost"}
                         size="icon-sm"
                         onClick={() => handleDelete(id)}
                       >

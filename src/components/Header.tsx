@@ -1,6 +1,7 @@
 import { Download, Globe, RotateCcw, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useConfirmAction } from "@/lib/useConfirmAction";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -29,20 +30,17 @@ export default function Header() {
   const language = useStore((s) => s.language);
   const setLanguage = useStore((s) => s.setLanguage);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [clearConfirm, setClearConfirm] = useState(false);
+  const { isConfirming, confirm } = useConfirmAction();
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
 
   const annotationCount = Object.keys(annotations).length;
   const isMetadataComplete = author.trim() && project.trim();
 
   const handleClear = () => {
-    if (clearConfirm) {
+    confirm("reset", () => {
       localStorage.removeItem("ragold-store");
       window.location.reload();
-    } else {
-      setClearConfirm(true);
-      setTimeout(() => setClearConfirm(false), 3000);
-    }
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,13 +148,13 @@ export default function Header() {
               {t("common.export")} ({annotationCount})
             </Button>
             <Button
-              variant={clearConfirm ? "destructive" : "ghost"}
+              variant={isConfirming("reset") ? "destructive" : "ghost"}
               size="sm"
               onClick={handleClear}
               title={t("header.resetTooltip")}
             >
               <RotateCcw className="w-4 h-4 mr-2" />
-              {clearConfirm ? t("common.confirm") : t("common.reset")}
+              {isConfirming("reset") ? t("common.confirm") : t("common.reset")}
             </Button>
           </div>
         </div>
