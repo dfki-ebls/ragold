@@ -15,7 +15,8 @@ export const de: TranslationKeys = {
   },
   header: {
     title: "RAGold",
-    importTooltip: "Importiert Annotationen und Dokumente aus JSON (ersetzt vorhandene Daten)",
+    importTooltip:
+      "Importiert Annotationen und Dokumente aus JSON (ersetzt vorhandene Daten)",
     importConfirm:
       "Der Import ersetzt alle vorhandenen Annotationen und Dokumente. Dies kann nicht rückgängig gemacht werden. Fortfahren?",
     exportTooltip: "Exportiert Annotationen und Dokumente als JSON",
@@ -24,8 +25,7 @@ export const de: TranslationKeys = {
     resetTooltip: "Löscht alle Annotationen und Dokumente",
     resetDisabled: "Keine Daten vorhanden",
     importSuccess: "Import abgeschlossen. {{count}} Annotation(en) geladen.",
-    importEmpty:
-      "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
+    importEmpty: "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
     importError: "Import fehlgeschlagen: {{message}}",
   },
   metadata: {

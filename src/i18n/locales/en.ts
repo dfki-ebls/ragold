@@ -13,7 +13,8 @@ export const en = {
   },
   header: {
     title: "RAGold",
-    importTooltip: "Import annotations and documents from JSON (replaces existing data)",
+    importTooltip:
+      "Import annotations and documents from JSON (replaces existing data)",
     importConfirm:
       "Importing will replace all existing annotations and documents. This cannot be undone. Continue?",
     exportTooltip: "Export annotations and documents as JSON",
@@ -126,8 +127,7 @@ export const en = {
     exportFailed: "Export failed. No data found.",
     resetButton: "Reset App",
     resetConfirm: "Confirm Reset",
-    resetDescription:
-      "Resetting clears all stored data and reloads the app.",
+    resetDescription: "Resetting clears all stored data and reloads the app.",
   },
   documentManager: {
     titleNew: "New Document",
