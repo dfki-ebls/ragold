@@ -94,7 +94,7 @@ export const AnnotationForm = forwardRef<
     setFormData(newFormData);
     resetTracking(newFormData);
     clearErrors();
-  }, [annotation]);
+  }, [annotation, resetTracking, clearErrors]);
 
   const isUnanswerable = formData.queryType === "unanswerable";
 

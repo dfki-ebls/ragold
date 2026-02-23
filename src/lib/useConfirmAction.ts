@@ -12,7 +12,7 @@ export function useConfirmAction(timeoutMs = 3000): {
   confirm: (id: string, onConfirm: () => void) => void;
 } {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     return () => clearTimeout(timeoutRef.current);
