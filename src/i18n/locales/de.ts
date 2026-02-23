@@ -63,6 +63,7 @@ export const de: TranslationKeys = {
     notesDescription:
       "Besonderheiten wie mehrdeutige Begriffe, Zeitabhängigkeit, besondere Formulierungen.",
     notesPlaceholder: "Optionale Hinweise...",
+    unsavedChangesTitle: "Ungespeicherte Änderungen",
     unsavedChanges:
       "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?",
   },

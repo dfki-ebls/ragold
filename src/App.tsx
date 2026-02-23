@@ -12,6 +12,16 @@ import {
 } from "@/components/DocumentManager";
 import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +41,7 @@ export default function App() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("guide");
+  const [pendingTab, setPendingTab] = useState<string | null>(null);
   const formRef = useRef<AnnotationFormRef>(null);
   const docFormRef = useRef<DocumentManagerRef>(null);
 
@@ -38,27 +49,29 @@ export default function App() {
   const annotationCount = Object.keys(annotations).length;
   const documentCount = Object.keys(documents).length;
 
-  const handleTabChange = (value: string) => {
-    if (
-      activeTab === "annotations" &&
-      value !== "annotations" &&
-      formRef.current?.hasUnsavedChanges()
-    ) {
-      const confirmed = window.confirm(t("form.unsavedChanges"));
-      if (!confirmed) return;
+  const hasUnsavedChanges = () => {
+    if (activeTab === "annotations" && formRef.current?.hasUnsavedChanges()) {
+      return true;
     }
-    if (
-      activeTab === "documents" &&
-      value !== "documents" &&
-      docFormRef.current?.hasUnsavedChanges()
-    ) {
-      const confirmed = window.confirm(t("form.unsavedChanges"));
-      if (!confirmed) return;
+    if (activeTab === "documents" && docFormRef.current?.hasUnsavedChanges()) {
+      return true;
     }
+    return false;
+  };
+
+  const switchTab = (value: string) => {
     setActiveTab(value);
     if (value !== "annotations") {
       setEditingId(null);
     }
+  };
+
+  const handleTabChange = (value: string) => {
+    if (hasUnsavedChanges()) {
+      setPendingTab(value);
+      return;
+    }
+    switchTab(value);
   };
 
   const handleCancel = () => {
@@ -182,6 +195,34 @@ export default function App() {
           </TabsContent>
         </Tabs>
       </main>
+
+      <AlertDialog
+        open={pendingTab !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingTab(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("form.unsavedChanges")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                if (pendingTab) switchTab(pendingTab);
+                setPendingTab(null);
+              }}
+            >
+              {t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -61,6 +61,7 @@ export const en = {
     notesDescription:
       "Special considerations such as ambiguous terms, time dependencies, or special phrasings.",
     notesPlaceholder: "Optional notes...",
+    unsavedChangesTitle: "Unsaved Changes",
     unsavedChanges: "There are unsaved changes. Do you really want to switch?",
   },
   queryTypes: {

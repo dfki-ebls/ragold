@@ -1,6 +1,17 @@
 import { Download, Globe, RotateCcw, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { SupportedLanguage } from "@/i18n";
 import { useStore } from "@/lib/store";
@@ -19,6 +30,7 @@ export default function Header() {
   const setLanguage = useStore((s) => s.setLanguage);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [clearConfirm, setClearConfirm] = useState(false);
+  const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
 
   const annotationCount = Object.keys(annotations).length;
   const isMetadataComplete = author.trim() && project.trim();
@@ -33,32 +45,38 @@ export default function Header() {
     }
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setPendingImportFile(file);
+  };
 
-    if (!window.confirm(t("header.importConfirm"))) {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      return;
+  const handleImportConfirm = async () => {
+    const file = pendingImportFile;
+    setPendingImportFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
+    if (!file) return;
 
     try {
       const count = await useStore.getState().importAnnotations(file);
       if (count > 0) {
-        alert(t("header.importSuccess", { count }));
+        toast.success(t("header.importSuccess", { count }));
       } else {
-        alert(t("header.importEmpty"));
+        toast.warning(t("header.importEmpty"));
       }
     } catch (err) {
-      alert(
+      toast.error(
         t("header.importError", {
           message: err instanceof Error ? err.message : "Unknown error",
         }),
       );
     }
+  };
 
+  const handleImportCancel = () => {
+    setPendingImportFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -66,11 +84,11 @@ export default function Header() {
 
   const handleExport = () => {
     if (!isMetadataComplete) {
-      alert(t("header.exportDisabledMeta"));
+      toast.warning(t("header.exportDisabledMeta"));
       return;
     }
     if (annotationCount === 0) {
-      alert(t("header.exportDisabledEmpty"));
+      toast.warning(t("header.exportDisabledEmpty"));
       return;
     }
     useStore.getState().exportAnnotations();
@@ -82,65 +100,89 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-lg font-semibold">{t("header.title")}</h1>
+    <>
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-lg font-semibold">{t("header.title")}</h1>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleLanguage}
-            title={
-              language === "de" ? "Switch to English" : "Auf Deutsch wechseln"
-            }
-          >
-            <Globe className="w-4 h-4 mr-2" />
-            {languageLabels[language]}
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            onChange={handleImport}
-            className="hidden"
-            id="import-file"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-            title={t("header.importTooltip")}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            {t("common.import")}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            title={
-              !isMetadataComplete
-                ? t("header.exportDisabledMeta")
-                : annotationCount === 0
-                  ? t("header.exportDisabledEmpty")
-                  : t("header.exportTooltip")
-            }
-          >
-            <Download className="w-4 h-4 mr-2" />
-            {t("common.export")} ({annotationCount})
-          </Button>
-          <Button
-            variant={clearConfirm ? "destructive" : "ghost"}
-            size="sm"
-            onClick={handleClear}
-            title={t("header.resetTooltip")}
-          >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            {clearConfirm ? t("common.confirm") : t("common.reset")}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              title={
+                language === "de" ? "Switch to English" : "Auf Deutsch wechseln"
+              }
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              {languageLabels[language]}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileChange}
+              className="hidden"
+              id="import-file"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              title={t("header.importTooltip")}
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              {t("common.import")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              title={
+                !isMetadataComplete
+                  ? t("header.exportDisabledMeta")
+                  : annotationCount === 0
+                    ? t("header.exportDisabledEmpty")
+                    : t("header.exportTooltip")
+              }
+            >
+              <Download className="w-4 h-4 mr-2" />
+              {t("common.export")} ({annotationCount})
+            </Button>
+            <Button
+              variant={clearConfirm ? "destructive" : "ghost"}
+              size="sm"
+              onClick={handleClear}
+              title={t("header.resetTooltip")}
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {clearConfirm ? t("common.confirm") : t("common.reset")}
+            </Button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <AlertDialog
+        open={pendingImportFile !== null}
+        onOpenChange={(open) => {
+          if (!open) handleImportCancel();
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.import")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("header.importConfirm")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleImportConfirm}>
+              {t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

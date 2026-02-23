@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Download, RotateCcw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { toast } from "sonner";
 import i18n from "@/i18n";
 import { useStore } from "@/lib/store";
 
@@ -63,9 +64,13 @@ export class ErrorBoundary extends Component<Props, State> {
   handleExport = (): void => {
     const ok = exportData();
     if (ok) {
-      alert(t("errorBoundary.exportSuccess", "Data exported successfully."));
+      toast.success(
+        t("errorBoundary.exportSuccess", "Data exported successfully."),
+      );
     } else {
-      alert(t("errorBoundary.exportFailed", "Export failed. No data found."));
+      toast.error(
+        t("errorBoundary.exportFailed", "Export failed. No data found."),
+      );
     }
   };
 

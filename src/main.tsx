@@ -4,6 +4,7 @@ import "./i18n";
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { Toaster } from "./components/ui/sonner";
 import "./styles.css";
 
 const rootElement = document.getElementById("root");
@@ -18,6 +19,7 @@ createRoot(rootElement).render(
       <ErrorBoundary>
         <App />
       </ErrorBoundary>
+      <Toaster richColors />
     </ThemeProvider>
   </StrictMode>,
 );
