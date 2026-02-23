@@ -127,6 +127,9 @@ export const en = {
     resetConfirm: "Confirm Reset",
     resetDescription: "Resetting clears all stored data and reloads the app.",
   },
+  faq: {
+    contact: "Contact",
+  },
   documentManager: {
     titleNew: "New Document",
     titleEdit: "Edit Document",

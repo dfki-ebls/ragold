@@ -133,6 +133,9 @@ export const de: TranslationKeys = {
     resetDescription:
       "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
   },
+  faq: {
+    contact: "Kontakt",
+  },
   documentManager: {
     titleNew: "Neues Dokument",
     titleEdit: "Dokument bearbeiten",
