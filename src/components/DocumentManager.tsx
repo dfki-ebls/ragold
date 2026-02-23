@@ -28,8 +28,12 @@ const emptyForm: DocumentFormData = {
   description: "",
 };
 
-export const DocumentManager = forwardRef<DocumentManagerRef>(
-  function DocumentManager(_props, ref) {
+interface DocumentManagerProps {
+  scrollToTabs?: () => void;
+}
+
+export const DocumentManager = forwardRef<DocumentManagerRef, DocumentManagerProps>(
+  function DocumentManager({ scrollToTabs }, ref) {
     const { t } = useTranslation();
     const documents = useStore((s) => s.documents);
     const addDocument = useStore((s) => s.addDocument);
@@ -82,6 +86,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
         filename: doc.filename,
         description: doc.description,
       });
+      scrollToTabs?.();
     };
 
     const handleDelete = (id: string) => {

@@ -2,10 +2,9 @@ import { AlignLeft, Folder, Mail, User } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  AnnotationForm,
-  type AnnotationFormRef,
-} from "@/components/AnnotationForm";
-import { AnnotationManager } from "@/components/AnnotationManager";
+  AnnotationManager,
+  type AnnotationManagerRef,
+} from "@/components/AnnotationManager";
 import {
   DocumentManager,
   type DocumentManagerRef,
@@ -27,7 +26,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/lib/store";
-import type { Annotation } from "@/lib/types";
 
 const contactInfo = import.meta.env.VITE_CONTACT_INFO;
 
@@ -39,18 +37,21 @@ export default function App() {
   const project = useStore((s) => s.project);
   const description = useStore((s) => s.description);
 
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("guide");
   const [pendingTab, setPendingTab] = useState<string | null>(null);
-  const formRef = useRef<AnnotationFormRef>(null);
   const docFormRef = useRef<DocumentManagerRef>(null);
+  const annotationFormRef = useRef<AnnotationManagerRef>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
 
-  const editingAnnotation = editingId ? annotations[editingId] : null;
+  const scrollToTabs = () => {
+    tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const annotationCount = Object.keys(annotations).length;
   const documentCount = Object.keys(documents).length;
 
   const hasUnsavedChanges = () => {
-    if (activeTab === "annotations" && formRef.current?.hasUnsavedChanges()) {
+    if (activeTab === "annotations" && annotationFormRef.current?.hasUnsavedChanges()) {
       return true;
     }
     if (activeTab === "documents" && docFormRef.current?.hasUnsavedChanges()) {
@@ -61,9 +62,6 @@ export default function App() {
 
   const switchTab = (value: string) => {
     setActiveTab(value);
-    if (value !== "annotations") {
-      setEditingId(null);
-    }
   };
 
   const handleTabChange = (value: string) => {
@@ -72,21 +70,6 @@ export default function App() {
       return;
     }
     switchTab(value);
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-  };
-
-  const handleSubmit = (data: Annotation) => {
-    const store = useStore.getState();
-    if (editingId) {
-      store.updateAnnotation(editingId, data);
-      setEditingId(null);
-    } else {
-      store.addAnnotation(data);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   };
 
   return (
@@ -152,7 +135,7 @@ export default function App() {
         </Card>
 
         <Tabs value={activeTab} onValueChange={handleTabChange}>
-          <TabsList className="mb-4 flex w-fit flex-wrap gap-1 h-auto mx-auto">
+          <TabsList ref={tabsRef} className="mb-4 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="documents">
               {t("tabs.documents", { count: documentCount })}
@@ -167,31 +150,11 @@ export default function App() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <DocumentManager ref={docFormRef} />
+            <DocumentManager ref={docFormRef} scrollToTabs={scrollToTabs} />
           </TabsContent>
 
           <TabsContent value="annotations">
-            <div className="space-y-6">
-              <AnnotationForm
-                ref={formRef}
-                annotation={editingAnnotation ?? undefined}
-                onSubmit={handleSubmit}
-                onCancel={editingId ? handleCancel : undefined}
-              />
-              <AnnotationManager
-                annotations={annotations}
-                onEdit={(id) => {
-                  setEditingId(id);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                onDelete={(id) => {
-                  useStore.getState().deleteAnnotation(id);
-                  if (editingId === id) {
-                    setEditingId(null);
-                  }
-                }}
-              />
-            </div>
+            <AnnotationManager ref={annotationFormRef} scrollToTabs={scrollToTabs} />
           </TabsContent>
         </Tabs>
       </main>

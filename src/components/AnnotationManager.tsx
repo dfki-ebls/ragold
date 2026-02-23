@@ -6,8 +6,12 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  AnnotationForm,
+  type AnnotationFormRef,
+} from "@/components/AnnotationForm";
 import { EmptyState } from "@/components/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +26,11 @@ import {
 } from "@/lib/types";
 
 interface AnnotationManagerProps {
-  annotations: Record<string, Annotation>;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  scrollToTabs?: () => void;
+}
+
+export interface AnnotationManagerRef {
+  hasUnsavedChanges: () => boolean;
 }
 
 function ChunkPreview({
@@ -211,49 +217,89 @@ function AnnotationItem({
   );
 }
 
-export function AnnotationManager({
-  annotations,
-  onEdit,
-  onDelete,
-}: AnnotationManagerProps) {
+export const AnnotationManager = forwardRef<
+  AnnotationManagerRef,
+  AnnotationManagerProps
+>(function AnnotationManager({ scrollToTabs }, ref) {
   const { t } = useTranslation();
+  const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
   const { isConfirming, confirm } = useConfirmAction();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const formRef = useRef<AnnotationFormRef>(null);
 
+  const editingAnnotation = editingId ? annotations[editingId] : null;
   const entries = Object.entries(annotations);
 
+  useImperativeHandle(ref, () => ({
+    hasUnsavedChanges: () => formRef.current?.hasUnsavedChanges() ?? false,
+  }));
+
+  const handleSubmit = (data: Annotation) => {
+    const store = useStore.getState();
+    if (editingId) {
+      store.updateAnnotation(editingId, data);
+      setEditingId(null);
+    } else {
+      store.addAnnotation(data);
+      scrollToTabs?.();
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+  };
+
+  const handleEdit = (id: string) => {
+    setEditingId(id);
+    scrollToTabs?.();
+  };
+
   const handleDelete = (id: string) => {
-    confirm(id, () => onDelete(id));
+    confirm(id, () => {
+      useStore.getState().deleteAnnotation(id);
+      if (editingId === id) {
+        setEditingId(null);
+      }
+    });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {t("annotationManager.library", { count: entries.length })}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {entries.length === 0 ? (
-          <EmptyState
-            message={t("annotationManager.empty")}
-            hint={t("annotationManager.emptyHint")}
-          />
-        ) : (
-          <div className="space-y-3">
-            {entries.map(([id, annotation]) => (
-              <AnnotationItem
-                key={id}
-                annotation={annotation}
-                onEdit={() => onEdit(id)}
-                onDelete={() => handleDelete(id)}
-                deleteConfirm={isConfirming(id)}
-                documents={documents}
-              />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <AnnotationForm
+        ref={formRef}
+        annotation={editingAnnotation ?? undefined}
+        onSubmit={handleSubmit}
+        onCancel={editingId ? handleCancel : undefined}
+      />
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {t("annotationManager.library", { count: entries.length })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {entries.length === 0 ? (
+            <EmptyState
+              message={t("annotationManager.empty")}
+              hint={t("annotationManager.emptyHint")}
+            />
+          ) : (
+            <div className="space-y-3">
+              {entries.map(([id, annotation]) => (
+                <AnnotationItem
+                  key={id}
+                  annotation={annotation}
+                  onEdit={() => handleEdit(id)}
+                  onDelete={() => handleDelete(id)}
+                  deleteConfirm={isConfirming(id)}
+                  documents={documents}
+                />
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
-}
+});
