@@ -87,6 +87,19 @@ This action cannot be undone, so consider exporting first.
 - Add distracting chunks to create challenging examples that put the system to the test.
 - Add notes when there are ambiguities or special considerations.
 
+## Using AI Tools for Inspiration
+
+If you are not yet familiar with how AI systems respond to questions, you can use tools like [ChatGPT](https://chatgpt.com) to get a rough idea of what a good answer might look like.
+Note that ChatGPT may only be used if allowed by your organization.
+Simply enter your user query and review the generated response.
+Then tailor the answer to your specific documents and domain knowledge.
+
+Keep in mind:
+
+- AI-generated answers are a starting point, not a final answer.
+- Adjust the response so it matches the information in your actual document chunks.
+- Make sure the expected answer is accurate and specific to your context.
+
 ## What are Query Types?
 
 The query types are based on the "Know Your RAG" taxonomy:

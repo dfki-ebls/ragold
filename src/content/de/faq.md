@@ -87,6 +87,19 @@ Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher ex
 - Fügen Sie ablenkende Ausschnitte hinzu, um herausfordernde Beispiele zu erstellen, die das System auf die Probe stellen.
 - Fügen Sie Anmerkungen hinzu, wenn es Mehrdeutigkeiten oder besondere Überlegungen gibt.
 
+## KI-Tools zur Inspiration nutzen
+
+Wenn Sie noch nicht vertraut damit sind, wie KI-Systeme auf Fragen antworten, können Sie Tools wie [ChatGPT](https://chatgpt.com) nutzen, um eine grobe Vorstellung einer guten Antwort zu bekommen.
+Beachten Sie, dass ChatGPT nur verwendet werden darf, wenn dies von Ihrer Organisation erlaubt ist.
+Geben Sie einfach Ihre Nutzeranfrage ein und sehen Sie sich die generierte Antwort an.
+Passen Sie die Antwort dann an Ihre spezifischen Dokumente und Ihr Fachwissen an.
+
+Beachten Sie:
+
+- KI-generierte Antworten sind ein Ausgangspunkt, keine endgültige Antwort.
+- Passen Sie die Antwort so an, dass sie zu den Informationen in Ihren tatsächlichen Dokumentausschnitten passt.
+- Stellen Sie sicher, dass die erwartete Antwort korrekt und spezifisch für Ihren Kontext ist.
+
 ## Was sind Fragetypen?
 
 Die Fragetypen basieren auf der "Know Your RAG"-Taxonomie:
