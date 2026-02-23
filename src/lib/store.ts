@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -29,8 +30,8 @@ interface AppState extends AnnotationData {
   importAnnotations: (file: File) => Promise<number>;
 }
 
-function createEmptyState(): AnnotationData {
-  const now = new Date().toISOString();
+function createEmptyState() {
+  const now = dayjs().toISOString();
   return annotationDataSchema.parse({
     language: i18n.language,
     createdAt: now,
@@ -119,7 +120,8 @@ export const useStore = create<AppState>()(
           language,
           createdAt,
         } = get();
-        const now = new Date().toISOString();
+        const now = dayjs();
+        const stamp = now.format("YYYYMMDD-HHmmss");
 
         const exportData = {
           version: SCHEMA_VERSION,
@@ -128,7 +130,7 @@ export const useStore = create<AppState>()(
           description,
           language,
           createdAt,
-          updatedAt: now,
+          updatedAt: now.toISOString(),
           annotations,
           documents,
         };
@@ -139,11 +141,11 @@ export const useStore = create<AppState>()(
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `ragold-${now.split("T")[0]}.json`;
+        link.download = `ragold-${stamp}.json`;
         link.click();
         URL.revokeObjectURL(url);
 
-        set({ updatedAt: now });
+        set({ updatedAt: now.toISOString() });
       },
 
       importAnnotations: async (file) => {
@@ -163,19 +165,17 @@ export const useStore = create<AppState>()(
         }
 
         const parsed = result.data;
-        const now = new Date().toISOString();
 
-        const importedLanguage: SupportedLanguage = supportedLanguages.includes(
-          parsed.language as SupportedLanguage,
-        )
-          ? (parsed.language as SupportedLanguage)
-          : get().language;
+        const importedLanguage: SupportedLanguage =
+          supportedLanguages.includes(parsed.language)
+            ? parsed.language
+            : get().language;
 
         set({
           annotations: parsed.annotations,
           documents: parsed.documents,
           createdAt: parsed.createdAt,
-          updatedAt: now,
+          updatedAt: dayjs().toISOString(),
           author: parsed.author,
           project: parsed.project,
           description: parsed.description,

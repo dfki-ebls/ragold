@@ -41,12 +41,7 @@ export const annotationSchema = z.looseObject({
 // --- Language schema ---
 
 const languageSchema = z
-  .string()
-  .check(
-    z.refine((val): val is SupportedLanguage =>
-      supportedLanguages.includes(val as SupportedLanguage),
-    ),
-  )
+  .enum(supportedLanguages as [SupportedLanguage, ...SupportedLanguage[]])
   .default(defaultLanguage);
 
 // --- Top-level envelope ---

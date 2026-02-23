@@ -1,11 +1,11 @@
+import dayjs from "dayjs";
 import { Download, RotateCcw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import i18n from "@/i18n";
 import { useStore } from "@/lib/store";
 
 function t(key: string, fallback: string): string {
-  const result = i18n.t(key);
-  return result === key ? fallback : result;
+  return i18n.t(key, { defaultValue: fallback });
 }
 
 function exportData(): boolean {
@@ -21,7 +21,7 @@ function exportData(): boolean {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `ragold-recovery-${new Date().toISOString().split("T")[0]}.json`;
+      link.download = `ragold-recovery-${dayjs().format("YYYYMMDD-HHmmss")}.json`;
       link.click();
       URL.revokeObjectURL(url);
       return true;
