@@ -84,7 +84,7 @@ This action cannot be undone, so consider exporting first.
 - Write queries in natural language as real users would phrase them.
 - Include enough context in chunks so the answer can actually be derived.
 - For unanswerable queries, the expected answer should explain why the question cannot be answered.
-- Use distracting chunks sparingly to create challenging examples.
+- Add distracting chunks to create challenging examples that put the system to the test.
 - Add notes when there are ambiguities or special considerations.
 
 ## What are Query Types?

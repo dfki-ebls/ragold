@@ -84,7 +84,7 @@ Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher ex
 - Schreiben Sie Anfragen in natürlicher Sprache, wie echte Nutzer sie formulieren würden.
 - Fügen Sie genügend Kontext in die Ausschnitte ein, damit die Antwort tatsächlich abgeleitet werden kann.
 - Bei unbeantwortbaren Anfragen sollte die erwartete Antwort erklären, warum die Frage nicht beantwortet werden kann.
-- Verwenden Sie ablenkende Ausschnitte sparsam, um herausfordernde Beispiele zu erstellen.
+- Fügen Sie ablenkende Ausschnitte hinzu, um herausfordernde Beispiele zu erstellen, die das System auf die Probe stellen.
 - Fügen Sie Anmerkungen hinzu, wenn es Mehrdeutigkeiten oder besondere Überlegungen gibt.
 
 ## Was sind Fragetypen?
