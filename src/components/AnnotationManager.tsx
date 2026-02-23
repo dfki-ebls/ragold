@@ -2,8 +2,6 @@ import {
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  Pencil,
-  Trash2,
   XCircle,
 } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
@@ -13,6 +11,7 @@ import {
   type AnnotationFormRef,
 } from "@/components/AnnotationForm";
 import { EmptyState } from "@/components/EmptyState";
+import { ListItem } from "@/components/ListItem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirmAction } from "@/lib/useConfirmAction";
@@ -78,7 +77,11 @@ function AnnotationItem({
   const distractingCount = annotation.distractingChunks?.length ?? 0;
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg border bg-card">
+    <ListItem
+      onEdit={onEdit}
+      onDelete={onDelete}
+      deleteConfirm={deleteConfirm}
+    >
       <div className="flex-1 min-w-0">
         <div className="font-medium line-clamp-2">{annotation.query}</div>
         <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
@@ -192,28 +195,7 @@ function AnnotationItem({
           </div>
         )}
       </div>
-      <div className="flex items-center gap-1 shrink-0">
-        {deleteConfirm && (
-          <span className="text-xs text-destructive mr-2">
-            {t("annotationManager.clickAgain")}
-          </span>
-        )}
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={onEdit}
-        >
-          <Pencil className="w-4 h-4" />
-        </Button>
-        <Button
-          variant={deleteConfirm ? "destructive" : "ghost"}
-          size="icon-sm"
-          onClick={onDelete}
-        >
-          <Trash2 className="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
+    </ListItem>
   );
 }
 

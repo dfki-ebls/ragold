@@ -1,7 +1,8 @@
-import { AlignLeft, File, FileText, Pencil, Trash2 } from "lucide-react";
+import { AlignLeft, File, FileText } from "lucide-react";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { EmptyState } from "@/components/EmptyState";
 import { FieldError } from "@/components/FieldError";
+import { ListItem } from "@/components/ListItem";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { useFormChangeTracking } from "@/lib/useFormChangeTracking";
 import { useFormErrors } from "@/lib/useFormErrors";
@@ -184,9 +185,11 @@ export const DocumentManager = forwardRef<DocumentManagerRef, DocumentManagerPro
             ) : (
               <div className="space-y-3">
                 {documentList.map(([id, doc]) => (
-                  <div
+                  <ListItem
                     key={id}
-                    className="flex items-start gap-3 p-3 rounded-lg border bg-card"
+                    onEdit={() => handleEdit(id, doc)}
+                    onDelete={() => handleDelete(id)}
+                    deleteConfirm={isConfirming(id)}
                   >
                     <FileText className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -195,28 +198,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef, DocumentManagerPro
                         {doc.description}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      {isConfirming(id) && (
-                        <span className="text-xs text-destructive mr-2">
-                          {t("documentManager.clickAgain")}
-                        </span>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => handleEdit(id, doc)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={isConfirming(id) ? "destructive" : "ghost"}
-                        size="icon-sm"
-                        onClick={() => handleDelete(id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  </ListItem>
                 ))}
               </div>
             )}

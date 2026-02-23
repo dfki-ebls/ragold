@@ -12,6 +12,7 @@ export const de: TranslationKeys = {
     export: "Export",
     add: "Hinzufügen",
     update: "Aktualisieren",
+    clickAgain: "Nochmal klicken",
   },
   header: {
     title: "RAGold",
@@ -112,7 +113,6 @@ export const de: TranslationKeys = {
     relevantChunks: "Relevante Dokumentausschnitte ({{count}})",
     distractingChunks: "Ablenkende Dokumentausschnitte ({{count}})",
     listNotes: "Anmerkungen",
-    clickAgain: "Nochmal klicken",
   },
   errorBoundary: {
     title: "Etwas ist schiefgelaufen",
@@ -142,6 +142,5 @@ export const de: TranslationKeys = {
     descriptionError: "Beschreibung ist erforderlich",
     empty: "Noch keine Dokumente vorhanden.",
     emptyHint: "Fügen Sie über das Formular oben ein Dokument hinzu.",
-    clickAgain: "Nochmal klicken",
   },
 };

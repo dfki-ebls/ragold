@@ -10,6 +10,7 @@ export const en = {
     export: "Export",
     add: "Add",
     update: "Update",
+    clickAgain: "Click again",
   },
   header: {
     title: "RAGold",
@@ -108,7 +109,6 @@ export const en = {
     relevantChunks: "Relevant Document Chunks ({{count}})",
     distractingChunks: "Distracting Document Chunks ({{count}})",
     listNotes: "Notes",
-    clickAgain: "Click again",
   },
   errorBoundary: {
     title: "Something went wrong",
@@ -137,7 +137,6 @@ export const en = {
     descriptionError: "Description is required",
     empty: "No documents yet.",
     emptyHint: "Add a document using the form above.",
-    clickAgain: "Click again",
   },
 };
 
