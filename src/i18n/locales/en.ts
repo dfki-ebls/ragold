@@ -36,8 +36,6 @@ export const en = {
       "This metadata applies to all annotations and documents. The export includes both annotations and documents.",
   },
   tabs: {
-    newAnnotation: "New Annotation",
-    editing: "Edit",
     annotations: "Annotations ({{count}})",
     documents: "Documents ({{count}})",
     guide: "Guide",
@@ -104,7 +102,7 @@ export const en = {
   annotationList: {
     count: "{{count}} annotation(s)",
     empty: "No annotations yet.",
-    emptyHint: 'Create your first annotation via the "New Annotation" tab.',
+    emptyHint: "Add an annotation using the form above.",
     showDetails: "Show details",
     hideDetails: "Show less",
     expectedResponse: "Expected Answer",

@@ -40,8 +40,8 @@ export default function App() {
 
   const handleTabChange = (value: string) => {
     if (
-      activeTab === "new" &&
-      value !== "new" &&
+      activeTab === "annotations" &&
+      value !== "annotations" &&
       formRef.current?.hasUnsavedChanges()
     ) {
       const confirmed = window.confirm(t("form.unsavedChanges"));
@@ -56,14 +56,13 @@ export default function App() {
       if (!confirmed) return;
     }
     setActiveTab(value);
-    if (value === "manage") {
+    if (value !== "annotations") {
       setEditingId(null);
     }
   };
 
   const handleCancel = () => {
     setEditingId(null);
-    setActiveTab("manage");
   };
 
   const handleSubmit = (data: Annotation) => {
@@ -71,7 +70,6 @@ export default function App() {
     if (editingId) {
       store.updateAnnotation(editingId, data);
       setEditingId(null);
-      setActiveTab("manage");
     } else {
       store.addAnnotation(data);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -143,10 +141,7 @@ export default function App() {
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
-            <TabsTrigger value="new">
-              {editingId ? t("tabs.editing") : t("tabs.newAnnotation")}
-            </TabsTrigger>
-            <TabsTrigger value="manage">
+            <TabsTrigger value="annotations">
               {t("tabs.annotations", { count: annotationCount })}
             </TabsTrigger>
             <TabsTrigger value="documents">
@@ -154,24 +149,28 @@ export default function App() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="new">
-            <AnnotationForm
-              ref={formRef}
-              annotation={editingAnnotation ?? undefined}
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-            />
-          </TabsContent>
-
-          <TabsContent value="manage">
-            <AnnotationList
-              annotations={annotations}
-              onEdit={(id) => {
-                setEditingId(id);
-                setActiveTab("new");
-              }}
-              onDelete={(id) => useStore.getState().deleteAnnotation(id)}
-            />
+          <TabsContent value="annotations">
+            <div className="space-y-6">
+              <AnnotationForm
+                ref={formRef}
+                annotation={editingAnnotation ?? undefined}
+                onSubmit={handleSubmit}
+                onCancel={editingId ? handleCancel : undefined}
+              />
+              <AnnotationList
+                annotations={annotations}
+                onEdit={(id) => {
+                  setEditingId(id);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                onDelete={(id) => {
+                  useStore.getState().deleteAnnotation(id);
+                  if (editingId === id) {
+                    setEditingId(null);
+                  }
+                }}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="documents">

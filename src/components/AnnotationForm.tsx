@@ -46,7 +46,7 @@ const QUERY_TYPE_ICONS: Record<KnownQueryType, React.ElementType> = {
 interface AnnotationFormProps {
   annotation?: Annotation;
   onSubmit: (data: Annotation) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
 }
 
 export interface AnnotationFormRef {
@@ -264,10 +264,14 @@ export const AnnotationForm = forwardRef<
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="submit">{t("common.save")}</Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              {t("common.cancel")}
+            <Button type="submit">
+              {isEditing ? t("common.update") : t("common.add")}
             </Button>
+            {isEditing && onCancel && (
+              <Button type="button" variant="outline" onClick={onCancel}>
+                {t("common.cancel")}
+              </Button>
+            )}
           </div>
         </form>
       </CardContent>

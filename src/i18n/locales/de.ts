@@ -38,8 +38,6 @@ export const de: TranslationKeys = {
       "Diese Metadaten gelten für alle Annotationen und Dokumente. Der Export enthält sowohl Annotationen als auch Dokumente.",
   },
   tabs: {
-    newAnnotation: "Neue Annotation",
-    editing: "Bearbeiten",
     annotations: "Annotationen ({{count}})",
     documents: "Dokumente ({{count}})",
     guide: "Anleitung",
@@ -108,8 +106,7 @@ export const de: TranslationKeys = {
   annotationList: {
     count: "{{count}} Annotation(en)",
     empty: "Noch keine Annotationen vorhanden.",
-    emptyHint:
-      'Erstellen Sie Ihre erste Annotation über den Tab "Neue Annotation".',
+    emptyHint: "Erstellen Sie über das Formular oben eine Annotation.",
     showDetails: "Details anzeigen",
     hideDetails: "Weniger anzeigen",
     expectedResponse: "Erwartete Antwort",
