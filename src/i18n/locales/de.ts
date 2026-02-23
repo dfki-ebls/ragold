@@ -34,8 +34,7 @@ export const de: TranslationKeys = {
     projectPlaceholder: "Projektname",
     datasetDescription: "Beschreibung (optional)",
     datasetDescriptionPlaceholder: "Kurze Beschreibung des Datensatzes",
-    metadataInfo:
-      "Diese Metadaten gelten für alle Annotationen und Dokumente. Der Export enthält sowohl Annotationen als auch Dokumente.",
+    metadataInfo: "Diese Metadaten gelten für alle Annotationen und Dokumente.",
   },
   tabs: {
     annotations: "Annotationen ({{count}})",
@@ -129,7 +128,7 @@ export const de: TranslationKeys = {
       "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
   },
   faq: {
-    contact: "Kontakt",
+    contact: "Senden Sie die exportierte Datei an",
   },
   documentManager: {
     titleNew: "Neues Dokument",

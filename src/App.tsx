@@ -140,12 +140,12 @@ export default function App() {
               />
             </div>
             <p className="text-sm text-muted-foreground mt-4">
-              {t("metadata.metadataInfo")}
+              {t("metadata.metadataInfo")} {t("faq.contact")}:
             </p>
             {contactInfo && (
               <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                {t("faq.contact")}: {contactInfo}
+                {contactInfo}
               </p>
             )}
           </CardContent>

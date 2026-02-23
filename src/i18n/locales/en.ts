@@ -32,8 +32,7 @@ export const en = {
     projectPlaceholder: "Project name",
     datasetDescription: "Description (optional)",
     datasetDescriptionPlaceholder: "Brief description of the dataset",
-    metadataInfo:
-      "This metadata applies to all annotations and documents. The export includes both annotations and documents.",
+    metadataInfo: "This metadata applies to all annotations and documents.",
   },
   tabs: {
     annotations: "Annotations ({{count}})",
@@ -124,7 +123,7 @@ export const en = {
     resetDescription: "Resetting clears all stored data and reloads the app.",
   },
   faq: {
-    contact: "Contact",
+    contact: "Send the exported file to",
   },
   documentManager: {
     titleNew: "New Document",
