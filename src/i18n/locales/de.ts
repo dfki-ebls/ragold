@@ -28,9 +28,6 @@ export const de: TranslationKeys = {
     importError: "Import fehlgeschlagen: {{message}}",
   },
   metadata: {
-    title: "Annotation von RAG-Beispielen",
-    description:
-      "Erstellen Sie Beispiele für Nutzeranfragen an ein Chat-System, das Antworten basierend auf Dokumenteninhalten generiert (Retrieval-Augmented Generation).",
     author: "Autor",
     authorPlaceholder: "Name des Annotators",
     project: "Projekt",

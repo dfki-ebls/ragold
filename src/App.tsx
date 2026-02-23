@@ -1,4 +1,4 @@
-import { AlignLeft, Folder, User } from "lucide-react";
+import { AlignLeft, Folder, Mail, User } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/lib/store";
 import type { Annotation } from "@/lib/types";
+
+const contactInfo = import.meta.env.VITE_CONTACT_INFO;
 
 export default function App() {
   const { t } = useTranslation();
@@ -80,11 +82,6 @@ export default function App() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">{t("metadata.title")}</h1>
-          <p className="text-muted-foreground">{t("metadata.description")}</p>
-        </div>
-
         <Card className="mb-8">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -134,6 +131,12 @@ export default function App() {
             <p className="text-sm text-muted-foreground mt-4">
               {t("metadata.metadataInfo")}
             </p>
+            {contactInfo && (
+              <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                {t("faq.contact")}: {contactInfo}
+              </p>
+            )}
           </CardContent>
         </Card>
 

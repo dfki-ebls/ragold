@@ -26,9 +26,6 @@ export const en = {
     importError: "Import failed: {{message}}",
   },
   metadata: {
-    title: "Annotating RAG Examples",
-    description:
-      "Create examples of user queries for a chat system that generates answers based on document contents (Retrieval-Augmented Generation).",
     author: "Author",
     authorPlaceholder: "Name of the annotator",
     project: "Project",
