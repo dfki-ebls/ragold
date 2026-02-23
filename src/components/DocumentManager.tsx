@@ -48,7 +48,6 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      if (!formData.filename.trim() || !formData.description.trim()) return;
 
       const doc: Document = {
         filename: formData.filename.trim(),
@@ -115,6 +114,7 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                     setFormData({ ...formData, filename: e.target.value })
                   }
                   placeholder={t("documentManager.filenamePlaceholder")}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -133,15 +133,11 @@ export const DocumentManager = forwardRef<DocumentManagerRef>(
                   }
                   placeholder={t("documentManager.descriptionPlaceholder")}
                   rows={4}
+                  required
                 />
               </div>
               <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  disabled={
-                    !formData.filename.trim() || !formData.description.trim()
-                  }
-                >
+                <Button type="submit">
                   {editingId ? t("common.update") : t("common.add")}
                 </Button>
                 {editingId && (

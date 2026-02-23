@@ -13,7 +13,6 @@ const languageLabels: Record<SupportedLanguage, string> = {
 export default function Header() {
   const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
-  const documents = useStore((s) => s.documents);
   const author = useStore((s) => s.author);
   const project = useStore((s) => s.project);
   const language = useStore((s) => s.language);
@@ -22,15 +21,12 @@ export default function Header() {
   const [clearConfirm, setClearConfirm] = useState(false);
 
   const annotationCount = Object.keys(annotations).length;
-  const documentCount = Object.keys(documents).length;
-  const totalCount = annotationCount + documentCount;
   const isMetadataComplete = author.trim() && project.trim();
-  const canExport = annotationCount > 0 && isMetadataComplete;
 
   const handleClear = () => {
     if (clearConfirm) {
-      useStore.getState().clearAll();
-      setClearConfirm(false);
+      localStorage.removeItem("ragold-store");
+      window.location.reload();
     } else {
       setClearConfirm(true);
       setTimeout(() => setClearConfirm(false), 3000);
@@ -69,7 +65,14 @@ export default function Header() {
   };
 
   const handleExport = () => {
-    if (!canExport) return;
+    if (!isMetadataComplete) {
+      alert(t("header.exportDisabledMeta"));
+      return;
+    }
+    if (annotationCount === 0) {
+      alert(t("header.exportDisabledEmpty"));
+      return;
+    }
     useStore.getState().exportAnnotations();
   };
 
@@ -116,7 +119,6 @@ export default function Header() {
             variant="outline"
             size="sm"
             onClick={handleExport}
-            disabled={!canExport}
             title={
               !isMetadataComplete
                 ? t("header.exportDisabledMeta")
@@ -132,12 +134,7 @@ export default function Header() {
             variant={clearConfirm ? "destructive" : "ghost"}
             size="sm"
             onClick={handleClear}
-            disabled={totalCount === 0}
-            title={
-              totalCount === 0
-                ? t("header.resetDisabled")
-                : t("header.resetTooltip")
-            }
+            title={t("header.resetTooltip")}
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             {clearConfirm ? t("common.confirm") : t("common.reset")}

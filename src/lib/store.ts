@@ -15,8 +15,6 @@ interface AppState extends AnnotationData {
   addAnnotation: (data: Annotation) => string;
   updateAnnotation: (id: string, data: Annotation) => void;
   deleteAnnotation: (id: string) => void;
-  clearAll: () => void;
-
   addDocument: (data: Document) => string;
   updateDocument: (id: string, data: Document) => void;
   deleteDocument: (id: string) => void;
@@ -71,8 +69,6 @@ export const useStore = create<AppState>()(
           return { annotations: rest };
         });
       },
-
-      clearAll: () => set({ annotations: {}, documents: {} }),
 
       addDocument: (data) => {
         const id = uuidv1();
