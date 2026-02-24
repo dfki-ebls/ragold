@@ -38,7 +38,7 @@ The `annotations.json` file contains:
   "version": 2,
   "author": "",
   "project": "",
-  "description": "",
+  "notes": "",
   "language": "en",
   "createdAt": "2026-01-01T00:00:00.000Z",
   "updatedAt": "2026-01-01T00:00:00.000Z",
