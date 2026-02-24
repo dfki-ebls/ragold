@@ -83,6 +83,8 @@ export const de: TranslationKeys = {
     selectDocument: "Dokument auswählen...",
     documentError: "Jeder Ausschnitt mit Inhalt muss einem Dokument zugeordnet sein",
     deletedDocument: "Gelöschtes Dokument",
+    selectDocumentFirst:
+      "Wählen Sie zuerst ein Dokument aus, um Ausschnitte einzugeben",
     addChunksHint:
       'Laden Sie Dokumente im Tab "Dokumente" hoch, um sie hier auszuwählen.',
   },

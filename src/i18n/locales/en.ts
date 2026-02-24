@@ -80,6 +80,7 @@ export const en = {
     selectDocument: "Select a document...",
     documentError: "Each chunk with content must have a document selected",
     deletedDocument: "Deleted document",
+    selectDocumentFirst: "Select a document first to enter chunk content",
     addChunksHint: 'Upload documents in the "Documents" tab to select them here.',
   },
   annotationManager: {

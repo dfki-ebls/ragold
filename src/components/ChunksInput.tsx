@@ -71,7 +71,7 @@ export function ChunksInput({
 
       {chunks.map((chunk, index) => (
         <div key={index} className="flex gap-2">
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 flex flex-col gap-2">
             <div className="space-y-1">
               <Select
                 value={chunk.documentId ?? ""}
@@ -96,20 +96,19 @@ export function ChunksInput({
                   </>
                 )}
               </Select>
-              {documentList.length === 0 && index === 0 && (
-                <p className="text-xs text-muted-foreground">
-                  {t("chunks.addChunksHint")}
-                </p>
-              )}
             </div>
             <Textarea
               value={chunk.content}
               onChange={(e) =>
                 updateChunk(index, e.target.value, chunk.documentId)
               }
-              placeholder={`${placeholder} ${index + 1}...`}
+              placeholder={
+                chunk.documentId
+                  ? `${placeholder} ${index + 1}...`
+                  : t("chunks.selectDocumentFirst")
+              }
               rows={3}
-              disabled={disabled}
+              disabled={disabled || !chunk.documentId}
             />
           </div>
           <Button
