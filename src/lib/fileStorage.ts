@@ -84,8 +84,17 @@ export async function deleteFile(id: string): Promise<void> {
   await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).delete(id));
 }
 
-/** Clear all stored files from IndexedDB. */
+/** Delete the entire IndexedDB database, fully resetting file storage. */
 export async function clearAllFiles(): Promise<void> {
-  const db = await getDb();
-  await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).clear());
+  if (dbPromise) {
+    const db = await dbPromise;
+    db.close();
+    dbPromise = null;
+  }
+  await new Promise<void>((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(DB_NAME);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => resolve();
+  });
 }
