@@ -130,6 +130,13 @@ export const en = {
     resetConfirm: "Confirm Reset",
     resetDescription: "Resetting clears all stored data and reloads the app.",
   },
+  schemaMigration: {
+    title: "Data Update Required",
+    description:
+      "The app has been updated (schema v{{old}} → v{{new}}). Your stored data is incompatible and will be replaced. You can download a backup of your current data before continuing.",
+    download: "Download & Continue",
+    continueWithout: "Continue without Download",
+  },
   faq: {
     contact: "Send the exported file to",
   },

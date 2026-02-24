@@ -34,6 +34,29 @@ interface AppState extends AnnotationData {
   importAnnotations: (file: File) => Promise<number>;
 }
 
+// --- Schema migration helpers ---
+
+let pendingMigrationData: unknown = null;
+
+export function getPendingMigrationData(): unknown {
+  return pendingMigrationData;
+}
+
+export function clearPendingMigrationData(): void {
+  pendingMigrationData = null;
+}
+
+function hasContent(data: unknown): boolean {
+  if (!data || typeof data !== "object") return false;
+  const d = data as Record<string, unknown>;
+  return (
+    (!!d.annotations && Object.keys(d.annotations as object).length > 0) ||
+    (!!d.documents && Object.keys(d.documents as object).length > 0)
+  );
+}
+
+// ---
+
 function createEmptyState() {
   const now = dayjs().toISOString();
   return annotationDataSchema.parse({
@@ -245,6 +268,17 @@ export const useStore = create<AppState>()(
         documents: state.documents,
       }),
       merge: (_persisted, current) => {
+        if (
+          _persisted &&
+          typeof _persisted === "object" &&
+          "version" in _persisted &&
+          typeof (_persisted as { version: unknown }).version === "number" &&
+          (_persisted as { version: number }).version < SCHEMA_VERSION &&
+          hasContent(_persisted)
+        ) {
+          pendingMigrationData = _persisted;
+          return current;
+        }
         const result = annotationDataSchema.safeParse(_persisted);
         if (!result.success) return current;
         return { ...current, ...result.data };

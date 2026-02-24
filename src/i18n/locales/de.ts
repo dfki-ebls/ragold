@@ -136,6 +136,13 @@ export const de: TranslationKeys = {
     resetDescription:
       "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
   },
+  schemaMigration: {
+    title: "Datenaktualisierung erforderlich",
+    description:
+      "Die App wurde aktualisiert (Schema v{{old}} → v{{new}}). Ihre gespeicherten Daten sind nicht kompatibel und werden ersetzt. Sie können vorher ein Backup Ihrer aktuellen Daten herunterladen.",
+    download: "Herunterladen & Fortfahren",
+    continueWithout: "Ohne Download fortfahren",
+  },
   faq: {
     contact: "Senden Sie die exportierte Datei an",
   },
