@@ -49,14 +49,18 @@ The `annotations.json` file contains:
       "relevantChunks": [{ "content": "", "documentId": "<uuid>" }],
       "distractingChunks": [{ "content": "", "documentId": "<uuid>" }],
       "response": "",
-      "notes": ""
+      "notes": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
     }
   },
   "documents": {
     "<uuid>": {
       "name": "",
       "size": 0,
-      "notes": ""
+      "notes": "",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
     }
   }
 }
