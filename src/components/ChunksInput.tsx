@@ -54,11 +54,7 @@ export function ChunksInput({
   };
 
   const handleDocumentSelect = (index: number, documentId: string) => {
-    if (documentId === "") {
-      updateChunk(index, chunks[index].content, undefined);
-    } else {
-      updateChunk(index, chunks[index].content, documentId);
-    }
+    updateChunk(index, chunks[index].content, documentId || undefined);
   };
 
   const Icon = variant === "relevant" ? CircleCheck : CircleX;
@@ -90,7 +86,7 @@ export function ChunksInput({
                 ) : (
                   <>
                     <SelectOption value="">
-                      {t("chunks.manualEntry")}
+                      {t("chunks.selectDocument")}
                     </SelectOption>
                     {documentList.map(([id, d]) => (
                       <SelectOption key={id} value={id}>

@@ -22,7 +22,7 @@ describe("chunkSchema", () => {
 describe("documentSchema", () => {
   it("fills defaults for empty object", () => {
     const result = documentSchema.parse({});
-    expect(result).toEqual({ filename: "", description: "" });
+    expect(result).toEqual({ filename: "" });
   });
 
   it("preserves unknown fields", () => {
@@ -93,7 +93,7 @@ describe("annotationDataSchema", () => {
         },
       },
       documents: {
-        "doc-1": { filename: "a.txt", description: "File A" },
+        "doc-1": { filename: "a.txt" },
       },
     };
     const result = annotationDataSchema.parse(input);

@@ -3,15 +3,16 @@ import { Download, RotateCcw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
+import { clearAllFiles } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
 
 function t(key: string, fallback: string): string {
   return i18n.t(key, { defaultValue: fallback });
 }
 
-function exportData(): boolean {
+async function exportData(): Promise<boolean> {
   try {
-    useStore.getState().exportAnnotations();
+    await useStore.getState().exportAnnotations();
     return true;
   } catch {
     // Store export failed — fall back to raw localStorage dump
@@ -62,22 +63,27 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleExport = (): void => {
-    const ok = exportData();
-    if (ok) {
-      toast.success(
-        t("errorBoundary.exportSuccess", "Data exported successfully."),
-      );
-    } else {
-      toast.error(
-        t("errorBoundary.exportFailed", "Export failed. No data found."),
-      );
-    }
+    exportData().then((ok) => {
+      if (ok) {
+        toast.success(
+          t("errorBoundary.exportSuccess", "Data exported successfully."),
+        );
+      } else {
+        toast.error(
+          t("errorBoundary.exportFailed", "Export failed. No data found."),
+        );
+      }
+    });
   };
 
   handleReset = (): void => {
     if (this.state.confirmReset) {
-      localStorage.removeItem("ragold-store");
-      window.location.reload();
+      clearAllFiles()
+        .catch(() => {})
+        .finally(() => {
+          localStorage.removeItem("ragold-store");
+          window.location.reload();
+        });
     } else {
       this.setState({ confirmReset: true });
       this.resetTimer = setTimeout(

@@ -15,16 +15,17 @@ export const en = {
   header: {
     title: "RAGold",
     importTooltip:
-      "Import annotations and documents from JSON (replaces existing data)",
+      "Import annotations and documents from a zip file (replaces existing data)",
     importConfirm:
       "Importing will replace all existing annotations and documents. This cannot be undone. Continue?",
-    exportTooltip: "Export annotations and documents as JSON",
+    exportTooltip: "Export annotations and documents as zip",
     exportDisabledMeta: "Author and project must be filled in",
     exportDisabledEmpty: "No annotations available",
     resetTooltip: "Reset the app to its initial state",
     importSuccess: "Import complete. {{count}} annotation(s) loaded.",
     importEmpty: "Import complete. The file contained no annotations.",
     importError: "Import failed: {{message}}",
+    exportError: "Export failed: {{message}}",
   },
   metadata: {
     author: "Author",
@@ -77,8 +78,9 @@ export const en = {
     distractingPlaceholder: "Distracting chunk",
     addChunk: "Add another chunk",
     noDocuments: "No documents available",
-    manualEntry: "Manual entry",
-    addChunksHint: 'Add documents in the "Documents" tab to select them here.',
+    selectDocument: "Select a document...",
+    deletedDocument: "Deleted document",
+    addChunksHint: 'Upload documents in the "Documents" tab to select them here.',
   },
   annotationManager: {
     titleNew: "New Annotation",
@@ -125,18 +127,19 @@ export const en = {
     contact: "Send the exported file to",
   },
   documentManager: {
-    titleNew: "New Document",
-    titleEdit: "Edit Document",
-
-    filename: "Filename",
-    filenamePlaceholder: "document.txt",
-    description: "Description",
-    descriptionPlaceholder: "Description of the document...",
+    titleNew: "Upload Documents",
+    titleEdit: "Replace Document",
+    dropzoneLabel: "Drop files here or click to select",
+    dropzoneHint: "Any file type, max 10 MB per file. Multiple files supported.",
+    dropzoneHintEdit: "Drop a replacement file or click to select.",
+    currentFile: "Current file",
     library: "Document Library ({{count}})",
-    filenameError: "Filename is required",
-    descriptionError: "Description is required",
     empty: "No documents yet.",
-    emptyHint: "Add a document using the form above.",
+    emptyHint: "Upload documents using the area above.",
+    fileTooLarge: "\"{{name}}\" exceeds the {{max}} MB size limit.",
+    uploadError: "Failed to store \"{{name}}\": {{message}}",
+    uploadSuccess: "{{count}} document(s) uploaded.",
+    reUploadSuccess: "Document replaced successfully.",
   },
 };
 

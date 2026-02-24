@@ -1,7 +1,6 @@
-import { Download, Globe, RotateCcw, Upload } from "lucide-react";
+import { Download, Globe, Loader2, RotateCcw, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useConfirmAction } from "@/lib/useConfirmAction";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -15,7 +14,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { SupportedLanguage } from "@/i18n";
+import { clearAllFiles } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
+import { useConfirmAction } from "@/lib/useConfirmAction";
 
 const languageLabels: Record<SupportedLanguage, string> = {
   de: "DE",
@@ -32,12 +33,14 @@ export default function Header() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isConfirming, confirm } = useConfirmAction();
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const annotationCount = Object.keys(annotations).length;
   const isMetadataComplete = author.trim() && project.trim();
 
   const handleClear = () => {
-    confirm("reset", () => {
+    confirm("reset", async () => {
+      await clearAllFiles();
       localStorage.removeItem("ragold-store");
       window.location.reload();
     });
@@ -80,7 +83,7 @@ export default function Header() {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!isMetadataComplete) {
       toast.warning(t("header.exportDisabledMeta"));
       return;
@@ -89,7 +92,18 @@ export default function Header() {
       toast.warning(t("header.exportDisabledEmpty"));
       return;
     }
-    useStore.getState().exportAnnotations();
+    setIsExporting(true);
+    try {
+      await useStore.getState().exportAnnotations();
+    } catch (err) {
+      toast.error(
+        t("header.exportError", {
+          message: err instanceof Error ? err.message : "Unknown error",
+        }),
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const toggleLanguage = () => {
@@ -118,7 +132,7 @@ export default function Header() {
             <input
               ref={fileInputRef}
               type="file"
-              accept=".json"
+              accept=".zip"
               onChange={handleFileChange}
               className="hidden"
               id="import-file"
@@ -136,6 +150,7 @@ export default function Header() {
               variant="outline"
               size="sm"
               onClick={handleExport}
+              disabled={isExporting}
               title={
                 !isMetadataComplete
                   ? t("header.exportDisabledMeta")
@@ -144,7 +159,11 @@ export default function Header() {
                     : t("header.exportTooltip")
               }
             >
-              <Download className="w-4 h-4 mr-2" />
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
               {t("common.export")}
             </Button>
             <Button

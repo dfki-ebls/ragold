@@ -17,16 +17,17 @@ export const de: TranslationKeys = {
   header: {
     title: "RAGold",
     importTooltip:
-      "Importiert Annotationen und Dokumente aus JSON (ersetzt vorhandene Daten)",
+      "Importiert Annotationen und Dokumente aus einer Zip-Datei (ersetzt vorhandene Daten)",
     importConfirm:
       "Der Import ersetzt alle vorhandenen Annotationen und Dokumente. Dies kann nicht rückgängig gemacht werden. Fortfahren?",
-    exportTooltip: "Exportiert Annotationen und Dokumente als JSON",
+    exportTooltip: "Exportiert Annotationen und Dokumente als Zip",
     exportDisabledMeta: "Autor und Projekt müssen ausgefüllt sein",
     exportDisabledEmpty: "Keine Annotationen vorhanden",
     resetTooltip: "Setzt die App auf den Ausgangszustand zurück",
     importSuccess: "Import abgeschlossen. {{count}} Annotation(en) geladen.",
     importEmpty: "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
     importError: "Import fehlgeschlagen: {{message}}",
+    exportError: "Export fehlgeschlagen: {{message}}",
   },
   metadata: {
     author: "Autor",
@@ -80,9 +81,10 @@ export const de: TranslationKeys = {
     distractingPlaceholder: "Ablenkender Ausschnitt",
     addChunk: "Weiteren Ausschnitt hinzufügen",
     noDocuments: "Keine Dokumente vorhanden",
-    manualEntry: "Manueller Eintrag",
+    selectDocument: "Dokument auswählen...",
+    deletedDocument: "Gelöschtes Dokument",
     addChunksHint:
-      'Fügen Sie Dokumente im Tab "Dokumente" hinzu, um sie hier auszuwählen.',
+      'Laden Sie Dokumente im Tab "Dokumente" hoch, um sie hier auszuwählen.',
   },
   annotationManager: {
     titleNew: "Neue Annotation",
@@ -130,17 +132,18 @@ export const de: TranslationKeys = {
     contact: "Senden Sie die exportierte Datei an",
   },
   documentManager: {
-    titleNew: "Neues Dokument",
-    titleEdit: "Dokument bearbeiten",
-
-    filename: "Dateiname",
-    filenamePlaceholder: "dokument.txt",
-    description: "Beschreibung",
-    descriptionPlaceholder: "Beschreibung des Dokuments...",
+    titleNew: "Dokumente hochladen",
+    titleEdit: "Dokument ersetzen",
+    dropzoneLabel: "Dateien hierher ziehen oder klicken zum Auswählen",
+    dropzoneHint: "Beliebiger Dateityp, max. 10 MB pro Datei. Mehrere Dateien möglich.",
+    dropzoneHintEdit: "Ersatzdatei hierher ziehen oder klicken zum Auswählen.",
+    currentFile: "Aktuelle Datei",
     library: "Dokumentbibliothek ({{count}})",
-    filenameError: "Dateiname ist erforderlich",
-    descriptionError: "Beschreibung ist erforderlich",
     empty: "Noch keine Dokumente vorhanden.",
-    emptyHint: "Fügen Sie über das Formular oben ein Dokument hinzu.",
+    emptyHint: "Laden Sie Dokumente über den Bereich oben hoch.",
+    fileTooLarge: "\"{{name}}\" überschreitet das Limit von {{max}} MB.",
+    uploadError: "Fehler beim Speichern von \"{{name}}\": {{message}}",
+    uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
+    reUploadSuccess: "Dokument erfolgreich ersetzt.",
   },
 };

@@ -1,210 +1,310 @@
-import { AlignLeft, File, FileText } from "lucide-react";
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { EmptyState } from "@/components/EmptyState";
-import { FieldError } from "@/components/FieldError";
-import { ListItem } from "@/components/ListItem";
-import { useConfirmAction } from "@/lib/useConfirmAction";
-import { useFormChangeTracking } from "@/lib/useFormChangeTracking";
-import { useFormErrors } from "@/lib/useFormErrors";
+import { FileText, Upload } from "lucide-react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { v1 as uuidv1 } from "uuid";
+import { EmptyState } from "@/components/EmptyState";
+import { ListItem } from "@/components/ListItem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useConfirmAction } from "@/lib/useConfirmAction";
+import { deleteFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
-import type { Document } from "@/lib/types";
-
-interface DocumentFormData {
-  filename: string;
-  description: string;
-}
+import { cn } from "@/lib/utils";
 
 export interface DocumentManagerRef {
   hasUnsavedChanges: () => boolean;
 }
 
-const emptyForm: DocumentFormData = {
-  filename: "",
-  description: "",
-};
-
 interface DocumentManagerProps {
   scrollToTabs?: () => void;
 }
 
-export const DocumentManager = forwardRef<DocumentManagerRef, DocumentManagerProps>(
-  function DocumentManager({ scrollToTabs }, ref) {
-    const { t } = useTranslation();
-    const documents = useStore((s) => s.documents);
-    const addDocument = useStore((s) => s.addDocument);
-    const updateDocument = useStore((s) => s.updateDocument);
-    const deleteDocument = useStore((s) => s.deleteDocument);
+const MAX_FILE_SIZE_MB = MAX_FILE_SIZE / (1024 * 1024);
 
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [formData, setFormData] = useState<DocumentFormData>(emptyForm);
-    const { errors, validate, clearErrors } =
-      useFormErrors<keyof DocumentFormData>();
-    const { isConfirming, confirm } = useConfirmAction();
-    const { hasUnsavedChanges } = useFormChangeTracking(formData, emptyForm);
+function DropZone({
+  inputRef,
+  multiple,
+  onChange,
+  hint,
+  isDragging,
+  setIsDragging,
+  onDrop,
+  disabled,
+}: {
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  multiple?: boolean;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  hint: string;
+  isDragging: boolean;
+  setIsDragging: (v: boolean) => void;
+  onDrop: React.DragEventHandler;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation();
 
-    useImperativeHandle(ref, () => ({ hasUnsavedChanges }));
-
-    const documentList = Object.entries(documents);
-
-    const handleValidate = (): boolean =>
-      validate({
-        filename: !formData.filename.trim()
-          ? t("documentManager.filenameError")
-          : undefined,
-        description: !formData.description.trim()
-          ? t("documentManager.descriptionError")
-          : undefined,
-      });
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!handleValidate()) return;
-
-      const doc: Document = {
-        filename: formData.filename.trim(),
-        description: formData.description.trim(),
-      };
-
-      if (editingId) {
-        updateDocument(editingId, doc);
-        setEditingId(null);
-      } else {
-        addDocument(doc);
-      }
-      setFormData(emptyForm);
-      clearErrors();
-    };
-
-    const handleEdit = (id: string, doc: Document) => {
-      setEditingId(id);
-      setFormData({
-        filename: doc.filename,
-        description: doc.description,
-      });
-      scrollToTabs?.();
-    };
-
-    const handleDelete = (id: string) => {
-      confirm(id, () => {
-        deleteDocument(id);
-        if (editingId === id) {
-          setEditingId(null);
-          setFormData(emptyForm);
+  return (
+    <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      onClick={() => !disabled && inputRef.current?.click()}
+      onKeyDown={(e) => {
+        if (!disabled && (e.key === "Enter" || e.key === " ")) {
+          inputRef.current?.click();
         }
-      });
-    };
+      }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        if (!disabled) setIsDragging(true);
+      }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={onDrop}
+      className={cn(
+        "flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition-colors cursor-pointer",
+        isDragging
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/50",
+        disabled && "cursor-not-allowed opacity-50",
+      )}
+    >
+      <Upload className="w-8 h-8 text-muted-foreground" />
+      <span className="text-sm font-medium">
+        {t("documentManager.dropzoneLabel")}
+      </span>
+      <span className="text-xs text-muted-foreground">{hint}</span>
+      <input
+        ref={inputRef}
+        type="file"
+        multiple={multiple}
+        className="hidden"
+        onChange={onChange}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
 
-    const handleCancel = () => {
+export const DocumentManager = forwardRef<
+  DocumentManagerRef,
+  DocumentManagerProps
+>(function DocumentManager({ scrollToTabs }, ref) {
+  const { t } = useTranslation();
+  const documents = useStore((s) => s.documents);
+  const addDocument = useStore((s) => s.addDocument);
+  const updateDocument = useStore((s) => s.updateDocument);
+  const deleteDocument = useStore((s) => s.deleteDocument);
+  const { isConfirming, confirm } = useConfirmAction();
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const reUploadInputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({ hasUnsavedChanges: () => false }));
+
+  const documentList = Object.entries(documents);
+  const editingDoc = editingId ? documents[editingId] : null;
+
+  const processFiles = async (files: File[]) => {
+    const oversized = files.filter((f) => f.size > MAX_FILE_SIZE);
+    const valid = files.filter((f) => f.size <= MAX_FILE_SIZE);
+
+    for (const f of oversized) {
+      toast.error(
+        t("documentManager.fileTooLarge", {
+          name: f.name,
+          max: MAX_FILE_SIZE_MB,
+        }),
+      );
+    }
+    if (valid.length === 0) return;
+
+    setUploading(true);
+    try {
+      const results = await Promise.allSettled(
+        valid.map(async (file) => {
+          const id = uuidv1();
+          await putFile(id, file);
+          addDocument(id, { filename: file.name });
+          return file.name;
+        }),
+      );
+
+      const succeeded = results.filter(
+        (r) => r.status === "fulfilled",
+      ).length;
+      const failed = results.filter(
+        (r): r is PromiseRejectedResult => r.status === "rejected",
+      );
+
+      if (succeeded > 0) {
+        toast.success(
+          t("documentManager.uploadSuccess", { count: succeeded }),
+        );
+      }
+      for (const [i, r] of failed.entries()) {
+        const name = valid[results.indexOf(r)]?.name ?? valid[i]?.name ?? "file";
+        toast.error(
+          t("documentManager.uploadError", {
+            name,
+            message:
+              r.reason instanceof Error ? r.reason.message : "Unknown error",
+          }),
+        );
+      }
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReUpload = async (file: File) => {
+    if (!editingId) return;
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(
+        t("documentManager.fileTooLarge", {
+          name: file.name,
+          max: MAX_FILE_SIZE_MB,
+        }),
+      );
+      return;
+    }
+    setUploading(true);
+    try {
+      await putFile(editingId, file);
+      updateDocument(editingId, { filename: file.name });
+      toast.success(t("documentManager.reUploadSuccess"));
       setEditingId(null);
-      setFormData(emptyForm);
-    };
+    } catch (err) {
+      toast.error(
+        t("documentManager.uploadError", {
+          name: file.name,
+          message: err instanceof Error ? err.message : "Unknown error",
+        }),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
 
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {editingId
-                ? t("documentManager.titleEdit")
-                : t("documentManager.titleNew")}
-            </CardTitle>
+  const handleEdit = (id: string) => {
+    setEditingId(id);
+    scrollToTabs?.();
+  };
 
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="filename" className="flex items-center gap-2">
-                  <File className="w-4 h-4" />
-                  {t("documentManager.filename")} *
-                </Label>
-                <Input
-                  id="filename"
-                  value={formData.filename}
-                  onChange={(e) =>
-                    setFormData({ ...formData, filename: e.target.value })
-                  }
-                  placeholder={t("documentManager.filenamePlaceholder")}
-                />
-                <FieldError message={errors.filename} />
-              </div>
-              <div className="space-y-2">
-                <Label
-                  htmlFor="doc-description"
-                  className="flex items-center gap-2"
-                >
-                  <AlignLeft className="w-4 h-4" />
-                  {t("documentManager.description")} *
-                </Label>
-                <Textarea
-                  id="doc-description"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder={t("documentManager.descriptionPlaceholder")}
-                  rows={4}
-                />
-                <FieldError message={errors.description} />
-              </div>
-              <div className="flex gap-3 pt-4">
-                <Button type="submit">
-                  {editingId ? t("common.update") : t("common.add")}
-                </Button>
-                {editingId && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancel}
-                  >
-                    {t("common.cancel")}
-                  </Button>
-                )}
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+  const handleDelete = (id: string) => {
+    confirm(id, () => {
+      deleteDocument(id);
+      deleteFile(id).catch(() => {});
+      if (editingId === id) setEditingId(null);
+    });
+  };
 
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {t("documentManager.library", { count: documentList.length })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {documentList.length === 0 ? (
-              <EmptyState
-                message={t("documentManager.empty")}
-                hint={t("documentManager.emptyHint")}
+  const handleCancelEdit = () => setEditingId(null);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      if (editingId) {
+        handleReUpload(files[0]);
+      } else {
+        processFiles(files);
+      }
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length > 0) processFiles(files);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleReUploadInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) handleReUpload(file);
+    if (reUploadInputRef.current) reUploadInputRef.current.value = "";
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {editingId
+              ? t("documentManager.titleEdit")
+              : t("documentManager.titleNew")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {editingId && editingDoc ? (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {t("documentManager.currentFile")}:{" "}
+                <strong>{editingDoc.filename}</strong>
+              </p>
+              <DropZone
+                inputRef={reUploadInputRef}
+                onChange={handleReUploadInputChange}
+                hint={t("documentManager.dropzoneHintEdit")}
+                isDragging={isDragging}
+                setIsDragging={setIsDragging}
+                onDrop={handleDrop}
+                disabled={uploading}
               />
-            ) : (
-              <div className="space-y-3">
-                {documentList.map(([id, doc]) => (
-                  <ListItem
-                    key={id}
-                    onEdit={() => handleEdit(id, doc)}
-                    onDelete={() => handleDelete(id)}
-                    deleteConfirm={isConfirming(id)}
-                  >
-                    <FileText className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{doc.filename}</div>
-                      <div className="text-sm text-muted-foreground mt-1 line-clamp-3">
-                        {doc.description}
-                      </div>
-                    </div>
-                  </ListItem>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  },
-);
+              <Button variant="outline" onClick={handleCancelEdit}>
+                {t("common.cancel")}
+              </Button>
+            </div>
+          ) : (
+            <DropZone
+              inputRef={fileInputRef}
+              multiple
+              onChange={handleFileInputChange}
+              hint={t("documentManager.dropzoneHint")}
+              isDragging={isDragging}
+              setIsDragging={setIsDragging}
+              onDrop={handleDrop}
+              disabled={uploading}
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {t("documentManager.library", { count: documentList.length })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {documentList.length === 0 ? (
+            <EmptyState
+              message={t("documentManager.empty")}
+              hint={t("documentManager.emptyHint")}
+            />
+          ) : (
+            <div className="space-y-3">
+              {documentList.map(([id, doc]) => (
+                <ListItem
+                  key={id}
+                  onEdit={() => handleEdit(id)}
+                  onDelete={() => handleDelete(id)}
+                  deleteConfirm={isConfirming(id)}
+                >
+                  <FileText className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">{doc.filename}</div>
+                  </div>
+                </ListItem>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+});

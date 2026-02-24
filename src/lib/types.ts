@@ -3,7 +3,7 @@ import type { SupportedLanguage } from "@/i18n";
 import { defaultLanguage, supportedLanguages } from "@/i18n";
 
 /** Current schema version. Bump only for breaking changes. */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /**
  * Known query types for UI rendering and form selection.
@@ -26,7 +26,6 @@ export const chunkSchema = z.looseObject({
 
 export const documentSchema = z.looseObject({
   filename: z.string().default(""),
-  description: z.string().default(""),
 });
 
 export const annotationSchema = z.looseObject({

@@ -3,6 +3,7 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
+import { clearAllFiles, getAllFiles, putFile } from "@/lib/fileStorage";
 import {
   type Annotation,
   type AnnotationData,
@@ -15,7 +16,7 @@ interface AppState extends AnnotationData {
   addAnnotation: (data: Annotation) => string;
   updateAnnotation: (id: string, data: Annotation) => void;
   deleteAnnotation: (id: string) => void;
-  addDocument: (data: Document) => string;
+  addDocument: (id: string, data: Document) => void;
   updateDocument: (id: string, data: Document) => void;
   deleteDocument: (id: string) => void;
 
@@ -24,7 +25,7 @@ interface AppState extends AnnotationData {
   setDescription: (description: string) => void;
   setLanguage: (language: SupportedLanguage) => void;
 
-  exportAnnotations: () => void;
+  exportAnnotations: () => Promise<void>;
   importAnnotations: (file: File) => Promise<number>;
 }
 
@@ -70,12 +71,10 @@ export const useStore = create<AppState>()(
         });
       },
 
-      addDocument: (data) => {
-        const id = uuidv1();
+      addDocument: (id, data) => {
         set((state) => ({
           documents: { ...state.documents, [id]: data },
         }));
-        return id;
       },
 
       updateDocument: (id, data) => {
@@ -106,7 +105,7 @@ export const useStore = create<AppState>()(
         set({ language });
       },
 
-      exportAnnotations: () => {
+      exportAnnotations: async () => {
         const {
           annotations,
           documents,
@@ -131,13 +130,26 @@ export const useStore = create<AppState>()(
           documents,
         };
 
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: "application/json",
+        const { default: JSZip } = await import("jszip");
+        const zip = new JSZip();
+        zip.file("annotations.json", JSON.stringify(exportData, null, 2));
+
+        const files = await getAllFiles();
+        for (const [id, blob] of files) {
+          const doc = documents[id];
+          if (doc) {
+            zip.file(`files/${id}/${doc.filename}`, blob);
+          }
+        }
+
+        const zipBlob = await zip.generateAsync({
+          type: "blob",
+          compression: "DEFLATE",
         });
-        const url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(zipBlob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `ragold-${stamp}.json`;
+        link.download = `ragold-${stamp}.zip`;
         link.click();
         URL.revokeObjectURL(url);
 
@@ -145,10 +157,17 @@ export const useStore = create<AppState>()(
       },
 
       importAnnotations: async (file) => {
-        const text = await file.text();
+        const { default: JSZip } = await import("jszip");
+        const zip = await JSZip.loadAsync(file);
+
+        const metaFile = zip.file("annotations.json");
+        if (!metaFile) {
+          throw new Error("Invalid zip: annotations.json not found");
+        }
+
+        const text = await metaFile.async("text");
         const raw = JSON.parse(text);
 
-        // Reject files from newer schema versions
         if (typeof raw.version === "number" && raw.version > SCHEMA_VERSION) {
           throw new Error(
             `This file requires a newer version of RAGold (schema v${raw.version}, current v${SCHEMA_VERSION}). Please update the app.`,
@@ -167,6 +186,20 @@ export const useStore = create<AppState>()(
             ? parsed.language
             : get().language;
 
+        // Clear existing files before writing new ones
+        await clearAllFiles();
+
+        // Extract and store document files from the zip
+        await Promise.all(
+          Object.entries(parsed.documents).map(async ([id, doc]) => {
+            const zipEntry = zip.file(`files/${id}/${doc.filename}`);
+            if (!zipEntry) return;
+            const buffer = await zipEntry.async("arraybuffer");
+            const blob = new Blob([buffer]);
+            await putFile(id, new File([blob], doc.filename));
+          }),
+        );
+
         set({
           annotations: parsed.annotations,
           documents: parsed.documents,
@@ -182,6 +215,7 @@ export const useStore = create<AppState>()(
 
         return Object.keys(parsed.annotations).length;
       },
+
     }),
     {
       name: "ragold-store",
