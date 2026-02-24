@@ -190,8 +190,8 @@ export const DocumentManager = forwardRef<
     setUploading(true);
     try {
       await putFile(editingId, file);
-      updateDocument(editingId, { name: file.name, size: file.size });
-      toast.success(t("documentManager.reUploadSuccess"));
+      updateDocument(editingId, { name: file.name, size: file.size, notes });
+      toast.success(t("documentManager.saved"));
       setEditingId(null);
     } catch (err) {
       toast.error(
@@ -215,6 +215,7 @@ export const DocumentManager = forwardRef<
       deleteDocument(id);
       deleteFile(id).catch(() => {});
       if (editingId === id) setEditingId(null);
+      toast.success(t("documentManager.deleteSuccess"));
     });
   };
 
@@ -294,7 +295,7 @@ export const DocumentManager = forwardRef<
                   onClick={() => {
                     updateDocument(editingId, { ...editingDoc, notes });
                     dirtyRef.current = false;
-                    toast.success(t("documentManager.notesSaved"));
+                    toast.success(t("documentManager.saved"));
                     setEditingId(null);
                   }}
                 >

@@ -28,7 +28,9 @@ export const de: TranslationKeys = {
     importSuccess: "Import abgeschlossen. {{count}} Annotation(en) geladen.",
     importEmpty: "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
     importError: "Import fehlgeschlagen: {{message}}",
+    exportSuccess: "Export abgeschlossen.",
     exportError: "Export fehlgeschlagen: {{message}}",
+    resetSuccess: "App zurückgesetzt.",
   },
   metadata: {
     author: "Autor",
@@ -118,6 +120,9 @@ export const de: TranslationKeys = {
     relevantChunks: "Relevante Dokumentausschnitte ({{count}})",
     distractingChunks: "Ablenkende Dokumentausschnitte ({{count}})",
     listNotes: "Anmerkungen",
+    createSuccess: "Annotation erstellt.",
+    updateSuccess: "Annotation aktualisiert.",
+    deleteSuccess: "Annotation gelöscht.",
   },
   errorBoundary: {
     title: "Etwas ist schiefgelaufen",
@@ -147,9 +152,9 @@ export const de: TranslationKeys = {
     fileTooLarge: "\"{{name}}\" überschreitet das Limit von {{max}} MB.",
     uploadError: "Fehler beim Speichern von \"{{name}}\": {{message}}",
     uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
-    reUploadSuccess: "Dokument erfolgreich ersetzt.",
+    saved: "Dokument gespeichert.",
+    deleteSuccess: "Dokument gelöscht.",
     notes: "Anmerkungen (optional)",
     notesPlaceholder: "Optionale Anmerkungen zu diesem Dokument...",
-    notesSaved: "Anmerkungen gespeichert.",
   },
 };

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import {
   AnnotationForm,
   type AnnotationFormRef,
@@ -225,9 +226,11 @@ export const AnnotationManager = forwardRef<
     if (editingId) {
       store.updateAnnotation(editingId, data);
       setEditingId(null);
+      toast.success(t("annotationManager.updateSuccess"));
     } else {
       store.addAnnotation(data);
       scrollToTabs?.();
+      toast.success(t("annotationManager.createSuccess"));
     }
   };
 
@@ -246,6 +249,7 @@ export const AnnotationManager = forwardRef<
       if (editingId === id) {
         setEditingId(null);
       }
+      toast.success(t("annotationManager.deleteSuccess"));
     });
   };
 

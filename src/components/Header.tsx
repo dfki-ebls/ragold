@@ -39,7 +39,10 @@ export default function Header() {
   const isMetadataComplete = author.trim() && project.trim();
 
   const handleClear = () => {
-    confirm("reset", () => resetApp());
+    confirm("reset", () => {
+      resetApp();
+      toast.success(t("header.resetSuccess"));
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +94,7 @@ export default function Header() {
     setIsExporting(true);
     try {
       await useStore.getState().exportAnnotations();
+      toast.success(t("header.exportSuccess"));
     } catch (err) {
       toast.error(
         t("header.exportError", {

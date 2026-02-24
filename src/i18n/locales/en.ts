@@ -26,7 +26,9 @@ export const en = {
     importSuccess: "Import complete. {{count}} annotation(s) loaded.",
     importEmpty: "Import complete. The file contained no annotations.",
     importError: "Import failed: {{message}}",
+    exportSuccess: "Export complete.",
     exportError: "Export failed: {{message}}",
+    resetSuccess: "App reset.",
   },
   metadata: {
     author: "Author",
@@ -113,6 +115,9 @@ export const en = {
     relevantChunks: "Relevant Document Chunks ({{count}})",
     distractingChunks: "Distracting Document Chunks ({{count}})",
     listNotes: "Notes",
+    createSuccess: "Annotation created.",
+    updateSuccess: "Annotation updated.",
+    deleteSuccess: "Annotation deleted.",
   },
   errorBoundary: {
     title: "Something went wrong",
@@ -141,10 +146,10 @@ export const en = {
     fileTooLarge: "\"{{name}}\" exceeds the {{max}} MB size limit.",
     uploadError: "Failed to store \"{{name}}\": {{message}}",
     uploadSuccess: "{{count}} document(s) uploaded.",
-    reUploadSuccess: "Document replaced successfully.",
+    saved: "Document saved.",
+    deleteSuccess: "Document deleted.",
     notes: "Notes (optional)",
     notesPlaceholder: "Optional notes about this document...",
-    notesSaved: "Notes saved.",
   },
 };
 
