@@ -13,6 +13,7 @@ export const de: TranslationKeys = {
     add: "Hinzufügen",
     update: "Aktualisieren",
     clickAgain: "Nochmal klicken",
+    lastEdited: "Bearbeitet {{date}}",
   },
   header: {
     title: "RAGold",

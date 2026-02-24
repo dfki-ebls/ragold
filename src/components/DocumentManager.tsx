@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { FileText, StickyNote, Upload } from "lucide-react";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -346,6 +347,9 @@ export const DocumentManager = forwardRef<
                       <div className="font-medium truncate">{doc.name}</div>
                       <div className="text-xs text-muted-foreground">
                         {formatFileSize(doc.size)}
+                        {doc.updatedAt && (
+                          <> · {t("common.lastEdited", { date: dayjs(doc.updatedAt).format("YYYY-MM-DD HH:mm") })}</>
+                        )}
                       </div>
                       {doc.notes && (
                         <div className="text-xs text-muted-foreground truncate">

@@ -22,7 +22,7 @@ describe("chunkSchema", () => {
 describe("documentSchema", () => {
   it("fills defaults for empty object", () => {
     const result = documentSchema.parse({});
-    expect(result).toEqual({ name: "", size: 0, notes: "" });
+    expect(result).toEqual({ name: "", size: 0, notes: "", createdAt: "", updatedAt: "" });
   });
 
   it("preserves unknown fields", () => {
@@ -45,6 +45,8 @@ describe("annotationSchema", () => {
       distractingChunks: [],
       response: "",
       notes: "",
+      createdAt: "",
+      updatedAt: "",
     });
   });
 

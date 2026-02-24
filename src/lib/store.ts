@@ -50,20 +50,25 @@ export const useStore = create<AppState>()(
 
       addAnnotation: (data) => {
         const id = uuidv1();
+        const now = dayjs().toISOString();
         set((state) => ({
-          annotations: { ...state.annotations, [id]: data },
+          annotations: {
+            ...state.annotations,
+            [id]: { ...data, createdAt: now, updatedAt: now },
+          },
         }));
         return id;
       },
 
       updateAnnotation: (id, data) => {
+        const now = dayjs().toISOString();
         set((state) => {
           const existing = state.annotations[id];
           if (!existing) return state;
           return {
             annotations: {
               ...state.annotations,
-              [id]: { ...existing, ...data },
+              [id]: { ...existing, ...data, updatedAt: now },
             },
           };
         });
@@ -77,19 +82,24 @@ export const useStore = create<AppState>()(
       },
 
       addDocument: (id, data) => {
+        const now = dayjs().toISOString();
         set((state) => ({
-          documents: { ...state.documents, [id]: data },
+          documents: {
+            ...state.documents,
+            [id]: { ...data, createdAt: now, updatedAt: now },
+          },
         }));
       },
 
       updateDocument: (id, data) => {
+        const now = dayjs().toISOString();
         set((state) => {
           const existing = state.documents[id];
           if (!existing) return state;
           return {
             documents: {
               ...state.documents,
-              [id]: { ...existing, ...data },
+              [id]: { ...existing, ...data, updatedAt: now },
             },
           };
         });

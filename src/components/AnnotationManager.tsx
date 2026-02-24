@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {
   CheckCircle,
   ChevronDown,
@@ -104,6 +105,9 @@ function AnnotationItem({
             <XCircle className="w-3.5 h-3.5" />
             {distractingCount}
           </span>
+          {annotation.updatedAt && (
+            <span>{t("common.lastEdited", { date: dayjs(annotation.updatedAt).format("YYYY-MM-DD HH:mm") })}</span>
+          )}
         </div>
 
         <Button

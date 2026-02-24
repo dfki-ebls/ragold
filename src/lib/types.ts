@@ -28,6 +28,8 @@ export const documentSchema = z.looseObject({
   name: z.string().default(""),
   size: z.number().default(0),
   notes: z.string().default(""),
+  createdAt: z.string().default(""),
+  updatedAt: z.string().default(""),
 });
 
 export const annotationSchema = z.looseObject({
@@ -37,6 +39,8 @@ export const annotationSchema = z.looseObject({
   distractingChunks: z.array(chunkSchema).default([]),
   response: z.string().default(""),
   notes: z.string().default(""),
+  createdAt: z.string().default(""),
+  updatedAt: z.string().default(""),
 });
 
 // --- Language schema ---

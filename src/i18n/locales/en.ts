@@ -11,6 +11,7 @@ export const en = {
     add: "Add",
     update: "Update",
     clickAgain: "Click again",
+    lastEdited: "Edited {{date}}",
   },
   header: {
     title: "RAGold",
