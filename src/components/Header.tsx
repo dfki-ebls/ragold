@@ -145,7 +145,7 @@ export default function Header() {
               }
             >
               <Download className="w-4 h-4 mr-2" />
-              {t("common.export")} ({annotationCount})
+              {t("common.export")}
             </Button>
             <Button
               variant={isConfirming("reset") ? "destructive" : "ghost"}
