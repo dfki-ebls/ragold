@@ -5,7 +5,7 @@ import {
   ChevronUp,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AnnotationForm } from "@/components/AnnotationForm";
@@ -214,13 +214,14 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
   const { isConfirming, confirm } = useConfirmAction();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
-  const [scrollTrigger, setScrollTrigger] = useState(0);
+  const scrollPendingRef = useRef(false);
 
   useEffect(() => {
-    if (scrollTrigger > 0) {
+    if (scrollPendingRef.current) {
+      scrollPendingRef.current = false;
       scrollToTabs?.();
     }
-  }, [scrollTrigger, scrollToTabs]);
+  });
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
   const entries = Object.entries(annotations);
@@ -233,7 +234,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       toast.success(t("annotationManager.updateSuccess"));
     } else {
       store.addAnnotation(data);
-      setScrollTrigger((n) => n + 1);
+      scrollPendingRef.current = true;
       toast.success(t("annotationManager.createSuccess"));
     }
   };
@@ -248,7 +249,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       return;
     }
     setEditingId(id);
-    setScrollTrigger((n) => n + 1);
+    scrollPendingRef.current = true;
   };
 
   const handleDelete = (id: string) => {
@@ -316,7 +317,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
               onClick={() => {
                 setEditingId(pendingEditId);
                 setPendingEditId(null);
-                setScrollTrigger((n) => n + 1);
+                scrollPendingRef.current = true;
               }}
             >
               {t("common.confirm")}
