@@ -65,7 +65,7 @@ describe("annotationDataSchema", () => {
     expect(result.version).toBe(SCHEMA_VERSION);
     expect(result.author).toBe("");
     expect(result.project).toBe("");
-    expect(result.description).toBe("");
+    expect(result.notes).toBe("");
     expect(result.language).toBe("en");
     expect(result.createdAt).toBe("");
     expect(result.updatedAt).toBe("");
