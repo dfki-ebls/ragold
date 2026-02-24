@@ -100,12 +100,10 @@ function AnnotationItem({
             <CheckCircle className="w-3.5 h-3.5" />
             {annotation.relevantChunks.length}
           </span>
-          {distractingCount > 0 && (
-            <span className="flex items-center gap-1 text-red-600">
-              <XCircle className="w-3.5 h-3.5" />
-              {distractingCount}
-            </span>
-          )}
+          <span className="flex items-center gap-1 text-red-600">
+            <XCircle className="w-3.5 h-3.5" />
+            {distractingCount}
+          </span>
         </div>
 
         <Button
@@ -140,45 +138,46 @@ function AnnotationItem({
               </div>
             </div>
 
-            <div>
-              <h4 className="text-sm font-medium mb-1">
-                {t("annotationManager.relevantChunks", {
-                  count: annotation.relevantChunks.length,
-                })}
-              </h4>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {annotation.relevantChunks.map((chunk, i) => (
-                  <ChunkPreview
-                    key={i}
-                    chunk={chunk}
-                    index={i}
-                    documents={documents}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {annotation.distractingChunks &&
-              annotation.distractingChunks.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium mb-1">
-                    {t("annotationManager.distractingChunks", {
-                      count: annotation.distractingChunks.length,
-                    })}
-                  </h4>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {annotation.distractingChunks.map((chunk, i) => (
-                      <ChunkPreview
-                        key={i}
-                        chunk={chunk}
-                        index={i}
-                        documents={documents}
-                        className="bg-destructive/10"
-                      />
-                    ))}
-                  </div>
+            {annotation.relevantChunks.length > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">
+                  {t("annotationManager.relevantChunks", {
+                    count: annotation.relevantChunks.length,
+                  })}
+                </h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {annotation.relevantChunks.map((chunk, i) => (
+                    <ChunkPreview
+                      key={i}
+                      chunk={chunk}
+                      index={i}
+                      documents={documents}
+                    />
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
+
+            {distractingCount > 0 && (
+              <div>
+                <h4 className="text-sm font-medium mb-1">
+                  {t("annotationManager.distractingChunks", {
+                    count: distractingCount,
+                  })}
+                </h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {annotation.distractingChunks!.map((chunk, i) => (
+                    <ChunkPreview
+                      key={i}
+                      chunk={chunk}
+                      index={i}
+                      documents={documents}
+                      className="bg-destructive/10"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {annotation.notes && (
               <div>
