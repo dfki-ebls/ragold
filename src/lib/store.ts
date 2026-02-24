@@ -27,7 +27,7 @@ interface AppState extends AnnotationData {
 
   setAuthor: (author: string) => void;
   setProject: (project: string) => void;
-  setDescription: (description: string) => void;
+  setNotes: (notes: string) => void;
   setLanguage: (language: SupportedLanguage) => void;
 
   exportAnnotations: () => Promise<void>;
@@ -104,7 +104,7 @@ export const useStore = create<AppState>()(
 
       setAuthor: (author) => set({ author }),
       setProject: (project) => set({ project }),
-      setDescription: (description) => set({ description }),
+      setNotes: (notes) => set({ notes }),
       setLanguage: (language) => {
         i18n.changeLanguage(language);
         set({ language });
@@ -116,7 +116,7 @@ export const useStore = create<AppState>()(
           documents,
           author,
           project,
-          description,
+          notes,
           language,
           createdAt,
         } = get();
@@ -127,7 +127,7 @@ export const useStore = create<AppState>()(
           version: SCHEMA_VERSION,
           author,
           project,
-          description,
+          notes,
           language,
           createdAt,
           updatedAt: now.toISOString(),
@@ -212,7 +212,7 @@ export const useStore = create<AppState>()(
           updatedAt: dayjs().toISOString(),
           author: parsed.author,
           project: parsed.project,
-          description: parsed.description,
+          notes: parsed.notes,
           language: importedLanguage,
         });
 
@@ -227,7 +227,7 @@ export const useStore = create<AppState>()(
         version: SCHEMA_VERSION,
         author: state.author,
         project: state.project,
-        description: state.description,
+        notes: state.notes,
         language: state.language,
         createdAt: state.createdAt,
         updatedAt: state.updatedAt,

@@ -51,7 +51,7 @@ export const annotationDataSchema = z.looseObject({
   version: z.number().default(SCHEMA_VERSION),
   author: z.string().default(""),
   project: z.string().default(""),
-  description: z.string().default(""),
+  notes: z.string().default(""),
   language: languageSchema,
   createdAt: z.string().default(""),
   updatedAt: z.string().default(""),

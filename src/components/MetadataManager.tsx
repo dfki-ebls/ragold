@@ -1,15 +1,16 @@
-import { AlignLeft, Folder, User } from "lucide-react";
+import { Folder, StickyNote, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/store";
 
 export function MetadataManager() {
   const { t } = useTranslation();
   const author = useStore((s) => s.author);
   const project = useStore((s) => s.project);
-  const description = useStore((s) => s.description);
+  const notes = useStore((s) => s.notes);
 
   return (
     <Card className="mb-4">
@@ -45,22 +46,20 @@ export function MetadataManager() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="description" className="flex items-center gap-2">
-            <AlignLeft className="w-4 h-4" />
-            {t("metadata.datasetDescription")}
+          <Label htmlFor="notes" className="flex items-center gap-2">
+            <StickyNote className="w-4 h-4" />
+            {t("metadata.notes")}
           </Label>
-          <Input
-            id="description"
-            value={description}
+          <Textarea
+            id="notes"
+            value={notes}
             onChange={(e) =>
-              useStore.getState().setDescription(e.target.value)
+              useStore.getState().setNotes(e.target.value)
             }
-            placeholder={t("metadata.datasetDescriptionPlaceholder")}
+            placeholder={t("metadata.notesPlaceholder")}
+            rows={3}
           />
         </div>
-        <p className="text-sm text-muted-foreground mt-4">
-          {t("metadata.metadataInfo")}
-        </p>
       </CardContent>
     </Card>
   );
