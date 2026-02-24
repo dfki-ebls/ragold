@@ -12,10 +12,10 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from "react";
 import { FieldError } from "@/components/FieldError";
-import { useFormChangeTracking } from "@/lib/useFormChangeTracking";
 import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
 import { ChunksInput } from "@/components/ChunksInput";
@@ -67,12 +67,12 @@ export const AnnotationForm = forwardRef<
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const { errors, validate, clearErrors } =
     useFormErrors<keyof Annotation>();
-  const { hasUnsavedChanges, resetTracking } = useFormChangeTracking(
-    formData,
-    emptyFormData,
-  );
+  const savedDataRef = useRef<Annotation>(emptyFormData);
 
-  useImperativeHandle(ref, () => ({ hasUnsavedChanges }));
+  useImperativeHandle(ref, () => ({
+    hasUnsavedChanges: () =>
+      JSON.stringify(formData) !== JSON.stringify(savedDataRef.current),
+  }));
 
   useEffect(() => {
     const newFormData = annotation
@@ -92,9 +92,9 @@ export const AnnotationForm = forwardRef<
         }
       : emptyFormData;
     setFormData(newFormData);
-    resetTracking(newFormData);
+    savedDataRef.current = newFormData;
     clearErrors();
-  }, [annotation, resetTracking, clearErrors]);
+  }, [annotation, clearErrors]);
 
   const isUnanswerable = formData.queryType === "unanswerable";
 
@@ -127,6 +127,8 @@ export const AnnotationForm = forwardRef<
       onSubmit(cleanedData);
       if (!annotation) {
         setFormData(emptyFormData);
+        savedDataRef.current = emptyFormData;
+        clearErrors();
       }
     }
   };
