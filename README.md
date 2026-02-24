@@ -7,9 +7,10 @@ RAGold helps annotators create query-response pairs with relevant and distractin
 
 - Create and manage annotations with queries, responses, and associated document chunks.
 - Classify queries by type: single-fact, summary, reasoning, or unanswerable.
-- Organize source documents and link chunks to specific documents.
-- Export and import annotation datasets as JSON.
-- All data is stored locally in the browser via localStorage.
+- Upload source documents (any file type, max 10 MB each) with drag-and-drop and bulk upload support.
+- Link document chunks to specific uploaded documents.
+- Export and import annotation datasets as zip archives containing both annotations and document files.
+- Annotation metadata is stored in localStorage, document files in IndexedDB.
 - Available in English and German.
 
 ## Environment Variables
@@ -20,11 +21,21 @@ RAGold helps annotators create query-response pairs with relevant and distractin
 
 ## Data Format
 
-Annotation datasets are stored as JSON with the following structure:
+Annotation datasets are exported as zip archives with the following structure:
+
+```
+ragold-<timestamp>.zip
+├── annotations.json
+└── files/
+    └── <uuid>/
+        └── <filename>
+```
+
+The `annotations.json` file contains:
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "author": "",
   "project": "",
   "description": "",
@@ -43,8 +54,8 @@ Annotation datasets are stored as JSON with the following structure:
   },
   "documents": {
     "<uuid>": {
-      "filename": "",
-      "description": ""
+      "name": "",
+      "size": 0
     }
   }
 }
