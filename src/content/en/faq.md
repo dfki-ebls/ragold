@@ -16,6 +16,7 @@ Go to the **Documents** tab to upload your reference documents.
 You can drag and drop files or click to select them — bulk uploads are supported.
 Any file type is accepted, with a maximum size of 10 MB per file.
 Each uploaded document gets a unique ID so that chunks can reference it.
+You can optionally add **Notes** to a document by clicking **Edit** in the document library.
 
 ### Step 3: Create an Annotation
 

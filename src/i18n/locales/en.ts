@@ -141,6 +141,9 @@ export const en = {
     uploadError: "Failed to store \"{{name}}\": {{message}}",
     uploadSuccess: "{{count}} document(s) uploaded.",
     reUploadSuccess: "Document replaced successfully.",
+    notes: "Notes (optional)",
+    notesPlaceholder: "Optional notes about this document...",
+    notesSaved: "Notes saved.",
   },
 };
 

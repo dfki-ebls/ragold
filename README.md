@@ -7,7 +7,7 @@ RAGold helps annotators create query-response pairs with relevant and distractin
 
 - Create and manage annotations with queries, responses, and associated document chunks.
 - Classify queries by type: single-fact, summary, reasoning, or unanswerable.
-- Upload source documents (any file type, max 10 MB each) with drag-and-drop and bulk upload support.
+- Upload source documents (any file type, max 10 MB each) with drag-and-drop and bulk upload support, and add optional notes.
 - Link document chunks to specific uploaded documents.
 - Export and import annotation datasets as zip archives containing both annotations and document files.
 - Annotation metadata is stored in localStorage, document files in IndexedDB.
@@ -55,7 +55,8 @@ The `annotations.json` file contains:
   "documents": {
     "<uuid>": {
       "name": "",
-      "size": 0
+      "size": 0,
+      "notes": ""
     }
   }
 }

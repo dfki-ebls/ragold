@@ -1,5 +1,5 @@
-import { FileText, Upload } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { FileText, StickyNote, Upload } from "lucide-react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { v1 as uuidv1 } from "uuid";
@@ -7,6 +7,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { ListItem } from "@/components/ListItem";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { deleteFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
@@ -104,10 +106,19 @@ export const DocumentManager = forwardRef<
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [notes, setNotes] = useState("");
+  const dirtyRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reUploadInputRef = useRef<HTMLInputElement>(null);
 
-  useImperativeHandle(ref, () => ({ hasUnsavedChanges: () => false }));
+  useEffect(() => {
+    setNotes(editingId ? (documents[editingId]?.notes ?? "") : "");
+    dirtyRef.current = false;
+  }, [editingId, documents]);
+
+  useImperativeHandle(ref, () => ({
+    hasUnsavedChanges: () => dirtyRef.current,
+  }));
 
   const documentList = Object.entries(documents);
   const editingDoc = editingId ? documents[editingId] : null;
@@ -252,6 +263,22 @@ export const DocumentManager = forwardRef<
                 {t("documentManager.currentFile")}:{" "}
                 <strong>{editingDoc.name}</strong>
               </p>
+              <div className="space-y-2">
+                <Label htmlFor="doc-notes" className="flex items-center gap-2">
+                  <StickyNote className="w-4 h-4" />
+                  {t("documentManager.notes")}
+                </Label>
+                <Textarea
+                  id="doc-notes"
+                  value={notes}
+                  onChange={(e) => {
+                    setNotes(e.target.value);
+                    dirtyRef.current = true;
+                  }}
+                  placeholder={t("documentManager.notesPlaceholder")}
+                  rows={3}
+                />
+              </div>
               <DropZone
                 inputRef={reUploadInputRef}
                 onChange={handleReUploadInputChange}
@@ -261,9 +288,21 @@ export const DocumentManager = forwardRef<
                 onDrop={handleDrop}
                 disabled={uploading}
               />
-              <Button variant="outline" onClick={handleCancelEdit}>
-                {t("common.cancel")}
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  onClick={() => {
+                    updateDocument(editingId, { ...editingDoc, notes });
+                    dirtyRef.current = false;
+                    toast.success(t("documentManager.notesSaved"));
+                    setEditingId(null);
+                  }}
+                >
+                  {t("common.save")}
+                </Button>
+                <Button variant="outline" onClick={handleCancelEdit}>
+                  {t("common.cancel")}
+                </Button>
+              </div>
             </div>
           ) : (
             <DropZone
@@ -308,6 +347,11 @@ export const DocumentManager = forwardRef<
                       <div className="text-xs text-muted-foreground">
                         {formatFileSize(doc.size)}
                       </div>
+                      {doc.notes && (
+                        <div className="text-xs text-muted-foreground truncate">
+                          {doc.notes}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </ListItem>

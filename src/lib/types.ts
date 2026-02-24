@@ -27,6 +27,7 @@ export const chunkSchema = z.looseObject({
 export const documentSchema = z.looseObject({
   name: z.string().default(""),
   size: z.number().default(0),
+  notes: z.string().default(""),
 });
 
 export const annotationSchema = z.looseObject({

@@ -22,7 +22,7 @@ describe("chunkSchema", () => {
 describe("documentSchema", () => {
   it("fills defaults for empty object", () => {
     const result = documentSchema.parse({});
-    expect(result).toEqual({ name: "", size: 0 });
+    expect(result).toEqual({ name: "", size: 0, notes: "" });
   });
 
   it("preserves unknown fields", () => {

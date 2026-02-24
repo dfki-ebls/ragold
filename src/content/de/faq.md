@@ -16,6 +16,7 @@ Gehen Sie zum Tab **Dokumente**, um Ihre Referenzdokumente hochzuladen.
 Sie können Dateien per Drag-and-Drop ablegen oder klicken, um sie auszuwählen — Mehrfach-Uploads werden unterstützt.
 Jeder Dateityp wird akzeptiert, mit einer maximalen Größe von 10 MB pro Datei.
 Jedes hochgeladene Dokument erhält eine eindeutige ID, damit Textpassagen darauf verweisen können.
+Sie können optional **Anmerkungen** zu einem Dokument hinzufügen, indem Sie in der Dokumentbibliothek auf **Bearbeiten** klicken.
 
 ### Schritt 3: Annotation erstellen
 

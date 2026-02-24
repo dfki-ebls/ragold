@@ -146,5 +146,8 @@ export const de: TranslationKeys = {
     uploadError: "Fehler beim Speichern von \"{{name}}\": {{message}}",
     uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
     reUploadSuccess: "Dokument erfolgreich ersetzt.",
+    notes: "Anmerkungen (optional)",
+    notesPlaceholder: "Optionale Anmerkungen zu diesem Dokument...",
+    notesSaved: "Anmerkungen gespeichert.",
   },
 };
