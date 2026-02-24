@@ -10,12 +10,12 @@ Fill in the **Author** and **Project** fields at the top of the page.
 These metadata fields are required before you can export your annotations.
 You can also add an optional **Description** for the dataset.
 
-### Step 2: Add Documents (Optional)
+### Step 2: Upload Documents
 
-Go to the **Documents** tab to add reference documents.
-Each document has a filename and a description.
-When you later create chunks, you can link each chunk to one of these documents.
-You can skip this step and enter chunks manually if preferred.
+Go to the **Documents** tab to upload your reference documents.
+You can drag and drop files or click to select them — bulk uploads are supported.
+Any file type is accepted, with a maximum size of 10 MB per file.
+Each uploaded document gets a unique ID so that chunks can reference it.
 
 ### Step 3: Create an Annotation
 
@@ -27,8 +27,8 @@ Switch to the **Annotations** tab and fill in:
    - _Summary_: The answer requires synthesizing information from multiple parts.
    - _Reasoning_: The answer is not explicit but can be logically derived.
    - _Unanswerable_: The information is not in the provided context.
-3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question.
-4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system.
+3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question. Each chunk must be linked to an uploaded document.
+4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system. These must also be linked to a document.
 5. **Expected Answer**: Write the ideal response the system should provide.
 6. **Notes** (optional): Add any special considerations about this example.
 
@@ -38,24 +38,24 @@ For **Unanswerable** queries, relevant document chunks and the expected answer a
 
 Your annotations appear below the form in the **Annotations** tab.
 You can expand, edit, and delete annotations as needed.
-When ready, use the **Export** button in the header to download your dataset as JSON.
+When ready, use the **Export** button in the header to download your dataset as a zip archive.
 
 ## Import and Export
 
 ### Exporting Your Work
 
-The exported JSON file (`ragold-YYYYMMDD-HHMMSS.json`) contains all project metadata, annotations, and documents.
+The exported zip archive (`ragold-YYYYMMDD-HHMMSS.zip`) contains an `annotations.json` file with all project metadata and annotations, plus the uploaded document files.
 You must fill in the **Author** and **Project** fields and create at least one annotation before exporting.
 
 ### Importing Data
 
-The **Import** button loads a previously exported JSON file, replacing all current data (annotations, documents, and metadata).
+The **Import** button loads a previously exported zip archive, replacing all current data (annotations, documents, and files).
 A confirmation dialog will appear before the import proceeds.
 This action cannot be undone, so consider exporting your current data first.
 
 ### Resetting Data
 
-The **Reset** button deletes all annotations and documents.
+The **Reset** button deletes all annotations, documents, and stored files.
 Click once to see the confirmation prompt, then click again within 3 seconds to confirm.
 
 ## Tips for Good Annotations

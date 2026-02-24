@@ -10,12 +10,12 @@ Füllen Sie die Felder **Autor** und **Projekt** oben auf der Seite aus.
 Diese Metadaten sind erforderlich, bevor Sie Ihre Annotationen exportieren können.
 Optional können Sie auch eine **Beschreibung** für den Datensatz hinzufügen.
 
-### Schritt 2: Dokumente hinzufügen (optional)
+### Schritt 2: Dokumente hochladen
 
-Gehen Sie zum Tab **Dokumente**, um Referenzdokumente hinzuzufügen.
-Jedes Dokument hat einen Dateinamen und eine Beschreibung.
-Wenn Sie später Ausschnitte erstellen, können Sie jeden Ausschnitt einem dieser Dokumente zuordnen.
-Sie können diesen Schritt überspringen und Ausschnitte manuell hinzufügen.
+Gehen Sie zum Tab **Dokumente**, um Ihre Referenzdokumente hochzuladen.
+Sie können Dateien per Drag-and-Drop ablegen oder klicken, um sie auszuwählen — Mehrfach-Uploads werden unterstützt.
+Jeder Dateityp wird akzeptiert, mit einer maximalen Größe von 10 MB pro Datei.
+Jedes hochgeladene Dokument erhält eine eindeutige ID, damit Ausschnitte darauf verweisen können.
 
 ### Schritt 3: Annotation erstellen
 
@@ -27,8 +27,8 @@ Wechseln Sie zum Tab **Annotationen** und füllen Sie aus:
    - _Zusammenfassung_: Die Antwort erfordert das Zusammenfassen von Informationen aus mehreren Teilen.
    - _Schlussfolgerung_: Die Antwort ist nicht explizit, kann aber logisch abgeleitet werden.
    - _Unbeantwortbar_: Die Information ist nicht im bereitgestellten Kontext vorhanden.
-3. **Relevante Dokumentausschnitte**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten.
-4. **Ablenkende Ausschnitte** (optional): Fügen Sie Passagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden.
+3. **Relevante Dokumentausschnitte**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten. Jeder Ausschnitt muss einem hochgeladenen Dokument zugeordnet sein.
+4. **Ablenkende Ausschnitte** (optional): Fügen Sie Passagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden. Auch diese müssen einem Dokument zugeordnet sein.
 5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
 6. **Anmerkungen** (optional): Fügen Sie besondere Hinweise zu diesem Beispiel hinzu.
 
@@ -38,24 +38,24 @@ Bei **unbeantwortbaren** Anfragen sind relevante Dokumentausschnitte und die erw
 
 Ihre Annotationen erscheinen unterhalb des Formulars im Tab **Annotationen**.
 Sie können Annotationen aufklappen, bearbeiten und löschen.
-Wenn Sie fertig sind, klicken Sie auf **Export** in der Kopfzeile, um Ihren Datensatz als JSON herunterzuladen.
+Wenn Sie fertig sind, klicken Sie auf **Export** in der Kopfzeile, um Ihren Datensatz als Zip-Archiv herunterzuladen.
 
 ## Import und Export
 
 ### Arbeit exportieren
 
-Die exportierte JSON-Datei (`ragold-YYYYMMDD-HHMMSS.json`) enthält alle Projektmetadaten, Annotationen und Dokumente.
+Das exportierte Zip-Archiv (`ragold-YYYYMMDD-HHMMSS.zip`) enthält eine `annotations.json`-Datei mit allen Projektmetadaten und Annotationen sowie die hochgeladenen Dokumentdateien.
 Sie müssen die Felder **Autor** und **Projekt** ausfüllen und mindestens eine Annotation erstellen, bevor Sie exportieren können.
 
 ### Daten importieren
 
-Der **Import**-Button lädt eine zuvor exportierte JSON-Datei und ersetzt dabei alle aktuellen Daten (Annotationen, Dokumente und Metadaten).
+Der **Import**-Button lädt ein zuvor exportiertes Zip-Archiv und ersetzt dabei alle aktuellen Daten (Annotationen, Dokumente und Dateien).
 Ein Bestätigungsdialog erscheint vor dem Import.
 Diese Aktion kann nicht rückgängig gemacht werden, daher sollten Sie vorher Ihre aktuellen Daten exportieren.
 
 ### Daten zurücksetzen
 
-Der **Reset**-Button löscht alle Annotationen und Dokumente.
+Der **Reset**-Button löscht alle Annotationen, Dokumente und gespeicherten Dateien.
 Klicken Sie einmal, um die Bestätigungsaufforderung zu sehen, dann klicken Sie innerhalb von 3 Sekunden erneut zur Bestätigung.
 
 ## Tipps für gute Annotationen
