@@ -3,7 +3,7 @@ import { Download, RotateCcw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
-import { clearAllFiles } from "@/lib/fileStorage";
+import { resetApp } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
 
 function t(key: string, fallback: string): string {
@@ -78,12 +78,11 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReset = (): void => {
     if (this.state.confirmReset) {
-      clearAllFiles()
-        .catch(() => {})
-        .finally(() => {
-          localStorage.removeItem("ragold-store");
-          window.location.reload();
-        });
+      resetApp().catch(() => {
+        // Best-effort: even if IndexedDB fails, clear localStorage and reload.
+        localStorage.removeItem("ragold-store");
+        window.location.reload();
+      });
     } else {
       this.setState({ confirmReset: true });
       this.resetTimer = setTimeout(

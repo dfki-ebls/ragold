@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { SupportedLanguage } from "@/i18n";
-import { clearAllFiles } from "@/lib/fileStorage";
+import { resetApp } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 
@@ -39,11 +39,7 @@ export default function Header() {
   const isMetadataComplete = author.trim() && project.trim();
 
   const handleClear = () => {
-    confirm("reset", async () => {
-      await clearAllFiles();
-      localStorage.removeItem("ragold-store");
-      window.location.reload();
-    });
+    confirm("reset", () => resetApp());
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

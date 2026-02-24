@@ -84,8 +84,14 @@ export async function deleteFile(id: string): Promise<void> {
   await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).delete(id));
 }
 
-/** Delete the entire IndexedDB database, fully resetting file storage. */
+/** Clear all files from the object store without deleting the database. */
 export async function clearAllFiles(): Promise<void> {
+  const db = await getDb();
+  await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).clear());
+}
+
+/** Delete the entire IndexedDB database, fully resetting file storage. */
+export async function resetIndexedDb(): Promise<void> {
   if (dbPromise) {
     const db = await dbPromise;
     db.close();
@@ -97,4 +103,11 @@ export async function clearAllFiles(): Promise<void> {
     request.onerror = () => reject(request.error);
     request.onblocked = () => resolve();
   });
+}
+
+/** Clear all persisted app data (IndexedDB + localStorage) and reload. */
+export async function resetApp(): Promise<void> {
+  await resetIndexedDb();
+  localStorage.removeItem("ragold-store");
+  window.location.reload();
 }

@@ -3,7 +3,12 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
-import { clearAllFiles, getAllFiles, putBuffer, putFile } from "@/lib/fileStorage";
+import {
+  getAllFiles,
+  putBuffer,
+  putFile,
+  clearAllFiles,
+} from "@/lib/fileStorage";
 import {
   type Annotation,
   type AnnotationData,
@@ -181,10 +186,11 @@ export const useStore = create<AppState>()(
 
         const parsed = result.data;
 
-        const importedLanguage: SupportedLanguage =
-          supportedLanguages.includes(parsed.language)
-            ? parsed.language
-            : get().language;
+        const importedLanguage: SupportedLanguage = supportedLanguages.includes(
+          parsed.language,
+        )
+          ? parsed.language
+          : get().language;
 
         // Clear existing files before writing new ones
         await clearAllFiles();
@@ -214,7 +220,6 @@ export const useStore = create<AppState>()(
 
         return Object.keys(parsed.annotations).length;
       },
-
     }),
     {
       name: "ragold-store",
