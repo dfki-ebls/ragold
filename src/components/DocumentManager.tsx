@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { FileText, StickyNote, Upload } from "lucide-react";
+import { FileText, PenLine, StickyNote, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -20,10 +20,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { useConfirmAction } from "@/lib/useConfirmAction";
-import { deleteFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
+import { deleteFile, getFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn, uniqueName } from "@/lib/utils";
 
 interface DocumentManagerProps {
   scrollToTabs?: () => void;
@@ -113,11 +114,13 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reUploadInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    setName(editingId ? (documents[editingId]?.name ?? "") : "");
     setNotes(editingId ? (documents[editingId]?.notes ?? "") : "");
     setDocumentFormDirty(false);
   }, [editingId, documents, setDocumentFormDirty]);
@@ -145,12 +148,15 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
 
     setUploading(true);
     try {
+      const existingNames = Object.values(documents).map((d) => d.name);
       const results = await Promise.allSettled(
         valid.map(async (file) => {
+          const dedupName = uniqueName(file.name, existingNames);
+          existingNames.push(dedupName);
           const id = uuidv1();
           await putFile(id, file);
-          addDocument(id, { name: file.name, size: file.size });
-          return file.name;
+          addDocument(id, { name: dedupName, size: file.size });
+          return dedupName;
         }),
       );
 
@@ -194,7 +200,8 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     setUploading(true);
     try {
       await putFile(editingId, file);
-      updateDocument(editingId, { name: file.name, size: file.size, notes });
+      const dedupName = uniqueName(file.name, otherNames(editingId));
+      updateDocument(editingId, { name: dedupName, size: file.size, notes });
       toast.success(t("documentManager.saved"));
       setEditingId(null);
     } catch (err) {
@@ -228,6 +235,27 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   };
 
   const handleCancelEdit = () => setEditingId(null);
+
+  const otherNames = (excludeId: string) =>
+    Object.entries(documents)
+      .filter(([id]) => id !== excludeId)
+      .map(([, d]) => d.name);
+
+  const handleDownload = async (id: string) => {
+    const doc = documents[id];
+    if (!doc) return;
+    const blob = await getFile(id);
+    if (!blob) {
+      toast.error(t("documentManager.downloadError"));
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = doc.name;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -269,10 +297,20 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
         <CardContent>
           {editingId && editingDoc ? (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {t("documentManager.currentFile")}:{" "}
-                <strong>{editingDoc.name}</strong>
-              </p>
+              <div className="space-y-2">
+                <Label htmlFor="doc-name" className="flex items-center gap-2">
+                  <PenLine className="w-4 h-4" />
+                  {t("documentManager.name")}
+                </Label>
+                <Input
+                  id="doc-name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setDocumentFormDirty(true);
+                  }}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="doc-notes" className="flex items-center gap-2">
                   <StickyNote className="w-4 h-4" />
@@ -301,7 +339,8 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
               <div className="flex gap-3">
                 <Button
                   onClick={() => {
-                    updateDocument(editingId, { ...editingDoc, notes });
+                    const dedupName = uniqueName(name, otherNames(editingId));
+                    updateDocument(editingId, { ...editingDoc, name: dedupName, notes });
                     setDocumentFormDirty(false);
                     toast.success(t("documentManager.saved"));
                     setEditingId(null);
@@ -348,6 +387,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                   key={id}
                   onEdit={() => handleEdit(id)}
                   onDelete={() => handleDelete(id)}
+                  onDownload={() => handleDownload(id)}
                   deleteConfirm={isConfirming(id)}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">

@@ -50,6 +50,7 @@ export const de: TranslationKeys = {
     unsavedChangesTitle: "Ungespeicherte Änderungen",
     unsavedChanges:
       "Es gibt ungespeicherte Änderungen, die verloren gehen. Möchten Sie fortfahren?",
+    validationError: "Bitte überprüfen Sie das Formular auf Fehler.",
   },
   queryTypes: {
     fact_single: {
@@ -162,6 +163,8 @@ export const de: TranslationKeys = {
     uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
     saved: "Dokument gespeichert.",
     deleteSuccess: "Dokument gelöscht.",
+    downloadError: "Datei nicht gefunden.",
+    name: "Dateiname",
     notes: "Anmerkungen (optional)",
     notesPlaceholder: "Optionale Anmerkungen zu diesem Dokument...",
   },

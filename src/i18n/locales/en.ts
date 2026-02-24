@@ -47,6 +47,7 @@ export const en = {
   form: {
     unsavedChangesTitle: "Unsaved Changes",
     unsavedChanges: "There are unsaved changes that will be lost. Do you want to continue?",
+    validationError: "Please check the form for errors.",
   },
   queryTypes: {
     fact_single: {
@@ -156,6 +157,8 @@ export const en = {
     uploadSuccess: "{{count}} document(s) uploaded.",
     saved: "Document saved.",
     deleteSuccess: "Document deleted.",
+    downloadError: "File not found.",
+    name: "File name",
     notes: "Notes (optional)",
     notesPlaceholder: "Optional notes about this document...",
   },

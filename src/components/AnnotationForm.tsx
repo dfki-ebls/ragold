@@ -9,6 +9,7 @@ import {
   Target,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { FieldError } from "@/components/FieldError";
 import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
@@ -124,6 +125,8 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
         setAnnotationFormDirty(false);
         clearErrors();
       }
+    } else {
+      toast.error(t("form.validationError"));
     }
   };
 
