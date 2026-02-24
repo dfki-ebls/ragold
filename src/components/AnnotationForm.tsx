@@ -121,7 +121,7 @@ export const AnnotationForm = forwardRef<
       query: !formData.query.trim() ? t("annotationManager.queryError") : undefined,
       relevantChunks: validateChunks(formData.relevantChunks, true),
       distractingChunks: validateChunks(formData.distractingChunks, false),
-      response: !isUnanswerable && !formData.response.trim()
+      response: !formData.response.trim()
         ? t("annotationManager.responseError")
         : undefined,
     });
@@ -131,9 +131,11 @@ export const AnnotationForm = forwardRef<
     if (handleValidate()) {
       const cleanedData: Annotation = {
         ...formData,
-        relevantChunks: formData.relevantChunks.filter((chunk) =>
-          chunk.content.trim(),
-        ),
+        relevantChunks: isUnanswerable
+          ? []
+          : formData.relevantChunks.filter((chunk) =>
+              chunk.content.trim(),
+            ),
         distractingChunks: formData.distractingChunks.filter((chunk) =>
           chunk.content.trim(),
         ),
@@ -216,16 +218,18 @@ export const AnnotationForm = forwardRef<
             </div>
           </div>
 
-          <div className="space-y-2">
-            <ChunksInput
-              chunks={formData.relevantChunks}
-              onChange={(relevantChunks) =>
-                updateFormData({ ...formData, relevantChunks })
-              }
-              required={!isUnanswerable}
-            />
-            <FieldError message={errors.relevantChunks} />
-          </div>
+          {!isUnanswerable && (
+            <div className="space-y-2">
+              <ChunksInput
+                chunks={formData.relevantChunks}
+                onChange={(relevantChunks) =>
+                  updateFormData({ ...formData, relevantChunks })
+                }
+                required
+              />
+              <FieldError message={errors.relevantChunks} />
+            </div>
+          )}
 
           <div className="space-y-2">
             <ChunksInput
@@ -241,7 +245,7 @@ export const AnnotationForm = forwardRef<
           <div className="space-y-2">
             <Label htmlFor="response" className="flex items-center gap-2">
               <MessageSquare className="w-4 h-4" />
-              {t("annotationManager.response")} {isUnanswerable ? "(optional)" : "*"}
+              {t("annotationManager.response")} *
             </Label>
             <p className="text-sm text-muted-foreground">
               {t("annotationManager.responseDescription")}
