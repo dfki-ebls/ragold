@@ -67,11 +67,10 @@ export const AnnotationForm = forwardRef<
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const { errors, validate, clearErrors } =
     useFormErrors<keyof Annotation>();
-  const savedDataRef = useRef<Annotation>(emptyFormData);
+  const dirtyRef = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    hasUnsavedChanges: () =>
-      JSON.stringify(formData) !== JSON.stringify(savedDataRef.current),
+    hasUnsavedChanges: () => dirtyRef.current,
   }));
 
   useEffect(() => {
@@ -92,9 +91,14 @@ export const AnnotationForm = forwardRef<
         }
       : emptyFormData;
     setFormData(newFormData);
-    savedDataRef.current = newFormData;
+    dirtyRef.current = false;
     clearErrors();
   }, [annotation, clearErrors]);
+
+  const updateFormData = (next: Annotation) => {
+    setFormData(next);
+    dirtyRef.current = true;
+  };
 
   const isUnanswerable = formData.queryType === "unanswerable";
 
@@ -127,7 +131,7 @@ export const AnnotationForm = forwardRef<
       onSubmit(cleanedData);
       if (!annotation) {
         setFormData(emptyFormData);
-        savedDataRef.current = emptyFormData;
+        dirtyRef.current = false;
         clearErrors();
       }
     }
@@ -157,7 +161,7 @@ export const AnnotationForm = forwardRef<
               id="query"
               value={formData.query}
               onChange={(e) =>
-                setFormData({ ...formData, query: e.target.value })
+                updateFormData({ ...formData, query: e.target.value })
               }
               placeholder={t("annotationManager.queryPlaceholder")}
               rows={3}
@@ -181,7 +185,7 @@ export const AnnotationForm = forwardRef<
                     key={type}
                     type="button"
                     onClick={() =>
-                      setFormData({ ...formData, queryType: type })
+                      updateFormData({ ...formData, queryType: type })
                     }
                     className={`p-3 text-left border rounded-md transition-colors ${
                       formData.queryType === type
@@ -206,7 +210,7 @@ export const AnnotationForm = forwardRef<
             <ChunksInput
               chunks={formData.relevantChunks}
               onChange={(relevantChunks) =>
-                setFormData({ ...formData, relevantChunks })
+                updateFormData({ ...formData, relevantChunks })
               }
               required={!isUnanswerable}
             />
@@ -217,7 +221,7 @@ export const AnnotationForm = forwardRef<
             <ChunksInput
               chunks={formData.distractingChunks}
               onChange={(distractingChunks) =>
-                setFormData({ ...formData, distractingChunks })
+                updateFormData({ ...formData, distractingChunks })
               }
               variant="distracting"
             />
@@ -235,7 +239,7 @@ export const AnnotationForm = forwardRef<
               id="response"
               value={formData.response}
               onChange={(e) =>
-                setFormData({ ...formData, response: e.target.value })
+                updateFormData({ ...formData, response: e.target.value })
               }
               placeholder={t("annotationManager.responsePlaceholder")}
               rows={4}
@@ -255,7 +259,7 @@ export const AnnotationForm = forwardRef<
               id="notes"
               value={formData.notes}
               onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
+                updateFormData({ ...formData, notes: e.target.value })
               }
               placeholder={t("annotationManager.notesPlaceholder")}
               rows={3}
