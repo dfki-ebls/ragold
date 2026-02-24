@@ -163,6 +163,7 @@ export const de: TranslationKeys = {
     uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
     saved: "Dokument gespeichert.",
     deleteSuccess: "Dokument gelöscht.",
+    deleteBlocked: "Löschen nicht möglich: referenziert von {{count}} Annotation(en).",
     downloadError: "Datei nicht gefunden.",
     name: "Dateiname",
     notes: "Anmerkungen (optional)",

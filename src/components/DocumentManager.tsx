@@ -103,6 +103,7 @@ function DropZone({
 export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
+  const annotations = useStore((s) => s.annotations);
   const addDocument = useStore((s) => s.addDocument);
   const updateDocument = useStore((s) => s.updateDocument);
   const deleteDocument = useStore((s) => s.deleteDocument);
@@ -235,6 +236,16 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   };
 
   const handleDelete = (id: string) => {
+    const refCount = Object.values(annotations).filter((a) => {
+      const allChunks = [...a.relevantChunks, ...a.distractingChunks];
+      return allChunks.some((c) => c.documentId === id);
+    }).length;
+
+    if (refCount > 0) {
+      toast.error(t("documentManager.deleteBlocked", { count: refCount }));
+      return;
+    }
+
     confirm(id, () => {
       deleteDocument(id);
       deleteFile(id).catch(() => {});

@@ -157,6 +157,7 @@ export const en = {
     uploadSuccess: "{{count}} document(s) uploaded.",
     saved: "Document saved.",
     deleteSuccess: "Document deleted.",
+    deleteBlocked: "Cannot delete: referenced by {{count}} annotation(s).",
     downloadError: "File not found.",
     name: "File name",
     notes: "Notes (optional)",
