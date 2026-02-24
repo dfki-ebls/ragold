@@ -5,7 +5,7 @@ import {
   ChevronUp,
   XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { AnnotationForm } from "@/components/AnnotationForm";
@@ -214,6 +214,13 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
   const { isConfirming, confirm } = useConfirmAction();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
+
+  useEffect(() => {
+    if (scrollTrigger > 0) {
+      scrollToTabs?.();
+    }
+  }, [scrollTrigger, scrollToTabs]);
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
   const entries = Object.entries(annotations);
@@ -226,7 +233,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       toast.success(t("annotationManager.updateSuccess"));
     } else {
       store.addAnnotation(data);
-      scrollToTabs?.();
+      setScrollTrigger((n) => n + 1);
       toast.success(t("annotationManager.createSuccess"));
     }
   };
@@ -241,7 +248,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       return;
     }
     setEditingId(id);
-    scrollToTabs?.();
+    setScrollTrigger((n) => n + 1);
   };
 
   const handleDelete = (id: string) => {
@@ -309,7 +316,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
               onClick={() => {
                 setEditingId(pendingEditId);
                 setPendingEditId(null);
-                scrollToTabs?.();
+                setScrollTrigger((n) => n + 1);
               }}
             >
               {t("common.confirm")}

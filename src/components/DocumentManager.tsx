@@ -112,6 +112,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [scrollTrigger, setScrollTrigger] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [name, setName] = useState("");
@@ -124,6 +125,12 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     setNotes(editingId ? (documents[editingId]?.notes ?? "") : "");
     setDocumentFormDirty(false);
   }, [editingId, documents, setDocumentFormDirty]);
+
+  useEffect(() => {
+    if (scrollTrigger > 0) {
+      scrollToTabs?.();
+    }
+  }, [scrollTrigger, scrollToTabs]);
 
   const documentList = Object.entries(documents);
   const editingDoc = editingId ? documents[editingId] : null;
@@ -171,6 +178,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
         toast.success(
           t("documentManager.uploadSuccess", { count: succeeded }),
         );
+        setScrollTrigger((n) => n + 1);
       } else {
         const lines = failed.map((r, i) => {
           const idx = results.indexOf(r);
@@ -222,7 +230,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       return;
     }
     setEditingId(id);
-    scrollToTabs?.();
+    setScrollTrigger((n) => n + 1);
   };
 
   const handleDelete = (id: string) => {
@@ -433,7 +441,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
               onClick={() => {
                 setEditingId(pendingEditId);
                 setPendingEditId(null);
-                scrollToTabs?.();
+                setScrollTrigger((n) => n + 1);
               }}
             >
               {t("common.confirm")}
