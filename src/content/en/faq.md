@@ -29,7 +29,7 @@ Switch to the **Annotations** tab and fill in:
    - _Unanswerable_: The information is not in the provided context.
 3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question. Each chunk must be linked to an uploaded document.
 4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system. These must also be linked to a document.
-5. **Expected Answer**: Write the ideal response the system should provide.
+5. **Expected Answer**: Write the ideal response the system should provide. See the tips below for ideas on drafting good answers.
 6. **Notes** (optional): Add any special considerations about this example.
 
 For **Unanswerable** queries, relevant document chunks are not needed.
@@ -66,9 +66,5 @@ Click once to see the confirmation prompt, then click again within 3 seconds to 
 - For unanswerable queries, the expected answer should explain why the question cannot be answered.
 - Add distracting chunks to create challenging examples that put the system to the test.
 - Add notes when there are ambiguities or special considerations.
-
-## Using AI Tools for Inspiration
-
-You can use tools like [ChatGPT](https://chatgpt.com) to get a rough idea of what a good answer might look like (if allowed by your organization).
-Enter your user query, review the generated response, and then tailor it to your specific documents and domain knowledge.
-AI-generated answers are a starting point — always ensure the expected answer is accurate and grounded in your actual document chunks.
+- Consider using AI tools like [ChatGPT](https://chatgpt.com) to draft expected answers: enter your query, review the response, and tailor it to your documents and domain knowledge (if allowed by your organization).
+- Treat AI-generated answers as a starting point — always ensure the expected answer is accurate and grounded in your actual document chunks.

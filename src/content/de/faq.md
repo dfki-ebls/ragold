@@ -29,7 +29,7 @@ Wechseln Sie zum Tab **Annotationen** und füllen Sie aus:
    - _Unbeantwortbar_: Die Information ist nicht im bereitgestellten Kontext vorhanden.
 3. **Relevante Textpassagen**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten. Jede Textpassage muss einem hochgeladenen Dokument zugeordnet sein.
 4. **Ablenkende Textpassagen** (optional): Fügen Sie Textpassagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden. Auch diese müssen einem Dokument zugeordnet sein.
-5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
+5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte. Siehe die Tipps unten für Ideen zum Verfassen guter Antworten.
 6. **Anmerkungen** (optional): Fügen Sie besondere Hinweise zu diesem Beispiel hinzu.
 
 Bei **unbeantwortbaren** Anfragen entfallen die relevanten Textpassagen.
@@ -66,9 +66,5 @@ Klicken Sie einmal, um die Bestätigungsaufforderung zu sehen, dann klicken Sie 
 - Bei unbeantwortbaren Anfragen sollte die erwartete Antwort erklären, warum die Frage nicht beantwortet werden kann.
 - Fügen Sie ablenkende Textpassagen hinzu, um herausfordernde Beispiele zu erstellen, die das System auf die Probe stellen.
 - Fügen Sie Anmerkungen hinzu, wenn es Mehrdeutigkeiten oder besondere Überlegungen gibt.
-
-## KI-Tools zur Inspiration nutzen
-
-Sie können Tools wie [ChatGPT](https://chatgpt.com) nutzen, um eine grobe Vorstellung einer guten Antwort zu bekommen (sofern von Ihrer Organisation erlaubt).
-Geben Sie Ihre Nutzeranfrage ein, sehen Sie sich die generierte Antwort an und passen Sie diese an Ihre spezifischen Dokumente und Ihr Fachwissen an.
-KI-generierte Antworten sind ein Ausgangspunkt — stellen Sie immer sicher, dass die erwartete Antwort korrekt ist und auf Ihren tatsächlichen Textpassagen basiert.
+- Nutzen Sie KI-Tools wie [ChatGPT](https://chatgpt.com) zum Entwerfen erwarteter Antworten: Geben Sie Ihre Anfrage ein, prüfen Sie die Antwort und passen Sie diese an Ihre Dokumente und Ihr Fachwissen an (sofern von Ihrer Organisation erlaubt).
+- Behandeln Sie KI-generierte Antworten als Ausgangspunkt — stellen Sie immer sicher, dass die erwartete Antwort korrekt ist und auf Ihren tatsächlichen Textpassagen basiert.
