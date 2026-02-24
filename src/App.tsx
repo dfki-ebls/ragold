@@ -36,7 +36,9 @@ export default function App() {
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const scrollToTabs = () => {
-    tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    requestAnimationFrame(() => {
+      tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const annotationCount = Object.keys(annotations).length;
