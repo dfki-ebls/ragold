@@ -30,6 +30,11 @@ interface AppState extends AnnotationData {
   setNotes: (notes: string) => void;
   setLanguage: (language: SupportedLanguage) => void;
 
+  annotationFormDirty: boolean;
+  documentFormDirty: boolean;
+  setAnnotationFormDirty: (dirty: boolean) => void;
+  setDocumentFormDirty: (dirty: boolean) => void;
+
   exportAnnotations: () => Promise<void>;
   importAnnotations: (file: File) => Promise<number>;
 }
@@ -70,6 +75,11 @@ export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
       ...createEmptyState(),
+
+      annotationFormDirty: false,
+      documentFormDirty: false,
+      setAnnotationFormDirty: (dirty) => set({ annotationFormDirty: dirty }),
+      setDocumentFormDirty: (dirty) => set({ documentFormDirty: dirty }),
 
       addAnnotation: (data) => {
         const id = uuidv1();

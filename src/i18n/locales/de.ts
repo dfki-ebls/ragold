@@ -28,6 +28,7 @@ export const de: TranslationKeys = {
     importSuccess: "Import abgeschlossen. {{count}} Annotation(en) geladen.",
     importEmpty: "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
     importError: "Import fehlgeschlagen: {{message}}",
+    exportUnsavedWarning: "Es gibt ungespeicherte Formularänderungen, die nicht im Export enthalten sein werden.",
     exportSuccess: "Export abgeschlossen.",
     exportError: "Export fehlgeschlagen: {{message}}",
     resetSuccess: "App zurückgesetzt.",
@@ -48,7 +49,7 @@ export const de: TranslationKeys = {
   form: {
     unsavedChangesTitle: "Ungespeicherte Änderungen",
     unsavedChanges:
-      "Es gibt ungespeicherte Änderungen. Möchten Sie wirklich wechseln?",
+      "Es gibt ungespeicherte Änderungen, die verloren gehen. Möchten Sie fortfahren?",
   },
   queryTypes: {
     fact_single: {

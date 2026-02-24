@@ -91,10 +91,16 @@ export default function Header() {
       toast.warning(t("header.exportDisabledEmpty"));
       return;
     }
+    const { annotationFormDirty, documentFormDirty } = useStore.getState();
+    const hasUnsaved = annotationFormDirty || documentFormDirty;
     setIsExporting(true);
     try {
       await useStore.getState().exportAnnotations();
-      toast.success(t("header.exportSuccess"));
+      if (hasUnsaved) {
+        toast.warning(t("header.exportUnsavedWarning"));
+      } else {
+        toast.success(t("header.exportSuccess"));
+      }
     } catch (err) {
       toast.error(
         t("header.exportError", {

@@ -5,15 +5,22 @@ import {
   ChevronUp,
   XCircle,
 } from "lucide-react";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import {
-  AnnotationForm,
-  type AnnotationFormRef,
-} from "@/components/AnnotationForm";
+import { AnnotationForm } from "@/components/AnnotationForm";
 import { EmptyState } from "@/components/EmptyState";
 import { ListItem } from "@/components/ListItem";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfirmAction } from "@/lib/useConfirmAction";
@@ -28,10 +35,6 @@ import {
 
 interface AnnotationManagerProps {
   scrollToTabs?: () => void;
-}
-
-export interface AnnotationManagerRef {
-  hasUnsavedChanges: () => boolean;
 }
 
 function ChunkPreview({
@@ -203,23 +206,17 @@ function AnnotationItem({
   );
 }
 
-export const AnnotationManager = forwardRef<
-  AnnotationManagerRef,
-  AnnotationManagerProps
->(function AnnotationManager({ scrollToTabs }, ref) {
+export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
   const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
+  const annotationFormDirty = useStore((s) => s.annotationFormDirty);
   const { isConfirming, confirm } = useConfirmAction();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const formRef = useRef<AnnotationFormRef>(null);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
 
   const editingAnnotation = editingId ? annotations[editingId] : null;
   const entries = Object.entries(annotations);
-
-  useImperativeHandle(ref, () => ({
-    hasUnsavedChanges: () => formRef.current?.hasUnsavedChanges() ?? false,
-  }));
 
   const handleSubmit = (data: Annotation) => {
     const store = useStore.getState();
@@ -239,6 +236,10 @@ export const AnnotationManager = forwardRef<
   };
 
   const handleEdit = (id: string) => {
+    if (annotationFormDirty) {
+      setPendingEditId(id);
+      return;
+    }
     setEditingId(id);
     scrollToTabs?.();
   };
@@ -256,7 +257,6 @@ export const AnnotationManager = forwardRef<
   return (
     <div className="space-y-6">
       <AnnotationForm
-        ref={formRef}
         annotation={editingAnnotation ?? undefined}
         onSubmit={handleSubmit}
         onCancel={editingId ? handleCancel : undefined}
@@ -289,6 +289,34 @@ export const AnnotationManager = forwardRef<
           )}
         </CardContent>
       </Card>
+      <AlertDialog
+        open={pendingEditId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingEditId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("form.unsavedChanges")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setEditingId(pendingEditId);
+                setPendingEditId(null);
+                scrollToTabs?.();
+              }}
+            >
+              {t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
-});
+}

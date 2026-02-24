@@ -1,14 +1,8 @@
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  AnnotationManager,
-  type AnnotationManagerRef,
-} from "@/components/AnnotationManager";
-import {
-  DocumentManager,
-  type DocumentManagerRef,
-} from "@/components/DocumentManager";
+import { AnnotationManager } from "@/components/AnnotationManager";
+import { DocumentManager } from "@/components/DocumentManager";
 import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
 import { MetadataManager } from "@/components/MetadataManager";
@@ -40,9 +34,6 @@ export default function App() {
     getPendingMigrationData,
   );
   const [activeTab, setActiveTab] = useState("guide");
-  const [pendingTab, setPendingTab] = useState<string | null>(null);
-  const docFormRef = useRef<DocumentManagerRef>(null);
-  const annotationFormRef = useRef<AnnotationManagerRef>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const scrollToTabs = () => {
@@ -53,16 +44,6 @@ export default function App() {
 
   const annotationCount = Object.keys(annotations).length;
   const documentCount = Object.keys(documents).length;
-
-  const hasUnsavedChanges = () => {
-    if (activeTab === "annotations" && annotationFormRef.current?.hasUnsavedChanges()) {
-      return true;
-    }
-    if (activeTab === "documents" && docFormRef.current?.hasUnsavedChanges()) {
-      return true;
-    }
-    return false;
-  };
 
   const oldVersion =
     migrationData &&
@@ -90,25 +71,13 @@ export default function App() {
     dismissMigration();
   };
 
-  const switchTab = (value: string) => {
-    setActiveTab(value);
-  };
-
-  const handleTabChange = (value: string) => {
-    if (hasUnsavedChanges()) {
-      setPendingTab(value);
-      return;
-    }
-    switchTab(value);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="max-w-4xl mx-auto px-4 py-6">
         <MetadataManager />
 
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList ref={tabsRef} className="mb-4 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="documents">
@@ -124,11 +93,11 @@ export default function App() {
           </TabsContent>
 
           <TabsContent value="documents">
-            <DocumentManager ref={docFormRef} scrollToTabs={scrollToTabs} />
+            <DocumentManager scrollToTabs={scrollToTabs} />
           </TabsContent>
 
           <TabsContent value="annotations">
-            <AnnotationManager ref={annotationFormRef} scrollToTabs={scrollToTabs} />
+            <AnnotationManager scrollToTabs={scrollToTabs} />
           </TabsContent>
         </Tabs>
       </main>
@@ -157,33 +126,6 @@ export default function App() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog
-        open={pendingTab !== null}
-        onOpenChange={(open) => {
-          if (!open) setPendingTab(null);
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("form.unsavedChanges")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              onClick={() => {
-                if (pendingTab) switchTab(pendingTab);
-                setPendingTab(null);
-              }}
-            >
-              {t("common.confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

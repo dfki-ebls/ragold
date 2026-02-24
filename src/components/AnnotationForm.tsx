@@ -8,25 +8,14 @@ import {
   Tags,
   Target,
 } from "lucide-react";
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import { FieldError } from "@/components/FieldError";
 import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
+import { useStore } from "@/lib/store";
 import { ChunksInput } from "@/components/ChunksInput";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -50,29 +39,18 @@ interface AnnotationFormProps {
   onCancel?: () => void;
 }
 
-export interface AnnotationFormRef {
-  hasUnsavedChanges: () => boolean;
-}
-
 const emptyFormData: Annotation = {
   ...annotationSchema.parse({}),
   relevantChunks: [{ content: "" }],
   distractingChunks: [{ content: "" }],
 };
 
-export const AnnotationForm = forwardRef<
-  AnnotationFormRef,
-  AnnotationFormProps
->(function AnnotationForm({ annotation, onSubmit, onCancel }, ref) {
+export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFormProps) {
   const { t } = useTranslation();
+  const setAnnotationFormDirty = useStore((s) => s.setAnnotationFormDirty);
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
   const { errors, validate, clearErrors } =
     useFormErrors<keyof Annotation>();
-  const dirtyRef = useRef(false);
-
-  useImperativeHandle(ref, () => ({
-    hasUnsavedChanges: () => dirtyRef.current,
-  }));
 
   useEffect(() => {
     const newFormData = annotation
@@ -92,13 +70,13 @@ export const AnnotationForm = forwardRef<
         }
       : emptyFormData;
     setFormData(newFormData);
-    dirtyRef.current = false;
+    setAnnotationFormDirty(false);
     clearErrors();
-  }, [annotation, clearErrors]);
+  }, [annotation, clearErrors, setAnnotationFormDirty]);
 
   const updateFormData = (next: Annotation) => {
     setFormData(next);
-    dirtyRef.current = true;
+    setAnnotationFormDirty(true);
   };
 
   const isUnanswerable = formData.queryType === "unanswerable";
@@ -143,7 +121,7 @@ export const AnnotationForm = forwardRef<
       onSubmit(cleanedData);
       if (!annotation) {
         setFormData(emptyFormData);
-        dirtyRef.current = false;
+        setAnnotationFormDirty(false);
         clearErrors();
       }
     }
@@ -295,4 +273,4 @@ export const AnnotationForm = forwardRef<
       </CardContent>
     </Card>
   );
-});
+}

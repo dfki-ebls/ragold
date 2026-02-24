@@ -26,6 +26,7 @@ export const en = {
     importSuccess: "Import complete. {{count}} annotation(s) loaded.",
     importEmpty: "Import complete. The file contained no annotations.",
     importError: "Import failed: {{message}}",
+    exportUnsavedWarning: "There are unsaved form changes that won't be included in this export.",
     exportSuccess: "Export complete.",
     exportError: "Export failed: {{message}}",
     resetSuccess: "App reset.",
@@ -45,7 +46,7 @@ export const en = {
   },
   form: {
     unsavedChangesTitle: "Unsaved Changes",
-    unsavedChanges: "There are unsaved changes. Do you really want to switch?",
+    unsavedChanges: "There are unsaved changes that will be lost. Do you want to continue?",
   },
   queryTypes: {
     fact_single: {

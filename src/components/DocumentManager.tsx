@@ -1,11 +1,21 @@
 import dayjs from "dayjs";
 import { FileText, StickyNote, Upload } from "lucide-react";
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { v1 as uuidv1 } from "uuid";
 import { EmptyState } from "@/components/EmptyState";
 import { ListItem } from "@/components/ListItem";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -14,10 +24,6 @@ import { useConfirmAction } from "@/lib/useConfirmAction";
 import { deleteFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-
-export interface DocumentManagerRef {
-  hasUnsavedChanges: () => boolean;
-}
 
 interface DocumentManagerProps {
   scrollToTabs?: () => void;
@@ -93,33 +99,28 @@ function DropZone({
   );
 }
 
-export const DocumentManager = forwardRef<
-  DocumentManagerRef,
-  DocumentManagerProps
->(function DocumentManager({ scrollToTabs }, ref) {
+export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const addDocument = useStore((s) => s.addDocument);
   const updateDocument = useStore((s) => s.updateDocument);
   const deleteDocument = useStore((s) => s.deleteDocument);
+  const documentFormDirty = useStore((s) => s.documentFormDirty);
+  const setDocumentFormDirty = useStore((s) => s.setDocumentFormDirty);
   const { isConfirming, confirm } = useConfirmAction();
 
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [notes, setNotes] = useState("");
-  const dirtyRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reUploadInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setNotes(editingId ? (documents[editingId]?.notes ?? "") : "");
-    dirtyRef.current = false;
-  }, [editingId, documents]);
-
-  useImperativeHandle(ref, () => ({
-    hasUnsavedChanges: () => dirtyRef.current,
-  }));
+    setDocumentFormDirty(false);
+  }, [editingId, documents, setDocumentFormDirty]);
 
   const documentList = Object.entries(documents);
   const editingDoc = editingId ? documents[editingId] : null;
@@ -128,12 +129,16 @@ export const DocumentManager = forwardRef<
     const oversized = files.filter((f) => f.size > MAX_FILE_SIZE);
     const valid = files.filter((f) => f.size <= MAX_FILE_SIZE);
 
-    for (const f of oversized) {
+    if (oversized.length > 0) {
       toast.error(
-        t("documentManager.fileTooLarge", {
-          name: f.name,
-          max: MAX_FILE_SIZE_MB,
-        }),
+        oversized
+          .map((f) =>
+            t("documentManager.fileTooLarge", {
+              name: f.name,
+              max: MAX_FILE_SIZE_MB,
+            }),
+          )
+          .join("\n"),
       );
     }
     if (valid.length === 0) return;
@@ -156,20 +161,19 @@ export const DocumentManager = forwardRef<
         (r): r is PromiseRejectedResult => r.status === "rejected",
       );
 
-      if (succeeded > 0) {
+      if (failed.length === 0) {
         toast.success(
           t("documentManager.uploadSuccess", { count: succeeded }),
         );
-      }
-      for (const [i, r] of failed.entries()) {
-        const name = valid[results.indexOf(r)]?.name ?? valid[i]?.name ?? "file";
-        toast.error(
-          t("documentManager.uploadError", {
-            name,
-            message:
-              r.reason instanceof Error ? r.reason.message : "Unknown error",
-          }),
-        );
+      } else {
+        const lines = failed.map((r, i) => {
+          const idx = results.indexOf(r);
+          const name = valid[idx]?.name ?? valid[i]?.name ?? "file";
+          const message =
+            r.reason instanceof Error ? r.reason.message : "Unknown error";
+          return t("documentManager.uploadError", { name, message });
+        });
+        toast.error(lines.join("\n"));
       }
     } finally {
       setUploading(false);
@@ -206,6 +210,10 @@ export const DocumentManager = forwardRef<
   };
 
   const handleEdit = (id: string) => {
+    if (documentFormDirty) {
+      setPendingEditId(id);
+      return;
+    }
     setEditingId(id);
     scrollToTabs?.();
   };
@@ -275,7 +283,7 @@ export const DocumentManager = forwardRef<
                   value={notes}
                   onChange={(e) => {
                     setNotes(e.target.value);
-                    dirtyRef.current = true;
+                    setDocumentFormDirty(true);
                   }}
                   placeholder={t("documentManager.notesPlaceholder")}
                   rows={3}
@@ -294,7 +302,7 @@ export const DocumentManager = forwardRef<
                 <Button
                   onClick={() => {
                     updateDocument(editingId, { ...editingDoc, notes });
-                    dirtyRef.current = false;
+                    setDocumentFormDirty(false);
                     toast.success(t("documentManager.saved"));
                     setEditingId(null);
                   }}
@@ -365,6 +373,34 @@ export const DocumentManager = forwardRef<
           )}
         </CardContent>
       </Card>
+      <AlertDialog
+        open={pendingEditId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingEditId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("form.unsavedChanges")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setEditingId(pendingEditId);
+                setPendingEditId(null);
+                scrollToTabs?.();
+              }}
+            >
+              {t("common.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
-});
+}
