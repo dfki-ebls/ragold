@@ -138,7 +138,7 @@ export const useStore = create<AppState>()(
         for (const [id, blob] of files) {
           const doc = documents[id];
           if (doc) {
-            zip.file(`files/${id}/${doc.filename}`, blob);
+            zip.file(`files/${id}/${doc.name}`, blob);
           }
         }
 
@@ -192,11 +192,11 @@ export const useStore = create<AppState>()(
         // Extract and store document files from the zip
         await Promise.all(
           Object.entries(parsed.documents).map(async ([id, doc]) => {
-            const zipEntry = zip.file(`files/${id}/${doc.filename}`);
+            const zipEntry = zip.file(`files/${id}/${doc.name}`);
             if (!zipEntry) return;
             const buffer = await zipEntry.async("arraybuffer");
             const blob = new Blob([buffer]);
-            await putFile(id, new File([blob], doc.filename));
+            await putFile(id, new File([blob], doc.name));
           }),
         );
 

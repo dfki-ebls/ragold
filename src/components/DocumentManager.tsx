@@ -22,6 +22,12 @@ interface DocumentManagerProps {
 
 const MAX_FILE_SIZE_MB = MAX_FILE_SIZE / (1024 * 1024);
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 function DropZone({
   inputRef,
   multiple,
@@ -126,7 +132,7 @@ export const DocumentManager = forwardRef<
         valid.map(async (file) => {
           const id = uuidv1();
           await putFile(id, file);
-          addDocument(id, { filename: file.name });
+          addDocument(id, { name: file.name, size: file.size });
           return file.name;
         }),
       );
@@ -172,7 +178,7 @@ export const DocumentManager = forwardRef<
     setUploading(true);
     try {
       await putFile(editingId, file);
-      updateDocument(editingId, { filename: file.name });
+      updateDocument(editingId, { name: file.name, size: file.size });
       toast.success(t("documentManager.reUploadSuccess"));
       setEditingId(null);
     } catch (err) {
@@ -244,7 +250,7 @@ export const DocumentManager = forwardRef<
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 {t("documentManager.currentFile")}:{" "}
-                <strong>{editingDoc.filename}</strong>
+                <strong>{editingDoc.name}</strong>
               </p>
               <DropZone
                 inputRef={reUploadInputRef}
@@ -295,9 +301,14 @@ export const DocumentManager = forwardRef<
                   onDelete={() => handleDelete(id)}
                   deleteConfirm={isConfirming(id)}
                 >
-                  <FileText className="w-5 h-5 mt-0.5 text-muted-foreground shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{doc.filename}</div>
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{doc.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {formatFileSize(doc.size)}
+                      </div>
+                    </div>
                   </div>
                 </ListItem>
               ))}

@@ -90,7 +90,7 @@ export function ChunksInput({
                     </SelectOption>
                     {documentList.map(([id, d]) => (
                       <SelectOption key={id} value={id}>
-                        {d.filename}
+                        {d.name}
                       </SelectOption>
                     ))}
                   </>

@@ -22,12 +22,12 @@ describe("chunkSchema", () => {
 describe("documentSchema", () => {
   it("fills defaults for empty object", () => {
     const result = documentSchema.parse({});
-    expect(result).toEqual({ filename: "" });
+    expect(result).toEqual({ name: "", size: 0 });
   });
 
   it("preserves unknown fields", () => {
     const result = documentSchema.parse({
-      filename: "f.txt",
+      name: "f.txt",
       description: "d",
       tags: ["a"],
     });
@@ -93,13 +93,13 @@ describe("annotationDataSchema", () => {
         },
       },
       documents: {
-        "doc-1": { filename: "a.txt" },
+        "doc-1": { name: "a.txt" },
       },
     };
     const result = annotationDataSchema.parse(input);
     expect(result.author).toBe("Alice");
     expect(result.annotations["abc-123"].query).toBe("What is X?");
-    expect(result.documents["doc-1"].filename).toBe("a.txt");
+    expect(result.documents["doc-1"].name).toBe("a.txt");
   });
 
   it("preserves unknown top-level fields", () => {

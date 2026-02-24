@@ -51,7 +51,7 @@ function ChunkPreview({
       <div className="flex items-baseline gap-2">
         <span className="text-muted-foreground/60 shrink-0">[{index + 1}]</span>
         <span className="text-xs font-medium text-foreground/70">
-          {doc ? doc.filename : t("chunks.deletedDocument")}
+          {doc ? doc.name : t("chunks.deletedDocument")}
         </span>
       </div>
       <div className="whitespace-pre-wrap mt-1 line-clamp-3">{chunk.content}</div>
