@@ -15,7 +15,7 @@ Optional können Sie auch eine **Beschreibung** für den Datensatz hinzufügen.
 Gehen Sie zum Tab **Dokumente**, um Ihre Referenzdokumente hochzuladen.
 Sie können Dateien per Drag-and-Drop ablegen oder klicken, um sie auszuwählen — Mehrfach-Uploads werden unterstützt.
 Jeder Dateityp wird akzeptiert, mit einer maximalen Größe von 10 MB pro Datei.
-Jedes hochgeladene Dokument erhält eine eindeutige ID, damit Ausschnitte darauf verweisen können.
+Jedes hochgeladene Dokument erhält eine eindeutige ID, damit Textpassagen darauf verweisen können.
 
 ### Schritt 3: Annotation erstellen
 
@@ -27,18 +27,19 @@ Wechseln Sie zum Tab **Annotationen** und füllen Sie aus:
    - _Zusammenfassung_: Die Antwort erfordert das Zusammenfassen von Informationen aus mehreren Teilen.
    - _Schlussfolgerung_: Die Antwort ist nicht explizit, kann aber logisch abgeleitet werden.
    - _Unbeantwortbar_: Die Information ist nicht im bereitgestellten Kontext vorhanden.
-3. **Relevante Dokumentausschnitte**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten. Jeder Ausschnitt muss einem hochgeladenen Dokument zugeordnet sein.
-4. **Ablenkende Ausschnitte** (optional): Fügen Sie Passagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden. Auch diese müssen einem Dokument zugeordnet sein.
+3. **Relevante Textpassagen**: Fügen Sie Textpassagen hinzu, die die Informationen zur Beantwortung der Frage enthalten. Jede Textpassage muss einem hochgeladenen Dokument zugeordnet sein.
+4. **Ablenkende Textpassagen** (optional): Fügen Sie Textpassagen hinzu, die relevant erscheinen könnten, aber das System irreführen würden. Auch diese müssen einem Dokument zugeordnet sein.
 5. **Erwartete Antwort**: Schreiben Sie die ideale Antwort, die das System geben sollte.
 6. **Anmerkungen** (optional): Fügen Sie besondere Hinweise zu diesem Beispiel hinzu.
 
-Bei **unbeantwortbaren** Anfragen sind relevante Dokumentausschnitte und die erwartete Antwort optional.
+Bei **unbeantwortbaren** Anfragen entfallen die relevanten Textpassagen.
 
 ### Schritt 4: Überprüfen und Exportieren
 
 Ihre Annotationen erscheinen unterhalb des Formulars im Tab **Annotationen**.
 Sie können Annotationen aufklappen, bearbeiten und löschen.
 Wenn Sie fertig sind, klicken Sie auf **Export** in der Kopfzeile, um Ihren Datensatz als Zip-Archiv herunterzuladen.
+{{CONTACT_NOTE}}
 
 ## Import und Export
 
@@ -61,13 +62,13 @@ Klicken Sie einmal, um die Bestätigungsaufforderung zu sehen, dann klicken Sie 
 ## Tipps für gute Annotationen
 
 - Schreiben Sie Anfragen in natürlicher Sprache, wie echte Nutzer sie formulieren würden.
-- Fügen Sie genügend Kontext in die Ausschnitte ein, damit die Antwort tatsächlich abgeleitet werden kann.
+- Fügen Sie genügend Kontext in die Textpassagen ein, damit die Antwort tatsächlich abgeleitet werden kann.
 - Bei unbeantwortbaren Anfragen sollte die erwartete Antwort erklären, warum die Frage nicht beantwortet werden kann.
-- Fügen Sie ablenkende Ausschnitte hinzu, um herausfordernde Beispiele zu erstellen, die das System auf die Probe stellen.
+- Fügen Sie ablenkende Textpassagen hinzu, um herausfordernde Beispiele zu erstellen, die das System auf die Probe stellen.
 - Fügen Sie Anmerkungen hinzu, wenn es Mehrdeutigkeiten oder besondere Überlegungen gibt.
 
 ## KI-Tools zur Inspiration nutzen
 
 Sie können Tools wie [ChatGPT](https://chatgpt.com) nutzen, um eine grobe Vorstellung einer guten Antwort zu bekommen (sofern von Ihrer Organisation erlaubt).
 Geben Sie Ihre Nutzeranfrage ein, sehen Sie sich die generierte Antwort an und passen Sie diese an Ihre spezifischen Dokumente und Ihr Fachwissen an.
-KI-generierte Antworten sind ein Ausgangspunkt — stellen Sie immer sicher, dass die erwartete Antwort korrekt ist und auf Ihren tatsächlichen Dokumentausschnitten basiert.
+KI-generierte Antworten sind ein Ausgangspunkt — stellen Sie immer sicher, dass die erwartete Antwort korrekt ist und auf Ihren tatsächlichen Textpassagen basiert.

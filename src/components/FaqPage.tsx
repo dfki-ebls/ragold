@@ -4,14 +4,19 @@ import faqDe from "@/content/de/faq.md?raw";
 import faqEn from "@/content/en/faq.md?raw";
 import { useTranslation } from "react-i18next";
 
+const contactInfo = import.meta.env.VITE_CONTACT_INFO;
+
 const faqContent: Record<string, string> = {
   en: faqEn,
   de: faqDe,
 };
 
 export function FaqPage() {
-  const { i18n } = useTranslation();
-  const content = faqContent[i18n.language] ?? faqContent.en;
+  const { t, i18n } = useTranslation();
+  const raw = faqContent[i18n.language] ?? faqContent.en;
+  const content = contactInfo
+    ? raw.replace("{{CONTACT_NOTE}}", `${t("faq.contact")} ${contactInfo}.`)
+    : raw.replace("\n{{CONTACT_NOTE}}", "");
 
   return (
     <Card>

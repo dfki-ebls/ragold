@@ -32,13 +32,14 @@ Switch to the **Annotations** tab and fill in:
 5. **Expected Answer**: Write the ideal response the system should provide.
 6. **Notes** (optional): Add any special considerations about this example.
 
-For **Unanswerable** queries, relevant document chunks and the expected answer are optional.
+For **Unanswerable** queries, relevant document chunks are not needed.
 
 ### Step 4: Review and Export
 
 Your annotations appear below the form in the **Annotations** tab.
 You can expand, edit, and delete annotations as needed.
 When ready, use the **Export** button in the header to download your dataset as a zip archive.
+{{CONTACT_NOTE}}
 
 ## Import and Export
 

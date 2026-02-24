@@ -1,11 +1,9 @@
-import { AlignLeft, Folder, Mail, User } from "lucide-react";
+import { AlignLeft, Folder, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useStore } from "@/lib/store";
-
-const contactInfo = import.meta.env.VITE_CONTACT_INFO;
 
 export function MetadataManager() {
   const { t } = useTranslation();
@@ -61,14 +59,8 @@ export function MetadataManager() {
           />
         </div>
         <p className="text-sm text-muted-foreground mt-4">
-          {t("metadata.metadataInfo")} {t("faq.contact")}:
+          {t("metadata.metadataInfo")}
         </p>
-        {contactInfo && (
-          <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
-            <Mail className="w-4 h-4" />
-            {contactInfo}
-          </p>
-        )}
       </CardContent>
     </Card>
   );
