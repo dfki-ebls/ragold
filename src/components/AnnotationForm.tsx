@@ -32,6 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   type Annotation,
   annotationSchema,
+  type Chunk,
   KNOWN_QUERY_TYPES,
   type KnownQueryType,
 } from "@/lib/types";
@@ -102,18 +103,27 @@ export const AnnotationForm = forwardRef<
 
   const isUnanswerable = formData.queryType === "unanswerable";
 
+  const hasNoContent = (chunks: Chunk[]) =>
+    chunks.every((chunk) => !chunk.content.trim());
+
+  const hasMissingDocument = (chunks: Chunk[]) =>
+    chunks.some((chunk) => chunk.content.trim() && !chunk.documentId);
+
+  const validateChunks = (chunks: Chunk[], requireContent: boolean): string | undefined => {
+    if (isUnanswerable) return undefined;
+    if (requireContent && hasNoContent(chunks)) return t("chunks.relevantError");
+    if (hasMissingDocument(chunks)) return t("chunks.documentError");
+    return undefined;
+  };
+
   const handleValidate = (): boolean =>
     validate({
       query: !formData.query.trim() ? t("annotationManager.queryError") : undefined,
-      relevantChunks:
-        !isUnanswerable &&
-        formData.relevantChunks.every((chunk) => !chunk.content.trim())
-          ? t("chunks.relevantError")
-          : undefined,
-      response:
-        !isUnanswerable && !formData.response.trim()
-          ? t("annotationManager.responseError")
-          : undefined,
+      relevantChunks: validateChunks(formData.relevantChunks, true),
+      distractingChunks: validateChunks(formData.distractingChunks, false),
+      response: !isUnanswerable && !formData.response.trim()
+        ? t("annotationManager.responseError")
+        : undefined,
     });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -225,6 +235,7 @@ export const AnnotationForm = forwardRef<
               }
               variant="distracting"
             />
+            <FieldError message={errors.distractingChunks} />
           </div>
 
           <div className="space-y-2">

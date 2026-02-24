@@ -82,6 +82,7 @@ export const de: TranslationKeys = {
     addChunk: "Weiteren Ausschnitt hinzufügen",
     noDocuments: "Keine Dokumente vorhanden",
     selectDocument: "Dokument auswählen...",
+    documentError: "Jeder Ausschnitt mit Inhalt muss einem Dokument zugeordnet sein",
     deletedDocument: "Gelöschtes Dokument",
     addChunksHint:
       'Laden Sie Dokumente im Tab "Dokumente" hoch, um sie hier auszuwählen.',

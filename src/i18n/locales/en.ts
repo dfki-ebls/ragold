@@ -79,6 +79,7 @@ export const en = {
     addChunk: "Add another chunk",
     noDocuments: "No documents available",
     selectDocument: "Select a document...",
+    documentError: "Each chunk with content must have a document selected",
     deletedDocument: "Deleted document",
     addChunksHint: 'Upload documents in the "Documents" tab to select them here.',
   },
