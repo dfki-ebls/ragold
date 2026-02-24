@@ -3,7 +3,7 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
-import { clearAllFiles, getAllFiles, putFile } from "@/lib/fileStorage";
+import { clearAllFiles, getAllFiles, putBuffer, putFile } from "@/lib/fileStorage";
 import {
   type Annotation,
   type AnnotationData,
@@ -195,8 +195,7 @@ export const useStore = create<AppState>()(
             const zipEntry = zip.file(`files/${id}/${doc.name}`);
             if (!zipEntry) return;
             const buffer = await zipEntry.async("arraybuffer");
-            const blob = new Blob([buffer]);
-            await putFile(id, new File([blob], doc.name));
+            await putBuffer(id, buffer);
           }),
         );
 

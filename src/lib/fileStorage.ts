@@ -38,11 +38,15 @@ function wrap<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
-/** Store a file as an ArrayBuffer in IndexedDB, keyed by document UUID. */
-export async function putFile(id: string, file: File): Promise<void> {
-  const buffer = await file.arrayBuffer();
+/** Store an ArrayBuffer in IndexedDB, keyed by document UUID. */
+export async function putBuffer(id: string, buffer: ArrayBuffer): Promise<void> {
   const db = await getDb();
   await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).put(buffer, id));
+}
+
+/** Store a file as an ArrayBuffer in IndexedDB, keyed by document UUID. */
+export async function putFile(id: string, file: File): Promise<void> {
+  await putBuffer(id, await file.arrayBuffer());
 }
 
 /** Retrieve a file blob from IndexedDB by document UUID. Returns null if not found. */
