@@ -24,9 +24,7 @@ export function MetadataManager() {
             <Input
               id="author"
               value={author}
-              onChange={(e) =>
-                useStore.getState().setAuthor(e.target.value)
-              }
+              onChange={(e) => useStore.getState().setAuthor(e.target.value)}
               placeholder={t("metadata.authorPlaceholder")}
             />
           </div>
@@ -38,9 +36,7 @@ export function MetadataManager() {
             <Input
               id="project"
               value={project}
-              onChange={(e) =>
-                useStore.getState().setProject(e.target.value)
-              }
+              onChange={(e) => useStore.getState().setProject(e.target.value)}
               placeholder={t("metadata.projectPlaceholder")}
             />
           </div>
@@ -53,9 +49,7 @@ export function MetadataManager() {
           <Textarea
             id="notes"
             value={notes}
-            onChange={(e) =>
-              useStore.getState().setNotes(e.target.value)
-            }
+            onChange={(e) => useStore.getState().setNotes(e.target.value)}
             placeholder={t("metadata.notesPlaceholder")}
             rows={3}
           />

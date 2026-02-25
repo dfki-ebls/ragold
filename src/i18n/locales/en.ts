@@ -15,8 +15,7 @@ export const en = {
   },
   header: {
     title: "RAGold",
-    importTooltip:
-      "Import annotations and documents from a zip file (replaces existing data)",
+    importTooltip: "Import annotations and documents from a zip file (replaces existing data)",
     importConfirm:
       "Importing will replace all existing annotations and documents. This cannot be undone. Continue?",
     exportTooltip: "Export annotations and documents as zip",
@@ -52,8 +51,7 @@ export const en = {
   queryTypes: {
     fact_single: {
       label: "Single Fact",
-      description:
-        "Answer is present in the context as a single piece of information.",
+      description: "Answer is present in the context as a single piece of information.",
     },
     summary: {
       label: "Summary",
@@ -62,8 +60,7 @@ export const en = {
     },
     reasoning: {
       label: "Reasoning",
-      description:
-        "Answer is not explicitly in the context but can be derived through reasoning.",
+      description: "Answer is not explicitly in the context but can be derived through reasoning.",
     },
     unanswerable: {
       label: "Unanswerable",
@@ -93,15 +90,13 @@ export const en = {
     titleEdit: "Edit Annotation",
 
     query: "User Query",
-    queryDescription:
-      "Phrase the question as a user would enter it into a chat system.",
+    queryDescription: "Phrase the question as a user would enter it into a chat system.",
     queryPlaceholder: "How do I request vacation in the self-service portal?",
     queryError: "User query is required",
     queryType: "Query Type",
     queryTypeDescription: "How is the question answered by the context?",
     response: "Expected Answer",
-    responseDescription:
-      "Write the ideal answer that the chat system should provide.",
+    responseDescription: "Write the ideal answer that the chat system should provide.",
     responsePlaceholder: "Answer to the user query...",
     responseError: "Expected answer is required",
     notes: "Notes (optional)",
@@ -123,8 +118,7 @@ export const en = {
   },
   errorBoundary: {
     title: "Something went wrong",
-    description:
-      "An unexpected error occurred. You can export your data before resetting the app.",
+    description: "An unexpected error occurred. You can export your data before resetting the app.",
     exportButton: "Export Data",
     exportSuccess: "Data exported successfully.",
     exportFailed: "Export failed. No data found.",
@@ -152,8 +146,8 @@ export const en = {
     library: "Document Library ({{count}})",
     empty: "No documents yet.",
     emptyHint: "Upload documents using the area above.",
-    fileTooLarge: "\"{{name}}\" exceeds the {{max}} MB size limit.",
-    uploadError: "Failed to store \"{{name}}\": {{message}}",
+    fileTooLarge: '"{{name}}" exceeds the {{max}} MB size limit.',
+    uploadError: 'Failed to store "{{name}}": {{message}}',
     uploadSuccess: "{{count}} document(s) uploaded.",
     saved: "Document saved.",
     deleteSuccess: "Document deleted.",

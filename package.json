@@ -7,7 +7,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "biome": "biome check --write",
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
@@ -34,7 +33,6 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^25.3.0",

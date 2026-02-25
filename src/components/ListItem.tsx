@@ -10,13 +10,7 @@ interface ListItemProps {
   children: React.ReactNode;
 }
 
-export function ListItem({
-  onEdit,
-  onDelete,
-  onDownload,
-  deleteConfirm,
-  children,
-}: ListItemProps) {
+export function ListItem({ onEdit, onDelete, onDownload, deleteConfirm, children }: ListItemProps) {
   const { t } = useTranslation();
 
   return (
@@ -24,9 +18,7 @@ export function ListItem({
       {children}
       <div className="flex items-center gap-1 shrink-0">
         {deleteConfirm && (
-          <span className="text-xs text-destructive mr-2">
-            {t("common.clickAgain")}
-          </span>
+          <span className="text-xs text-destructive mr-2">{t("common.clickAgain")}</span>
         )}
         {onDownload && (
           <Button variant="ghost" size="icon-sm" onClick={onDownload}>
@@ -36,11 +28,7 @@ export function ListItem({
         <Button variant="ghost" size="icon-sm" onClick={onEdit}>
           <Pencil className="w-4 h-4" />
         </Button>
-        <Button
-          variant={deleteConfirm ? "destructive" : "ghost"}
-          size="icon-sm"
-          onClick={onDelete}
-        >
+        <Button variant={deleteConfirm ? "destructive" : "ghost"} size="icon-sm" onClick={onDelete}>
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>

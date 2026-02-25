@@ -28,7 +28,8 @@ export const de: TranslationKeys = {
     importSuccess: "Import abgeschlossen. {{count}} Annotation(en) geladen.",
     importEmpty: "Import abgeschlossen. Die Datei enthielt keine Annotationen.",
     importError: "Import fehlgeschlagen: {{message}}",
-    exportUnsavedWarning: "Es gibt ungespeicherte Formularänderungen, die nicht im Export enthalten sein werden.",
+    exportUnsavedWarning:
+      "Es gibt ungespeicherte Formularänderungen, die nicht im Export enthalten sein werden.",
     exportSuccess: "Export abgeschlossen.",
     exportError: "Export fehlgeschlagen: {{message}}",
     resetSuccess: "App zurückgesetzt.",
@@ -55,8 +56,7 @@ export const de: TranslationKeys = {
   queryTypes: {
     fact_single: {
       label: "Einzelfakt",
-      description:
-        "Antwort ist im Kontext vorhanden, eine einzelne Informationseinheit.",
+      description: "Antwort ist im Kontext vorhanden, eine einzelne Informationseinheit.",
     },
     summary: {
       label: "Zusammenfassung",
@@ -88,10 +88,8 @@ export const de: TranslationKeys = {
     selectDocument: "Dokument auswählen...",
     documentError: "Jeder Ausschnitt mit Inhalt muss einem Dokument zugeordnet sein",
     deletedDocument: "Gelöschtes Dokument",
-    selectDocumentFirst:
-      "Wählen Sie zuerst ein Dokument aus, um Ausschnitte einzugeben",
-    addChunksHint:
-      'Laden Sie Dokumente im Tab "Dokumente" hoch, um sie hier auszuwählen.',
+    selectDocumentFirst: "Wählen Sie zuerst ein Dokument aus, um Ausschnitte einzugeben",
+    addChunksHint: 'Laden Sie Dokumente im Tab "Dokumente" hoch, um sie hier auszuwählen.',
   },
   annotationManager: {
     titleNew: "Neue Annotation",
@@ -105,8 +103,7 @@ export const de: TranslationKeys = {
     queryType: "Fragetyp",
     queryTypeDescription: "Wie wird die Frage durch den Kontext beantwortet?",
     response: "Erwartete Antwort",
-    responseDescription:
-      "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
+    responseDescription: "Formulieren Sie die ideale Antwort, die das Chat-System geben sollte.",
     responsePlaceholder: "Antwort auf die Nutzeranfrage...",
     responseError: "Erwartete Antwort ist erforderlich",
     notes: "Anmerkungen (optional)",
@@ -135,8 +132,7 @@ export const de: TranslationKeys = {
     exportFailed: "Export fehlgeschlagen. Keine Daten gefunden.",
     resetButton: "App zurücksetzen",
     resetConfirm: "Zurücksetzen bestätigen",
-    resetDescription:
-      "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
+    resetDescription: "Das Zurücksetzen löscht alle gespeicherten Daten und lädt die App neu.",
   },
   schemaMigration: {
     title: "Datenaktualisierung erforderlich",
@@ -158,8 +154,8 @@ export const de: TranslationKeys = {
     library: "Dokumentbibliothek ({{count}})",
     empty: "Noch keine Dokumente vorhanden.",
     emptyHint: "Laden Sie Dokumente über den Bereich oben hoch.",
-    fileTooLarge: "\"{{name}}\" überschreitet das Limit von {{max}} MB.",
-    uploadError: "Fehler beim Speichern von \"{{name}}\": {{message}}",
+    fileTooLarge: '"{{name}}" überschreitet das Limit von {{max}} MB.',
+    uploadError: 'Fehler beim Speichern von "{{name}}": {{message}}',
     uploadSuccess: "{{count}} Dokument(e) hochgeladen.",
     saved: "Dokument gespeichert.",
     deleteSuccess: "Dokument gelöscht.",

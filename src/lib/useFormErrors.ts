@@ -7,8 +7,7 @@ export function useFormErrors<T extends string>() {
     (checks: Partial<Record<T, string | undefined | false>>): boolean => {
       const newErrors = Object.fromEntries(
         Object.entries(checks).filter(
-          (entry): entry is [string, string] =>
-            typeof entry[1] === "string" && entry[1].length > 0,
+          (entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].length > 0,
         ),
       ) as Partial<Record<T, string>>;
       setErrors(newErrors);

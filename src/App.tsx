@@ -18,11 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { clearAllFiles } from "@/lib/fileStorage";
-import {
-  clearPendingMigrationData,
-  getPendingMigrationData,
-  useStore,
-} from "@/lib/store";
+import { clearPendingMigrationData, getPendingMigrationData, useStore } from "@/lib/store";
 import { SCHEMA_VERSION } from "@/lib/types";
 
 export default function App() {
@@ -30,9 +26,7 @@ export default function App() {
   const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
 
-  const [migrationData, setMigrationData] = useState<unknown>(
-    getPendingMigrationData,
-  );
+  const [migrationData, setMigrationData] = useState<unknown>(getPendingMigrationData);
   const [activeTab, setActiveTab] = useState("guide");
   const tabsRef = useRef<HTMLDivElement>(null);
 
@@ -46,9 +40,7 @@ export default function App() {
   const documentCount = Object.keys(documents).length;
 
   const oldVersion =
-    migrationData &&
-    typeof migrationData === "object" &&
-    "version" in migrationData
+    migrationData && typeof migrationData === "object" && "version" in migrationData
       ? (migrationData as { version: number }).version
       : 0;
 
@@ -105,9 +97,7 @@ export default function App() {
       <AlertDialog open={migrationData !== null}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t("schemaMigration.title")}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{t("schemaMigration.title")}</AlertDialogTitle>
             <AlertDialogDescription>
               {t("schemaMigration.description", {
                 old: oldVersion,
@@ -125,7 +115,6 @@ export default function App() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </div>
   );
 }

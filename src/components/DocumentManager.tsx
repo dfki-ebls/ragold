@@ -77,16 +77,12 @@ function DropZone({
       onDrop={onDrop}
       className={cn(
         "flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition-colors cursor-pointer",
-        isDragging
-          ? "border-primary bg-primary/5"
-          : "border-border hover:border-primary/50",
+        isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >
       <Upload className="w-8 h-8 text-muted-foreground" />
-      <span className="text-sm font-medium">
-        {t("documentManager.dropzoneLabel")}
-      </span>
+      <span className="text-sm font-medium">{t("documentManager.dropzoneLabel")}</span>
       <span className="text-xs text-muted-foreground">{hint}</span>
       <input
         ref={inputRef}
@@ -169,24 +165,17 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
         }),
       );
 
-      const succeeded = results.filter(
-        (r) => r.status === "fulfilled",
-      ).length;
-      const failed = results.filter(
-        (r): r is PromiseRejectedResult => r.status === "rejected",
-      );
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+      const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
 
       if (failed.length === 0) {
-        toast.success(
-          t("documentManager.uploadSuccess", { count: succeeded }),
-        );
+        toast.success(t("documentManager.uploadSuccess", { count: succeeded }));
         scrollPendingRef.current = true;
       } else {
         const lines = failed.map((r, i) => {
           const idx = results.indexOf(r);
           const name = valid[idx]?.name ?? valid[i]?.name ?? "file";
-          const message =
-            r.reason instanceof Error ? r.reason.message : "Unknown error";
+          const message = r.reason instanceof Error ? r.reason.message : "Unknown error";
           return t("documentManager.uploadError", { name, message });
         });
         toast.error(lines.join("\n"));
@@ -296,9 +285,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleReUploadInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleReUploadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleReUpload(file);
     if (reUploadInputRef.current) reUploadInputRef.current.value = "";
@@ -309,9 +296,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       <Card>
         <CardHeader>
           <CardTitle>
-            {editingId
-              ? t("documentManager.titleEdit")
-              : t("documentManager.titleNew")}
+            {editingId ? t("documentManager.titleEdit") : t("documentManager.titleNew")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -390,9 +375,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>
-            {t("documentManager.library", { count: documentList.length })}
-          </CardTitle>
+          <CardTitle>{t("documentManager.library", { count: documentList.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {documentList.length === 0 ? (
@@ -417,13 +400,17 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                       <div className="text-xs text-muted-foreground">
                         {formatFileSize(doc.size)}
                         {doc.updatedAt && (
-                          <> · {t("common.lastEdited", { date: dayjs(doc.updatedAt).format("YYYY-MM-DD HH:mm") })}</>
+                          <>
+                            {" "}
+                            ·{" "}
+                            {t("common.lastEdited", {
+                              date: dayjs(doc.updatedAt).format("YYYY-MM-DD HH:mm"),
+                            })}
+                          </>
                         )}
                       </div>
                       {doc.notes && (
-                        <div className="text-xs text-muted-foreground truncate">
-                          {doc.notes}
-                        </div>
+                        <div className="text-xs text-muted-foreground truncate">{doc.notes}</div>
                       )}
                     </div>
                   </div>
@@ -442,9 +429,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("form.unsavedChanges")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("form.unsavedChanges")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>

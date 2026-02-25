@@ -3,12 +3,7 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
-import {
-  getAllFiles,
-  putBuffer,
-  putFile,
-  clearAllFiles,
-} from "@/lib/fileStorage";
+import { getAllFiles, putBuffer, putFile, clearAllFiles } from "@/lib/fileStorage";
 import {
   type Annotation,
   type AnnotationData,
@@ -154,15 +149,7 @@ export const useStore = create<AppState>()(
       },
 
       exportAnnotations: async () => {
-        const {
-          annotations,
-          documents,
-          author,
-          project,
-          notes,
-          language,
-          createdAt,
-        } = get();
+        const { annotations, documents, author, project, notes, language, createdAt } = get();
         const now = dayjs();
         const stamp = now.format("YYYYMMDD-HHmmss");
 
@@ -229,9 +216,7 @@ export const useStore = create<AppState>()(
 
         const parsed = result.data;
 
-        const importedLanguage: SupportedLanguage = supportedLanguages.includes(
-          parsed.language,
-        )
+        const importedLanguage: SupportedLanguage = supportedLanguages.includes(parsed.language)
           ? parsed.language
           : get().language;
 

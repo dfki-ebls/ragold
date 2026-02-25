@@ -48,8 +48,8 @@
       treefmt = {
         projectRootFile = "flake.nix";
         programs = {
-          prettier.enable = true;
           nixfmt.enable = true;
+          oxfmt.enable = true;
         };
       };
     };

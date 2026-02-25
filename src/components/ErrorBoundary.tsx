@@ -65,13 +65,9 @@ export class ErrorBoundary extends Component<Props, State> {
   handleExport = (): void => {
     exportData().then((ok) => {
       if (ok) {
-        toast.success(
-          t("errorBoundary.exportSuccess", "Data exported successfully."),
-        );
+        toast.success(t("errorBoundary.exportSuccess", "Data exported successfully."));
       } else {
-        toast.error(
-          t("errorBoundary.exportFailed", "Export failed. No data found."),
-        );
+        toast.error(t("errorBoundary.exportFailed", "Export failed. No data found."));
       }
     });
   };
@@ -85,10 +81,7 @@ export class ErrorBoundary extends Component<Props, State> {
       });
     } else {
       this.setState({ confirmReset: true });
-      this.resetTimer = setTimeout(
-        () => this.setState({ confirmReset: false }),
-        3000,
-      );
+      this.resetTimer = setTimeout(() => this.setState({ confirmReset: false }), 3000);
     }
   };
 

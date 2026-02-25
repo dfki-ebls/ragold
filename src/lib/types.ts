@@ -9,12 +9,7 @@ export const SCHEMA_VERSION = 2;
  * Known query types for UI rendering and form selection.
  * Based on "Know Your RAG" (https://aclanthology.org/2025.coling-industry.4/).
  */
-export const KNOWN_QUERY_TYPES = [
-  "fact_single",
-  "summary",
-  "reasoning",
-  "unanswerable",
-] as const;
+export const KNOWN_QUERY_TYPES = ["fact_single", "summary", "reasoning", "unanswerable"] as const;
 export type KnownQueryType = (typeof KNOWN_QUERY_TYPES)[number];
 
 // --- Leaf schemas (looseObject preserves unknown fields) ---

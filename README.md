@@ -15,8 +15,8 @@ RAGold helps annotators create query-response pairs with relevant and distractin
 
 ## Environment Variables
 
-| Variable | Description |
-| --- | --- |
+| Variable            | Description                                       |
+| ------------------- | ------------------------------------------------- |
 | `VITE_CONTACT_INFO` | Optional contact information displayed in the UI. |
 
 ## Data Format

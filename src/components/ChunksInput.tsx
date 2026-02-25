@@ -26,18 +26,11 @@ export function ChunksInput({
   const documents = useStore((s) => s.documents);
   const documentList = Object.entries(documents);
 
-  const label =
-    variant === "relevant"
-      ? t("chunks.relevantLabel")
-      : t("chunks.distractingLabel");
+  const label = variant === "relevant" ? t("chunks.relevantLabel") : t("chunks.distractingLabel");
   const description =
-    variant === "relevant"
-      ? t("chunks.relevantDescription")
-      : t("chunks.distractingDescription");
+    variant === "relevant" ? t("chunks.relevantDescription") : t("chunks.distractingDescription");
   const placeholder =
-    variant === "relevant"
-      ? t("chunks.relevantPlaceholder")
-      : t("chunks.distractingPlaceholder");
+    variant === "relevant" ? t("chunks.relevantPlaceholder") : t("chunks.distractingPlaceholder");
 
   const addChunk = () => {
     onChange([...chunks, { content: "" }]);
@@ -80,14 +73,10 @@ export function ChunksInput({
                 className="w-fit"
               >
                 {documentList.length === 0 ? (
-                  <SelectOption value="">
-                    {t("chunks.noDocuments")}
-                  </SelectOption>
+                  <SelectOption value="">{t("chunks.noDocuments")}</SelectOption>
                 ) : (
                   <>
-                    <SelectOption value="">
-                      {t("chunks.selectDocument")}
-                    </SelectOption>
+                    <SelectOption value="">{t("chunks.selectDocument")}</SelectOption>
                     {documentList.map(([id, d]) => (
                       <SelectOption key={id} value={id}>
                         {d.name}
@@ -99,9 +88,7 @@ export function ChunksInput({
             </div>
             <Textarea
               value={chunk.content}
-              onChange={(e) =>
-                updateChunk(index, e.target.value, chunk.documentId)
-              }
+              onChange={(e) => updateChunk(index, e.target.value, chunk.documentId)}
               placeholder={
                 chunk.documentId
                   ? `${placeholder} ${index + 1}...`
@@ -124,13 +111,7 @@ export function ChunksInput({
         </div>
       ))}
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={addChunk}
-        disabled={disabled}
-      >
+      <Button type="button" variant="ghost" size="sm" onClick={addChunk} disabled={disabled}>
         <Plus className="w-4 h-4 mr-2" />
         {t("chunks.addChunk")}
       </Button>

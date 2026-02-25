@@ -1,10 +1,5 @@
 import dayjs from "dayjs";
-import {
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronUp, XCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -82,22 +77,14 @@ function AnnotationItem({
   const distractingCount = annotation.distractingChunks?.length ?? 0;
 
   return (
-    <ListItem
-      onEdit={onEdit}
-      onDelete={onDelete}
-      deleteConfirm={deleteConfirm}
-    >
+    <ListItem onEdit={onEdit} onDelete={onDelete} deleteConfirm={deleteConfirm}>
       <div className="flex-1 min-w-0">
         <div className="font-medium line-clamp-2">{annotation.query}</div>
         <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
           {annotation.queryType && (
             <span className="px-2 py-0.5 bg-muted rounded text-xs">
-              {(KNOWN_QUERY_TYPES as readonly string[]).includes(
-                annotation.queryType,
-              )
-                ? t(
-                    `queryTypes.${annotation.queryType as KnownQueryType}.label`,
-                  )
+              {(KNOWN_QUERY_TYPES as readonly string[]).includes(annotation.queryType)
+                ? t(`queryTypes.${annotation.queryType as KnownQueryType}.label`)
                 : annotation.queryType}
             </span>
           )}
@@ -110,7 +97,11 @@ function AnnotationItem({
             {distractingCount}
           </span>
           {annotation.updatedAt && (
-            <span>{t("common.lastEdited", { date: dayjs(annotation.updatedAt).format("YYYY-MM-DD HH:mm") })}</span>
+            <span>
+              {t("common.lastEdited", {
+                date: dayjs(annotation.updatedAt).format("YYYY-MM-DD HH:mm"),
+              })}
+            </span>
           )}
         </div>
 
@@ -155,12 +146,7 @@ function AnnotationItem({
                 </h4>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {annotation.relevantChunks.map((chunk, i) => (
-                    <ChunkPreview
-                      key={i}
-                      chunk={chunk}
-                      index={i}
-                      documents={documents}
-                    />
+                    <ChunkPreview key={i} chunk={chunk} index={i} documents={documents} />
                   ))}
                 </div>
               </div>
@@ -189,9 +175,7 @@ function AnnotationItem({
 
             {annotation.notes && (
               <div>
-                <h4 className="text-sm font-medium mb-1">
-                  {t("annotationManager.listNotes")}
-                </h4>
+                <h4 className="text-sm font-medium mb-1">{t("annotationManager.listNotes")}</h4>
                 <div className="max-h-40 overflow-y-auto">
                   <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                     {annotation.notes}
@@ -271,9 +255,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       />
       <Card>
         <CardHeader>
-          <CardTitle>
-            {t("annotationManager.library", { count: entries.length })}
-          </CardTitle>
+          <CardTitle>{t("annotationManager.library", { count: entries.length })}</CardTitle>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -306,9 +288,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("form.unsavedChangesTitle")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("form.unsavedChanges")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("form.unsavedChanges")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>

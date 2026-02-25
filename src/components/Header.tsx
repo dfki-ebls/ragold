@@ -128,9 +128,7 @@ export default function Header() {
               variant="ghost"
               size="sm"
               onClick={toggleLanguage}
-              title={
-                language === "de" ? "Switch to English" : "Auf Deutsch wechseln"
-              }
+              title={language === "de" ? "Switch to English" : "Auf Deutsch wechseln"}
             >
               <Globe className="w-4 h-4 mr-2" />
               {languageLabels[language]}
@@ -194,9 +192,7 @@ export default function Header() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("common.import")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("header.importConfirm")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{t("header.importConfirm")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>

@@ -50,8 +50,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
   const { t } = useTranslation();
   const setAnnotationFormDirty = useStore((s) => s.setAnnotationFormDirty);
   const [formData, setFormData] = useState<Annotation>(emptyFormData);
-  const { errors, validate, clearErrors } =
-    useFormErrors<keyof Annotation>();
+  const { errors, validate, clearErrors } = useFormErrors<keyof Annotation>();
 
   useEffect(() => {
     const newFormData = annotation
@@ -59,9 +58,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
           query: annotation.query,
           queryType: annotation.queryType ?? "fact_single",
           relevantChunks:
-            annotation.relevantChunks.length > 0
-              ? annotation.relevantChunks
-              : [{ content: "" }],
+            annotation.relevantChunks.length > 0 ? annotation.relevantChunks : [{ content: "" }],
           distractingChunks:
             annotation.distractingChunks?.length > 0
               ? annotation.distractingChunks
@@ -82,8 +79,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
 
   const isUnanswerable = formData.queryType === "unanswerable";
 
-  const hasNoContent = (chunks: Chunk[]) =>
-    chunks.every((chunk) => !chunk.content.trim());
+  const hasNoContent = (chunks: Chunk[]) => chunks.every((chunk) => !chunk.content.trim());
 
   const hasMissingDocument = (chunks: Chunk[]) =>
     chunks.some((chunk) => chunk.content.trim() && !chunk.documentId);
@@ -100,9 +96,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
       query: !formData.query.trim() ? t("annotationManager.queryError") : undefined,
       relevantChunks: validateChunks(formData.relevantChunks, true),
       distractingChunks: validateChunks(formData.distractingChunks, false),
-      response: !formData.response.trim()
-        ? t("annotationManager.responseError")
-        : undefined,
+      response: !formData.response.trim() ? t("annotationManager.responseError") : undefined,
     });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -112,12 +106,8 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
         ...formData,
         relevantChunks: isUnanswerable
           ? []
-          : formData.relevantChunks.filter((chunk) =>
-              chunk.content.trim(),
-            ),
-        distractingChunks: formData.distractingChunks.filter((chunk) =>
-          chunk.content.trim(),
-        ),
+          : formData.relevantChunks.filter((chunk) => chunk.content.trim()),
+        distractingChunks: formData.distractingChunks.filter((chunk) => chunk.content.trim()),
       };
       onSubmit(cleanedData);
       if (!annotation) {
@@ -138,7 +128,6 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
         <CardTitle>
           {isEditing ? t("annotationManager.titleEdit") : t("annotationManager.titleNew")}
         </CardTitle>
-
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -153,9 +142,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <Textarea
               id="query"
               value={formData.query}
-              onChange={(e) =>
-                updateFormData({ ...formData, query: e.target.value })
-              }
+              onChange={(e) => updateFormData({ ...formData, query: e.target.value })}
               placeholder={t("annotationManager.queryPlaceholder")}
               rows={3}
             />
@@ -177,9 +164,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
                   <button
                     key={type}
                     type="button"
-                    onClick={() =>
-                      updateFormData({ ...formData, queryType: type })
-                    }
+                    onClick={() => updateFormData({ ...formData, queryType: type })}
                     className={`p-3 text-left border rounded-md transition-colors ${
                       formData.queryType === type
                         ? "border-primary bg-primary/5"
@@ -203,9 +188,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <div className="space-y-2">
               <ChunksInput
                 chunks={formData.relevantChunks}
-                onChange={(relevantChunks) =>
-                  updateFormData({ ...formData, relevantChunks })
-                }
+                onChange={(relevantChunks) => updateFormData({ ...formData, relevantChunks })}
                 required
               />
               <FieldError message={errors.relevantChunks} />
@@ -215,9 +198,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
           <div className="space-y-2">
             <ChunksInput
               chunks={formData.distractingChunks}
-              onChange={(distractingChunks) =>
-                updateFormData({ ...formData, distractingChunks })
-              }
+              onChange={(distractingChunks) => updateFormData({ ...formData, distractingChunks })}
               variant="distracting"
             />
             <FieldError message={errors.distractingChunks} />
@@ -234,9 +215,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <Textarea
               id="response"
               value={formData.response}
-              onChange={(e) =>
-                updateFormData({ ...formData, response: e.target.value })
-              }
+              onChange={(e) => updateFormData({ ...formData, response: e.target.value })}
               placeholder={t("annotationManager.responsePlaceholder")}
               rows={4}
             />
@@ -254,18 +233,14 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) =>
-                updateFormData({ ...formData, notes: e.target.value })
-              }
+              onChange={(e) => updateFormData({ ...formData, notes: e.target.value })}
               placeholder={t("annotationManager.notesPlaceholder")}
               rows={3}
             />
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="submit">
-              {isEditing ? t("common.update") : t("common.add")}
-            </Button>
+            <Button type="submit">{isEditing ? t("common.update") : t("common.add")}</Button>
             {isEditing && onCancel && (
               <Button type="button" variant="outline" onClick={onCancel}>
                 {t("common.cancel")}
