@@ -60,15 +60,10 @@ function DropZone({
   const { t } = useTranslation();
 
   return (
-    <div
-      role="button"
-      tabIndex={disabled ? -1 : 0}
+    <button
+      type="button"
+      disabled={disabled}
       onClick={() => !disabled && inputRef.current?.click()}
-      onKeyDown={(e) => {
-        if (!disabled && (e.key === "Enter" || e.key === " ")) {
-          inputRef.current?.click();
-        }
-      }}
       onDragOver={(e) => {
         e.preventDefault();
         if (!disabled) setIsDragging(true);
@@ -92,7 +87,7 @@ function DropZone({
         onChange={onChange}
         disabled={disabled}
       />
-    </div>
+    </button>
   );
 }
 
@@ -272,22 +267,22 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       if (editingId) {
-        handleReUpload(files[0]);
+        void handleReUpload(files[0]);
       } else {
-        processFiles(files);
+        void processFiles(files);
       }
     }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
-    if (files.length > 0) processFiles(files);
+    if (files.length > 0) void processFiles(files);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleReUploadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleReUpload(file);
+    if (file) void handleReUpload(file);
     if (reUploadInputRef.current) reUploadInputRef.current.value = "";
   };
 

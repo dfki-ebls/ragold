@@ -46,7 +46,7 @@ export default function App() {
 
   const dismissMigration = () => {
     clearPendingMigrationData();
-    clearAllFiles();
+    void clearAllFiles();
     setMigrationData(null);
   };
 

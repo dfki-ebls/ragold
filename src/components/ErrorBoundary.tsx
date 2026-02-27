@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleExport = (): void => {
-    exportData().then((ok) => {
+    void exportData().then((ok) => {
       if (ok) {
         toast.success(t("errorBoundary.exportSuccess", "Data exported successfully."));
       } else {

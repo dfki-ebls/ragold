@@ -55,7 +55,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
   useEffect(() => {
     const newFormData = annotation
       ? {
-          query: annotation.query,
+          ...annotation,
           queryType: annotation.queryType ?? "fact_single",
           relevantChunks:
             annotation.relevantChunks.length > 0 ? annotation.relevantChunks : [{ content: "" }],
@@ -63,8 +63,6 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             annotation.distractingChunks?.length > 0
               ? annotation.distractingChunks
               : [{ content: "" }],
-          response: annotation.response,
-          notes: annotation.notes,
         }
       : emptyFormData;
     setFormData(newFormData);

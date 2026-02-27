@@ -3,12 +3,13 @@ import { v1 as uuidv1 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage, supportedLanguages } from "@/i18n";
-import { getAllFiles, putBuffer, putFile, clearAllFiles } from "@/lib/fileStorage";
+import { getAllFiles, putBuffer, clearAllFiles } from "@/lib/fileStorage";
 import {
   type Annotation,
   type AnnotationData,
   annotationDataSchema,
   type Document,
+  documentSchema,
   SCHEMA_VERSION,
 } from "@/lib/types";
 
@@ -16,8 +17,8 @@ interface AppState extends AnnotationData {
   addAnnotation: (data: Annotation) => string;
   updateAnnotation: (id: string, data: Annotation) => void;
   deleteAnnotation: (id: string) => void;
-  addDocument: (id: string, data: Document) => void;
-  updateDocument: (id: string, data: Document) => void;
+  addDocument: (id: string, data: Partial<Document>) => void;
+  updateDocument: (id: string, data: Partial<Document>) => void;
   deleteDocument: (id: string) => void;
 
   setAuthor: (author: string) => void;
@@ -111,11 +112,9 @@ export const useStore = create<AppState>()(
 
       addDocument: (id, data) => {
         const now = dayjs().toISOString();
+        const doc = documentSchema.parse({ ...data, createdAt: now, updatedAt: now });
         set((state) => ({
-          documents: {
-            ...state.documents,
-            [id]: { ...data, createdAt: now, updatedAt: now },
-          },
+          documents: { ...state.documents, [id]: doc },
         }));
       },
 
@@ -144,7 +143,7 @@ export const useStore = create<AppState>()(
       setProject: (project) => set({ project }),
       setNotes: (notes) => set({ notes }),
       setLanguage: (language) => {
-        i18n.changeLanguage(language);
+        void i18n.changeLanguage(language);
         set({ language });
       },
 
@@ -244,7 +243,7 @@ export const useStore = create<AppState>()(
           language: importedLanguage,
         });
 
-        i18n.changeLanguage(importedLanguage);
+        void i18n.changeLanguage(importedLanguage);
 
         return Object.keys(parsed.annotations).length;
       },
@@ -280,7 +279,7 @@ export const useStore = create<AppState>()(
       },
       onRehydrateStorage: () => (state) => {
         if (state?.language) {
-          i18n.changeLanguage(state.language);
+          void i18n.changeLanguage(state.language);
         }
       },
     },

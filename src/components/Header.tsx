@@ -40,7 +40,7 @@ export default function Header() {
 
   const handleClear = () => {
     confirm("reset", () => {
-      resetApp();
+      void resetApp();
       toast.success(t("header.resetSuccess"));
     });
   };
