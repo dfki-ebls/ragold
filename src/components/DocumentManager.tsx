@@ -60,25 +60,29 @@ function DropZone({
   const { t } = useTranslation();
 
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={() => !disabled && inputRef.current?.click()}
-      onDragOver={(e) => {
-        e.preventDefault();
-        if (!disabled) setIsDragging(true);
-      }}
-      onDragLeave={() => setIsDragging(false)}
-      onDrop={onDrop}
-      className={cn(
-        "flex flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition-colors cursor-pointer",
-        isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
-        disabled && "cursor-not-allowed opacity-50",
-      )}
-    >
-      <Upload className="w-8 h-8 text-muted-foreground" />
-      <span className="text-sm font-medium">{t("documentManager.dropzoneLabel")}</span>
-      <span className="text-xs text-muted-foreground">{hint}</span>
+    <>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && inputRef.current?.click()}
+        onDragOver={(e) => {
+          e.preventDefault();
+          if (!disabled) setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={onDrop}
+        className={cn(
+          "flex min-w-0 w-full max-w-full flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-8 text-center transition-colors cursor-pointer",
+          isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
+          disabled && "cursor-not-allowed opacity-50",
+        )}
+      >
+        <Upload className="w-8 h-8 text-muted-foreground" />
+        <span className="max-w-full text-sm font-medium break-words">
+          {t("documentManager.dropzoneLabel")}
+        </span>
+        <span className="max-w-full text-xs text-muted-foreground break-words">{hint}</span>
+      </button>
       <input
         ref={inputRef}
         type="file"
@@ -87,7 +91,7 @@ function DropZone({
         onChange={onChange}
         disabled={disabled}
       />
-    </button>
+    </>
   );
 }
 
@@ -294,7 +298,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
             {editingId ? t("documentManager.titleEdit") : t("documentManager.titleNew")}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="w-full">
           {editingId && editingDoc ? (
             <div className="space-y-4">
               <div className="space-y-2">
