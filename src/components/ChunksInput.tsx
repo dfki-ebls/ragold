@@ -2,10 +2,18 @@ import { CircleCheck, CircleX, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectOption } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/store";
 import type { Chunk } from "@/lib/types";
+
+const NO_DOCUMENT_VALUE = "__no_document__";
 
 interface ChunksInputProps {
   chunks: Chunk[];
@@ -47,7 +55,11 @@ export function ChunksInput({
   };
 
   const handleDocumentSelect = (index: number, documentId: string) => {
-    updateChunk(index, chunks[index].content, documentId || undefined);
+    updateChunk(
+      index,
+      chunks[index].content,
+      documentId === NO_DOCUMENT_VALUE ? undefined : documentId
+    );
   };
 
   const Icon = variant === "relevant" ? CircleCheck : CircleX;
@@ -68,22 +80,26 @@ export function ChunksInput({
             <div className="space-y-1">
               <Select
                 value={chunk.documentId ?? ""}
-                onChange={(e) => handleDocumentSelect(index, e.target.value)}
+                onValueChange={(documentId) => handleDocumentSelect(index, documentId)}
                 disabled={disabled || documentList.length === 0}
-                className="w-fit"
               >
-                {documentList.length === 0 ? (
-                  <SelectOption value="">{t("chunks.noDocuments")}</SelectOption>
-                ) : (
-                  <>
-                    <SelectOption value="">{t("chunks.selectDocument")}</SelectOption>
-                    {documentList.map(([id, d]) => (
-                      <SelectOption key={id} value={id}>
-                        {d.name}
-                      </SelectOption>
-                    ))}
-                  </>
-                )}
+                <SelectTrigger className="w-fit">
+                  <SelectValue
+                    placeholder={
+                      documentList.length === 0
+                        ? t("chunks.noDocuments")
+                        : t("chunks.selectDocument")
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_DOCUMENT_VALUE}>{t("chunks.selectDocument")}</SelectItem>
+                  {documentList.map(([id, d]) => (
+                    <SelectItem key={id} value={id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
             <Textarea
