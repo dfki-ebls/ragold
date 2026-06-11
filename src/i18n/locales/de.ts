@@ -122,6 +122,8 @@ export const de: TranslationKeys = {
     createSuccess: "Annotation erstellt.",
     updateSuccess: "Annotation aktualisiert.",
     deleteSuccess: "Annotation gelöscht.",
+    copySuccess: "Annotation als JSON in die Zwischenablage kopiert.",
+    copyError: "Kopieren in die Zwischenablage fehlgeschlagen.",
   },
   errorBoundary: {
     title: "Etwas ist schiefgelaufen",

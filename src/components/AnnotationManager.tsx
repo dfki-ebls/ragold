@@ -54,7 +54,7 @@ function ChunkPreview({
           {doc ? doc.name : t("chunks.deletedDocument")}
         </span>
       </div>
-      <div className="whitespace-pre-wrap mt-1 line-clamp-3">{chunk.content}</div>
+      <div className="whitespace-pre-wrap mt-1">{chunk.content}</div>
     </div>
   );
 }
@@ -76,10 +76,19 @@ function AnnotationItem({
   const [isExpanded, setIsExpanded] = useState(false);
   const distractingCount = annotation.distractingChunks?.length ?? 0;
 
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(JSON.stringify(annotation, null, 2))
+      .then(() => toast.success(t("annotationManager.copySuccess")))
+      .catch(() => toast.error(t("annotationManager.copyError")));
+  };
+
   return (
-    <ListItem onEdit={onEdit} onDelete={onDelete} deleteConfirm={deleteConfirm}>
+    <ListItem onEdit={onEdit} onDelete={onDelete} onCopy={handleCopy} deleteConfirm={deleteConfirm}>
       <div className="flex-1 min-w-0">
-        <div className="font-medium line-clamp-2">{annotation.query}</div>
+        <div className={isExpanded ? "font-medium" : "font-medium line-clamp-2"}>
+          {annotation.query}
+        </div>
         <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
           {annotation.queryType && (
             <span className="px-2 py-0.5 bg-muted rounded text-xs">

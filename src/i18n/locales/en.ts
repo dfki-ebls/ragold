@@ -115,6 +115,8 @@ export const en = {
     createSuccess: "Annotation created.",
     updateSuccess: "Annotation updated.",
     deleteSuccess: "Annotation deleted.",
+    copySuccess: "Annotation copied to clipboard as JSON.",
+    copyError: "Copying to clipboard failed.",
   },
   errorBoundary: {
     title: "Something went wrong",
