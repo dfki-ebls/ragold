@@ -18,6 +18,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { useStore } from "@/lib/store";
 import {
@@ -32,29 +40,97 @@ interface AnnotationManagerProps {
   scrollToTabs?: () => void;
 }
 
-function ChunkPreview({
+function DetailField({
+  label,
+  value,
+  rows,
+}: {
+  label: string;
+  value: string;
+  /** When set, renders a textarea with this many rows; otherwise a single-line input. */
+  rows?: number;
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      {rows ? (
+        <Textarea
+          value={value}
+          readOnly
+          rows={rows}
+          className="bg-muted/50 field-sizing-fixed overflow-y-auto"
+        />
+      ) : (
+        <Input value={value} readOnly className="bg-muted/50" />
+      )}
+    </div>
+  );
+}
+
+function ChunkField({
   chunk,
   index,
   documents,
-  className,
+  variant = "relevant",
 }: {
   chunk: Chunk;
   index: number;
   documents: Record<string, Document>;
-  className?: string;
+  variant?: "relevant" | "distracting";
 }) {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
   const doc = chunk.documentId ? documents[chunk.documentId] : undefined;
 
   return (
-    <div className={`text-sm text-muted-foreground p-2 rounded ${className ?? "bg-muted"}`}>
-      <div className="flex items-baseline gap-2">
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger className="flex items-center gap-2 w-full text-left text-sm">
+        {open ? (
+          <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />
+        )}
         <span className="text-muted-foreground/60 shrink-0">[{index + 1}]</span>
-        <span className="text-xs font-medium text-foreground/70">
+        <span className="text-xs font-medium text-foreground/70 shrink-0">
           {doc ? doc.name : t("chunks.deletedDocument")}
         </span>
-      </div>
-      <div className="whitespace-pre-wrap mt-1">{chunk.content}</div>
+        {!open && <span className="truncate text-xs text-muted-foreground">{chunk.content}</span>}
+      </CollapsibleTrigger>
+      <CollapsibleContent className="pt-1">
+        <Textarea
+          value={chunk.content}
+          readOnly
+          rows={8}
+          className={`field-sizing-fixed overflow-y-auto ${
+            variant === "distracting" ? "bg-destructive/10" : "bg-muted/50"
+          }`}
+        />
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+function ChunkSection({
+  label,
+  chunks,
+  documents,
+  variant,
+}: {
+  label: string;
+  chunks: Chunk[];
+  documents: Record<string, Document>;
+  variant?: "relevant" | "distracting";
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs font-medium text-muted-foreground">{label}</Label>
+      {chunks.length > 0 && (
+        <div className="space-y-1">
+          {chunks.map((chunk, i) => (
+            <ChunkField key={i} chunk={chunk} index={i} documents={documents} variant={variant} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -83,8 +159,47 @@ function AnnotationItem({
       .catch(() => toast.error(t("annotationManager.copyError")));
   };
 
+  const details = isExpanded ? (
+    <div className="space-y-4">
+      <DetailField label={t("annotationManager.query")} value={annotation.query} rows={2} />
+      <DetailField label={t("annotationManager.queryType")} value={annotation.queryType} />
+
+      <ChunkSection
+        label={t("annotationManager.relevantChunks", {
+          count: annotation.relevantChunks.length,
+        })}
+        chunks={annotation.relevantChunks}
+        documents={documents}
+      />
+      <ChunkSection
+        label={t("annotationManager.distractingChunks", { count: distractingCount })}
+        chunks={annotation.distractingChunks ?? []}
+        documents={documents}
+        variant="distracting"
+      />
+
+      <DetailField
+        label={t("annotationManager.expectedResponse")}
+        value={annotation.response}
+        rows={8}
+      />
+      <DetailField label={t("annotationManager.listNotes")} value={annotation.notes} rows={2} />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <DetailField label={t("annotationManager.created")} value={annotation.createdAt} />
+        <DetailField label={t("annotationManager.updated")} value={annotation.updatedAt} />
+      </div>
+    </div>
+  ) : undefined;
+
   return (
-    <ListItem onEdit={onEdit} onDelete={onDelete} onCopy={handleCopy} deleteConfirm={deleteConfirm}>
+    <ListItem
+      onEdit={onEdit}
+      onDelete={onDelete}
+      onCopy={handleCopy}
+      deleteConfirm={deleteConfirm}
+      footer={details}
+    >
       <div className="flex-1 min-w-0">
         <div className={isExpanded ? "font-medium" : "font-medium line-clamp-2"}>
           {annotation.query}
@@ -132,68 +247,6 @@ function AnnotationItem({
             </>
           )}
         </Button>
-
-        {isExpanded && (
-          <div className="mt-3 space-y-4">
-            <div>
-              <h4 className="text-sm font-medium mb-1">
-                {t("annotationManager.expectedResponse")}
-              </h4>
-              <div className="max-h-40 overflow-y-auto">
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {annotation.response}
-                </p>
-              </div>
-            </div>
-
-            {annotation.relevantChunks.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium mb-1">
-                  {t("annotationManager.relevantChunks", {
-                    count: annotation.relevantChunks.length,
-                  })}
-                </h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {annotation.relevantChunks.map((chunk, i) => (
-                    <ChunkPreview key={i} chunk={chunk} index={i} documents={documents} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {distractingCount > 0 && (
-              <div>
-                <h4 className="text-sm font-medium mb-1">
-                  {t("annotationManager.distractingChunks", {
-                    count: distractingCount,
-                  })}
-                </h4>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {annotation.distractingChunks!.map((chunk, i) => (
-                    <ChunkPreview
-                      key={i}
-                      chunk={chunk}
-                      index={i}
-                      documents={documents}
-                      className="bg-destructive/10"
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {annotation.notes && (
-              <div>
-                <h4 className="text-sm font-medium mb-1">{t("annotationManager.listNotes")}</h4>
-                <div className="max-h-40 overflow-y-auto">
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {annotation.notes}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </ListItem>
   );

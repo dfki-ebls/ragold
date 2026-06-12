@@ -9,6 +9,8 @@ interface ListItemProps {
   onCopy?: () => void;
   deleteConfirm: boolean;
   children: React.ReactNode;
+  /** Full-width content rendered below the overview row, not capped by the action buttons. */
+  footer?: React.ReactNode;
 }
 
 export function ListItem({
@@ -18,33 +20,41 @@ export function ListItem({
   onCopy,
   deleteConfirm,
   children,
+  footer,
 }: ListItemProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg border bg-card">
-      {children}
-      <div className="flex items-center gap-1 shrink-0">
-        {deleteConfirm && (
-          <span className="text-xs text-destructive mr-2">{t("common.clickAgain")}</span>
-        )}
-        {onCopy && (
-          <Button variant="ghost" size="icon-sm" onClick={onCopy}>
-            <Copy className="w-4 h-4" />
+    <div className="p-3 rounded-lg border bg-card">
+      <div className="flex items-start gap-3">
+        {children}
+        <div className="flex items-center gap-1 shrink-0">
+          {deleteConfirm && (
+            <span className="text-xs text-destructive mr-2">{t("common.clickAgain")}</span>
+          )}
+          {onCopy && (
+            <Button variant="ghost" size="icon-sm" onClick={onCopy}>
+              <Copy className="w-4 h-4" />
+            </Button>
+          )}
+          {onDownload && (
+            <Button variant="ghost" size="icon-sm" onClick={onDownload}>
+              <Download className="w-4 h-4" />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon-sm" onClick={onEdit}>
+            <Pencil className="w-4 h-4" />
           </Button>
-        )}
-        {onDownload && (
-          <Button variant="ghost" size="icon-sm" onClick={onDownload}>
-            <Download className="w-4 h-4" />
+          <Button
+            variant={deleteConfirm ? "destructive" : "ghost"}
+            size="icon-sm"
+            onClick={onDelete}
+          >
+            <Trash2 className="w-4 h-4" />
           </Button>
-        )}
-        <Button variant="ghost" size="icon-sm" onClick={onEdit}>
-          <Pencil className="w-4 h-4" />
-        </Button>
-        <Button variant={deleteConfirm ? "destructive" : "ghost"} size="icon-sm" onClick={onDelete}>
-          <Trash2 className="w-4 h-4" />
-        </Button>
+        </div>
       </div>
+      {footer && <div className="mt-3">{footer}</div>}
     </div>
   );
 }

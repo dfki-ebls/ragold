@@ -112,6 +112,8 @@ export const en = {
     relevantChunks: "Relevant Document Chunks ({{count}})",
     distractingChunks: "Distracting Document Chunks ({{count}})",
     listNotes: "Notes",
+    created: "Created",
+    updated: "Last Updated",
     createSuccess: "Annotation created.",
     updateSuccess: "Annotation updated.",
     deleteSuccess: "Annotation deleted.",

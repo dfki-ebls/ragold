@@ -119,6 +119,8 @@ export const de: TranslationKeys = {
     relevantChunks: "Relevante Dokumentausschnitte ({{count}})",
     distractingChunks: "Ablenkende Dokumentausschnitte ({{count}})",
     listNotes: "Anmerkungen",
+    created: "Erstellt",
+    updated: "Zuletzt aktualisiert",
     createSuccess: "Annotation erstellt.",
     updateSuccess: "Annotation aktualisiert.",
     deleteSuccess: "Annotation gelöscht.",
