@@ -54,11 +54,11 @@ export function ChunksInput({
     onChange(updated);
   };
 
-  const handleDocumentSelect = (index: number, documentId: string) => {
+  const handleDocumentSelect = (index: number, documentId: string | null) => {
     updateChunk(
       index,
       chunks[index].content,
-      documentId === NO_DOCUMENT_VALUE ? undefined : documentId
+      !documentId || documentId === NO_DOCUMENT_VALUE ? undefined : documentId
     );
   };
 

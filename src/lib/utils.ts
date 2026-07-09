@@ -1,9 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn, type ClassValue } from "cnfast";
 
 /**
  * Returns a unique name by appending a numeric suffix if the name already
