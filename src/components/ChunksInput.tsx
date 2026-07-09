@@ -58,7 +58,7 @@ export function ChunksInput({
     updateChunk(
       index,
       chunks[index].content,
-      !documentId || documentId === NO_DOCUMENT_VALUE ? undefined : documentId
+      !documentId || documentId === NO_DOCUMENT_VALUE ? undefined : documentId,
     );
   };
 
