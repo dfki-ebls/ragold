@@ -49,11 +49,8 @@ const emptyFormData: Annotation = {
 export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFormProps) {
   const { t } = useTranslation();
   const setAnnotationFormDirty = useStore((s) => s.setAnnotationFormDirty);
-  const [formData, setFormData] = useState<Annotation>(emptyFormData);
-  const { errors, validate, clearErrors } = useFormErrors<keyof Annotation>();
-
-  useEffect(() => {
-    const newFormData = annotation
+  const [formData, setFormData] = useState<Annotation>(() =>
+    annotation
       ? {
           ...annotation,
           queryType: annotation.queryType ?? "fact_single",
@@ -64,11 +61,12 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
               ? annotation.distractingChunks
               : [{ content: "" }],
         }
-      : emptyFormData;
-    setFormData(newFormData);
-    setAnnotationFormDirty(false);
-    clearErrors();
-  }, [annotation, clearErrors, setAnnotationFormDirty]);
+      : emptyFormData,
+  );
+  const { errors, validate, clearErrors } = useFormErrors<keyof Annotation>();
+
+  // State is initialized per mount, the parent remounts the form via `key` when switching annotations.
+  useEffect(() => () => setAnnotationFormDirty(false), [setAnnotationFormDirty]);
 
   const updateFormData = (next: Annotation) => {
     setFormData(next);

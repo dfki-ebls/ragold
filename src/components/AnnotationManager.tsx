@@ -307,6 +307,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
   return (
     <div className="space-y-6">
       <AnnotationForm
+        key={editingId ?? "new"}
         annotation={editingAnnotation ?? undefined}
         onSubmit={handleSubmit}
         onCancel={editingId ? handleCancel : undefined}

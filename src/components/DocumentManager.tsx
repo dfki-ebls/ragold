@@ -116,11 +116,12 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reUploadInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setName(editingId ? (documents[editingId]?.name ?? "") : "");
-    setNotes(editingId ? (documents[editingId]?.notes ?? "") : "");
+  const startEditing = (id: string | null) => {
+    setEditingId(id);
+    setName(id ? (documents[id]?.name ?? "") : "");
+    setNotes(id ? (documents[id]?.notes ?? "") : "");
     setDocumentFormDirty(false);
-  }, [editingId, documents, setDocumentFormDirty]);
+  };
 
   useEffect(() => {
     if (scrollPendingRef.current) {
@@ -201,7 +202,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       const dedupName = uniqueName(file.name, otherNames(editingId));
       updateDocument(editingId, { name: dedupName, size: file.size, notes });
       toast.success(t("documentManager.saved"));
-      setEditingId(null);
+      startEditing(null);
     } catch (err) {
       toast.error(
         t("documentManager.uploadError", {
@@ -219,7 +220,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       setPendingEditId(id);
       return;
     }
-    setEditingId(id);
+    startEditing(id);
     scrollPendingRef.current = true;
   };
 
@@ -237,12 +238,12 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     confirm(id, () => {
       deleteDocument(id);
       deleteFile(id).catch(() => {});
-      if (editingId === id) setEditingId(null);
+      if (editingId === id) startEditing(null);
       toast.success(t("documentManager.deleteSuccess"));
     });
   };
 
-  const handleCancelEdit = () => setEditingId(null);
+  const handleCancelEdit = () => startEditing(null);
 
   const otherNames = (excludeId: string) =>
     Object.entries(documents)
@@ -345,9 +346,8 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                   onClick={() => {
                     const dedupName = uniqueName(name, otherNames(editingId));
                     updateDocument(editingId, { ...editingDoc, name: dedupName, notes });
-                    setDocumentFormDirty(false);
                     toast.success(t("documentManager.saved"));
-                    setEditingId(null);
+                    startEditing(null);
                   }}
                 >
                   {t("common.save")}
@@ -435,7 +435,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
             <AlertDialogAction
               variant="destructive"
               onClick={() => {
-                setEditingId(pendingEditId);
+                startEditing(pendingEditId);
                 setPendingEditId(null);
                 scrollPendingRef.current = true;
               }}
