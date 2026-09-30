@@ -24,7 +24,8 @@ import { Input } from "@/components/ui/input";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { deleteFile, getFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
 import { useStore } from "@/lib/store";
-import { cn, uniqueName } from "@/lib/utils";
+import { cn } from "cn";
+import { uniqueName } from "@/lib/utils";
 
 interface DocumentManagerProps {
   scrollToTabs?: () => void;

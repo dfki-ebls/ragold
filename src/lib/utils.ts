@@ -1,5 +1,3 @@
-export { cn, type ClassValue } from "cn";
-
 /**
  * Returns a unique name by appending a numeric suffix if the name already
  * exists in the provided set. Mimics OS file manager behavior:
