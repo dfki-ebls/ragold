@@ -1,4 +1,4 @@
-export { cn, type ClassValue } from "cnfast";
+export { cn, type ClassValue } from "cn";
 
 /**
  * Returns a unique name by appending a numeric suffix if the name already
