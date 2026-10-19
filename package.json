@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run --dir tests",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "shadcnup": "shadcn add --yes --overwrite $(basename -s .tsx src/components/ui/*.tsx)"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
