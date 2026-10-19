@@ -11,6 +11,8 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   build: {
     target: "esnext",
+    // Served next to `index.html`, the notices that the bundled packages require.
+    license: { fileName: "licenses.txt" },
   },
   test: {
     environment: "jsdom",

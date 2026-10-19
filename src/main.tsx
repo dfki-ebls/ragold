@@ -5,6 +5,8 @@ import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/sonner";
+// Imported from JS rather than CSS so that `build.license` lists it.
+import "@fontsource-variable/inter";
 import "./styles.css";
 
 const rootElement = document.getElementById("root");

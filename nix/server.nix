@@ -1,5 +1,6 @@
 {
-  writeShellApplication,
+  runCommand,
+  makeBinaryWrapper,
   writeText,
   app,
   lib,
@@ -23,15 +24,17 @@ let
     }
   '';
 in
-writeShellApplication {
-  name = "server";
-  text = ''
-    ${lib.getExe caddy} run --config ${caddyfile} --adapter caddyfile
-  '';
-  derivationArgs = {
+# A binary wrapper, so no shell ships in the docker image.
+runCommand "server"
+  {
+    nativeBuildInputs = [ makeBinaryWrapper ];
     passthru.port = caddyPort;
-  };
-  meta = app.meta // {
-    inherit (caddy.meta) platforms;
-  };
-}
+    meta = app.meta // {
+      inherit (caddy.meta) platforms;
+      mainProgram = "server";
+    };
+  }
+  ''
+    makeBinaryWrapper ${lib.getExe caddy} $out/bin/server \
+      --add-flags "run --config ${caddyfile} --adapter caddyfile"
+  ''

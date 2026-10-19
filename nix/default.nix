@@ -26,7 +26,8 @@
           inherit (config.packages) app;
         };
         docker = pkgs.callPackage ./docker.nix {
-          inherit (config.packages) server;
+          inherit (config.packages) app server;
+          rev = self.rev or self.dirtyRev;
         };
         build-docker = pkgs.writeShellApplication {
           name = "build-docker";

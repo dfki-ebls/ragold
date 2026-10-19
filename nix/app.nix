@@ -19,6 +19,7 @@ buildNpmPackage (finalAttrs: {
   '';
 
   meta = with lib; {
+    homepage = "https://github.com/dfki-ebls/ragold";
     license = licenses.mit;
     maintainers = with maintainers; [ mirkolenz ];
   };
