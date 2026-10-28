@@ -11,6 +11,9 @@ import "./styles.css";
 
 const rootElement = document.getElementById("root");
 
+// Ask the browser not to evict the stored data, denial is fine.
+void navigator.storage?.persist().catch(() => false);
+
 if (!rootElement) {
   throw new Error("Root element not found");
 }
