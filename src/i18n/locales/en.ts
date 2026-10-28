@@ -134,6 +134,12 @@ export const en = {
       "The question is marked as answerable, but no passage is marked as needed yet.",
     multiPassageFewNeeded: "Questions of this type usually draw on at least two needed passages.",
   },
+  transfer: {
+    title: "Import from another app",
+    description:
+      "{{origin}} wants to add {{annotations}} annotation(s) and {{documents}} document(s) to the current project.",
+    cancelled: "Import cancelled.",
+  },
   annotationManager: {
     titleNew: "New Annotation",
     titleEdit: "Edit Annotation",

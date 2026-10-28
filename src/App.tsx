@@ -5,6 +5,7 @@ import { DocumentManager } from "@/components/DocumentManager";
 import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
 import { MetadataManager } from "@/components/MetadataManager";
+import { TransferDialog } from "@/components/TransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/lib/store";
 
@@ -56,6 +57,7 @@ export default function App() {
         </Tabs>
       </main>
 
+      <TransferDialog />
     </div>
   );
 }

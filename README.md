@@ -17,6 +17,7 @@ Question types follow [CRAG](https://doi.org/10.52202/079017-0335) and answerabi
   Identical files are detected by their SHA-256 hash and stored only once.
   Deleting a document also removes the passages that refer to it after a confirmation.
 - Export annotation datasets as zip archives and merge such archives into the current project.
+- Receive archives from other apps such as hivegent through a browser-only transfer.
 - Annotation metadata is stored in localStorage (synced across tabs), document files in IndexedDB.
 - Available in English and German.
 
@@ -102,3 +103,10 @@ Both sides are therefore normalized before comparison (`normalizePassage` in [`s
 A passage matches a document if its normalized text is contained in the normalized document text.
 Otherwise, it matches the window of about the passage's length whose tokens cover at least 80% of the passage tokens in order.
 Evaluators should apply the same rule, which mirrors the approximate provenance matching of [KILT](https://doi.org/10.18653/v1/2021.naacl-main.200) (Petroni et al. 2021).
+
+## Transfer
+
+Other apps can send an archive without a file download.
+They open RAGold with `window.open("<ragold>/#import")`, wait for the message `{ type: "ragold:ready" }`, and post `{ type: "ragold:import", zip }` with the archive as a `Blob`.
+After the user confirms the import, RAGold answers with `{ type: "ragold:result", ok: true, count }` or `{ type: "ragold:result", ok: false, error }`.
+Only one import is accepted per page load.

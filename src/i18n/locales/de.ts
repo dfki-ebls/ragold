@@ -141,6 +141,12 @@ export const de: TranslationKeys = {
     multiPassageFewNeeded:
       "Fragen dieser Art stützen sich meist auf mindestens zwei notwendige Passagen.",
   },
+  transfer: {
+    title: "Import aus einer anderen Anwendung",
+    description:
+      "{{origin}} möchte {{annotations}} Annotation(en) und {{documents}} Dokument(e) zum aktuellen Projekt hinzufügen.",
+    cancelled: "Import abgebrochen.",
+  },
   annotationManager: {
     titleNew: "Neue Annotation",
     titleEdit: "Annotation bearbeiten",
