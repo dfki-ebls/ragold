@@ -1,39 +1,61 @@
 # User Guide
 
 Welcome to RAGold!
-This tool helps you create training examples for Retrieval-Augmented Generation (RAG) systems.
+This tool helps you create test examples for Retrieval-Augmented Generation (RAG) systems.
+Each example consists of a question, the passages of your documents that matter for it, and the ideal answer with its key facts.
 Follow these steps to create your first annotation.
 
 ### Step 1: Set Up Your Project
 
 Fill in the **Author** and **Project** fields at the top of the page.
-These metadata fields are required before you can export your annotations.
-You can also add an optional **Description** for the dataset.
+These fields are required before you can export your annotations.
+You can also add optional **Notes** for the dataset.
 
 ### Step 2: Upload Documents
 
 Go to the **Documents** tab to upload your reference documents.
-You can drag and drop files or click to select them — bulk uploads are supported.
+You can drag and drop files or click to select them, several files at once are fine.
 Any file type is accepted, with a maximum size of 10 MB per file.
-Each uploaded document gets a unique ID so that chunks can reference it.
-You can optionally add **Notes** to a document by clicking **Edit** in the document library.
+Every document gets a short fingerprint of its content.
+If you upload a file whose content already exists, RAGold tells you and keeps the existing document.
+You can rename a document, replace its file, or add **Notes** by clicking **Edit** in the document library.
+RAGold asks before deleting a document, and if passages use it, these passages are removed as well.
 
 ### Step 3: Create an Annotation
 
 Switch to the **Annotations** tab and fill in:
 
-1. **User Query**: Write a question as a user would ask it in a chat system.
-2. **Query Type**: Select how the question relates to the context (based on the "Know Your RAG" taxonomy):
-   - _Single Fact_: Simple lookup — the answer is stated directly in one place.
-   - _Summary_: The answer requires synthesizing information from multiple parts.
-   - _Reasoning_: The answer is not explicit but can be logically derived.
-   - _Unanswerable_: The information is not in the provided context.
-3. **Relevant Document Chunks**: Add text passages that contain the information needed to answer the question. Each chunk must be linked to an uploaded document.
-4. **Distracting Chunks** (optional): Add passages that might seem relevant but would mislead the system. These must also be linked to a document.
-5. **Expected Answer**: Write the ideal response the system should provide. See the tips below for ideas on drafting good answers.
+1. **Question**: Write the question as a user would ask it in a chat system.
+2. **Kind of question**: Choose what it takes to answer the question, each option shows an example.
+3. **Can the documents answer it?**: Choose whether the documents answer the question fully, partly, or not at all.
+4. **Passages**: Mark the parts of your documents that matter for the answer (see below).
+5. **Ideal answer** and **Key facts**: Write the answer, then mark its key facts (see below).
 6. **Notes** (optional): Add any special considerations about this example.
 
-For **Unanswerable** queries, relevant document chunks are not needed.
+The form shows hints for unusual combinations, for example a question marked as not answerable that still has needed passages.
+These hints do not prevent saving.
+
+#### Adding Passages
+
+Click **Add from document** to open the document viewer and pick a document at the top.
+PDF files, Word documents (.docx), Excel workbooks (.xlsx), and text files such as .txt, .md, .csv, or .json are shown directly.
+Select the relevant text with the mouse, or drag across cells in a workbook, and a small popup asks how important the passage is:
+
+- _Needed_: Required to answer the question.
+- _Helpful_: Adds useful context but is not required.
+- _Misleading_: Looks relevant but would lead to a wrong answer.
+
+The viewer stays open, so you can add several passages in a row and close it with **Done**.
+RAGold records where each passage was found, such as the page of a PDF, the heading in a Word document, the lines of a text file, or the cell range of a workbook.
+For images and other file types such as CAD drawings or old Office formats, open the file with **Open file** and use **Enter a passage by hand** to paste the text and describe where it is.
+In the form, you can change the grade of a passage, remove it, or click the magnifier to show it in its document.
+
+#### Marking Key Facts
+
+Write the ideal answer and click **Done editing**.
+Then select words in the answer, and a popup lets you mark them as _Must mention_ or _Nice to mention_.
+Key facts are highlighted in the answer and listed below it.
+If you edit the answer later so that a key fact no longer appears in it, the key fact is flagged and you can remove it or restore the wording.
 
 ### Step 4: Review and Export
 
@@ -51,21 +73,29 @@ You must fill in the **Author** and **Project** fields and create at least one a
 
 ### Importing Data
 
-The **Import** button loads a previously exported zip archive, replacing all current data (annotations, documents, and files).
+The **Import** button adds the annotations and documents of an exported zip archive to the current project.
+Documents with the same content as existing ones are reused, and nothing is imported if the archive is invalid.
+The author, project, and notes of the archive are only taken over if the current project is still empty.
 A confirmation dialog will appear before the import proceeds.
-This action cannot be undone, so consider exporting your current data first.
 
 ### Resetting Data
 
 The **Reset** button deletes all annotations, documents, and stored files.
 Click once to see the confirmation prompt, then click again within 3 seconds to confirm.
 
+## Background
+
+The kinds of questions follow the question types of the CRAG benchmark ([Yang et al. 2024](https://doi.org/10.52202/079017-0335)): simple, simple with condition, comparison, aggregation, set, multi-hop, post-processing, and false premise.
+The answerability options follow MTRAG ([Katsis et al. 2025](https://arxiv.org/abs/2501.03468)): answerable, partial, and unanswerable.
+The export uses these original names, so the data can be compared with other RAG benchmarks.
+
 ## Tips for Good Annotations
 
-- Write queries in natural language as real users would phrase them.
-- Include enough context in chunks so the answer can actually be derived.
-- For unanswerable queries, the expected answer should explain why the question cannot be answered.
-- Add distracting chunks to create challenging examples that put the system to the test.
+- Write questions in natural language as real users would phrase them.
+- Select passages generously enough that the answer can actually be derived from them.
+- For unanswerable questions, the ideal answer should explain why the question cannot be answered.
+- Add misleading passages to create challenging examples that put the system to the test.
+- Keep key facts short, a name, a number, or a short statement is usually best.
 - Add notes when there are ambiguities or special considerations.
-- Consider using AI tools like [ChatGPT](https://chatgpt.com) to draft expected answers: enter your query, review the response, and tailor it to your documents and domain knowledge (if allowed by your organization).
-- Treat AI-generated answers as a starting point — always ensure the expected answer is accurate and grounded in your actual document chunks.
+- Consider using AI tools like [ChatGPT](https://chatgpt.com) to draft ideal answers: enter your question, review the response, and tailor it to your documents and domain knowledge (if allowed by your organization).
+- Treat AI-generated answers as a starting point and make sure the ideal answer is accurate and grounded in your passages.

@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 /**
  * Returns a unique name by appending a numeric suffix if the name already
  * exists in the provided set. Mimics OS file manager behavior:
@@ -14,4 +16,24 @@ export function uniqueName(desired: string, existing: Iterable<string>): string 
   let n = 1;
   while (taken.has(`${stem}-${n}${ext}`)) n++;
   return `${stem}-${n}${ext}`;
+}
+
+/** Message of an unknown thrown value. */
+export function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+/** Save a blob through a temporary download link. */
+export function downloadBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+/** Short local date and time of an ISO timestamp. */
+export function formatTimestamp(timestamp: string): string {
+  return dayjs(timestamp).format("YYYY-MM-DD HH:mm");
 }

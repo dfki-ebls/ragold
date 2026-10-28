@@ -38,15 +38,31 @@ function wrap<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
-/** Store an ArrayBuffer in IndexedDB, keyed by document UUID. */
-export async function putBuffer(id: string, buffer: ArrayBuffer): Promise<void> {
-  const db = await getDb();
-  await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).put(buffer, id));
+function done(transaction: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+    transaction.onabort = () => reject(transaction.error);
+  });
 }
 
-/** Store a file as an ArrayBuffer in IndexedDB, keyed by document UUID. */
-export async function putFile(id: string, file: File): Promise<void> {
-  await putBuffer(id, await file.arrayBuffer());
+/** Lowercase hex SHA-256 digest of file content. */
+export async function sha256(data: ArrayBuffer): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+/** Store files keyed by document id in a single transaction, so either all or none are written. */
+export async function putFiles(files: ReadonlyMap<string, ArrayBuffer>): Promise<void> {
+  const db = await getDb();
+  const transaction = db.transaction(STORE_NAME, "readwrite");
+  const store = transaction.objectStore(STORE_NAME);
+
+  for (const [id, buffer] of files) {
+    store.put(buffer, id);
+  }
+
+  await done(transaction);
 }
 
 /** Retrieve a file blob from IndexedDB by document UUID. Returns null if not found. */
@@ -59,35 +75,10 @@ export async function getFile(id: string): Promise<Blob | null> {
   return new Blob([buffer]);
 }
 
-/** Retrieve all stored files as a Map of UUID to Blob. */
-export async function getAllFiles(): Promise<Map<string, Blob>> {
-  const db = await getDb();
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, "readonly");
-    const store = transaction.objectStore(STORE_NAME);
-    const keysReq = store.getAllKeys();
-    const valsReq = store.getAll();
-    transaction.oncomplete = () => {
-      const map = new Map<string, Blob>();
-      const keys = keysReq.result as string[];
-      const vals = valsReq.result as ArrayBuffer[];
-      keys.forEach((k, i) => map.set(k, new Blob([vals[i]])));
-      resolve(map);
-    };
-    transaction.onerror = () => reject(transaction.error);
-  });
-}
-
 /** Delete a single file from IndexedDB by document UUID. */
 export async function deleteFile(id: string): Promise<void> {
   const db = await getDb();
   await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).delete(id));
-}
-
-/** Clear all files from the object store without deleting the database. */
-export async function clearAllFiles(): Promise<void> {
-  const db = await getDb();
-  await wrap(db.transaction(STORE_NAME, "readwrite").objectStore(STORE_NAME).clear());
 }
 
 /** Delete the entire IndexedDB database, fully resetting file storage. */
@@ -103,11 +94,4 @@ export async function resetIndexedDb(): Promise<void> {
     request.onerror = () => reject(request.error);
     request.onblocked = () => resolve();
   });
-}
-
-/** Clear all persisted app data (IndexedDB + localStorage) and reload. */
-export async function resetApp(): Promise<void> {
-  await resetIndexedDb();
-  localStorage.removeItem("ragold-store");
-  window.location.reload();
 }

@@ -39,6 +39,9 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  --highlight: oklch(0.93 0.12 95 / 0.8);
+  --key-must: oklch(0.87 0.12 150 / 0.7);
+  --key-nice: oklch(0.89 0.07 235 / 0.7);
 }
 
 .dark {
@@ -75,6 +78,9 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  --highlight: oklch(0.6 0.12 95 / 0.5);
+  --key-must: oklch(0.55 0.12 150 / 0.55);
+  --key-nice: oklch(0.55 0.1 240 / 0.55);
 }
 
 @theme inline {
@@ -119,6 +125,22 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-highlight: var(--highlight);
+  --color-key-must: var(--key-must);
+  --color-key-nice: var(--key-nice);
+}
+
+/* Painted with the CSS Custom Highlight API, see `paintHighlight`. */
+::highlight(ragold-passage) {
+  background-color: var(--highlight);
+}
+
+::highlight(ragold-must) {
+  background-color: var(--key-must);
+}
+
+::highlight(ragold-nice) {
+  background-color: var(--key-nice);
 }
 
 @layer base {

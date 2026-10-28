@@ -3,8 +3,9 @@ import { Download, RotateCcw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
-import { resetApp } from "@/lib/fileStorage";
-import { useStore } from "@/lib/store";
+import { exportArchive } from "@/lib/archive";
+import { resetApp, STORE_KEY } from "@/lib/store";
+import { downloadBlob } from "@/lib/utils";
 
 function t(key: string, fallback: string): string {
   return i18n.t(key, { defaultValue: fallback });
@@ -12,20 +13,17 @@ function t(key: string, fallback: string): string {
 
 async function exportData(): Promise<boolean> {
   try {
-    await useStore.getState().exportAnnotations();
+    await exportArchive();
     return true;
   } catch {
-    // Store export failed — fall back to raw localStorage dump
+    // Store export failed, fall back to a raw localStorage dump.
     try {
-      const raw = localStorage.getItem("ragold-store");
+      const raw = localStorage.getItem(STORE_KEY);
       if (!raw) return false;
-      const blob = new Blob([raw], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `ragold-recovery-${dayjs().format("YYYYMMDD-HHmmss")}.json`;
-      link.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(
+        new Blob([raw], { type: "application/json" }),
+        `ragold-recovery-${dayjs().format("YYYYMMDD-HHmmss")}.json`,
+      );
       return true;
     } catch {
       return false;
@@ -76,7 +74,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.confirmReset) {
       resetApp().catch(() => {
         // Best-effort: even if IndexedDB fails, clear localStorage and reload.
-        localStorage.removeItem("ragold-store");
+        localStorage.removeItem(STORE_KEY);
         window.location.reload();
       });
     } else {

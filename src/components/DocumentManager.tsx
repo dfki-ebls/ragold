@@ -1,9 +1,7 @@
-import dayjs from "dayjs";
 import { FileText, PenLine, StickyNote, Upload } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { v1 as uuidv1 } from "uuid";
 import { EmptyState } from "@/components/EmptyState";
 import { ListItem } from "@/components/ListItem";
 import {
@@ -21,11 +19,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useConfirmAction } from "@/lib/useConfirmAction";
-import { deleteFile, getFile, MAX_FILE_SIZE, putFile } from "@/lib/fileStorage";
-import { useStore } from "@/lib/store";
+import { getFile, MAX_FILE_SIZE } from "@/lib/fileStorage";
+import { useDirtyForms, useStore } from "@/lib/store";
+import type { Annotation } from "@/lib/types";
+import { downloadBlob, errorMessage, formatTimestamp } from "@/lib/utils";
 import { cn } from "cn";
-import { uniqueName } from "@/lib/utils";
 
 interface DocumentManagerProps {
   scrollToTabs?: () => void;
@@ -37,6 +35,31 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+interface Usage {
+  annotations: number;
+  passages: number;
+}
+
+const UNUSED: Usage = { annotations: 0, passages: 0 };
+
+/** Number of annotations and passages that refer to each document. */
+function documentUsage(annotations: Record<string, Annotation>): Map<string, Usage> {
+  const usage = new Map<string, Usage>();
+
+  for (const { passages } of Object.values(annotations)) {
+    const ids = passages.map((p) => p.documentId);
+
+    for (const id of new Set(ids)) {
+      usage.set(id, {
+        annotations: (usage.get(id)?.annotations ?? 0) + 1,
+        passages: (usage.get(id)?.passages ?? 0) + ids.filter((other) => other === id).length,
+      });
+    }
+  }
+
+  return usage;
 }
 
 function DropZone({
@@ -100,15 +123,17 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const annotations = useStore((s) => s.annotations);
-  const addDocument = useStore((s) => s.addDocument);
+  const uploadDocument = useStore((s) => s.uploadDocument);
+  const replaceDocumentFile = useStore((s) => s.replaceDocumentFile);
   const updateDocument = useStore((s) => s.updateDocument);
   const deleteDocument = useStore((s) => s.deleteDocument);
-  const documentFormDirty = useStore((s) => s.documentFormDirty);
-  const setDocumentFormDirty = useStore((s) => s.setDocumentFormDirty);
-  const { isConfirming, confirm } = useConfirmAction();
+  const documentFormDirty = useDirtyForms((s) => s.document);
+  const usage = useMemo(() => documentUsage(annotations), [annotations]);
+  const usageOf = (id: string) => usage.get(id) ?? UNUSED;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const scrollPendingRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -121,7 +146,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     setEditingId(id);
     setName(id ? (documents[id]?.name ?? "") : "");
     setNotes(id ? (documents[id]?.notes ?? "") : "");
-    setDocumentFormDirty(false);
+    useDirtyForms.setState({ document: false });
   };
 
   useEffect(() => {
@@ -154,32 +179,35 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
 
     setUploading(true);
     try {
-      const existingNames = Object.values(documents).map((d) => d.name);
-      const results = await Promise.allSettled(
-        valid.map(async (file) => {
-          const dedupName = uniqueName(file.name, existingNames);
-          existingNames.push(dedupName);
-          const id = uuidv1();
-          await putFile(id, file);
-          addDocument(id, { name: dedupName, size: file.size });
-          return dedupName;
-        }),
-      );
+      const results = await Promise.allSettled(valid.map((file) => uploadDocument(file)));
+      const duplicates: string[] = [];
+      const errors: string[] = [];
+      let added = 0;
 
-      const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      const failed = results.filter((r): r is PromiseRejectedResult => r.status === "rejected");
+      results.forEach((result, i) => {
+        const { name } = valid[i];
 
-      if (failed.length === 0) {
-        toast.success(t("documentManager.uploadSuccess", { count: succeeded }));
+        if (result.status === "rejected") {
+          errors.push(
+            t("documentManager.uploadError", { name, message: errorMessage(result.reason) }),
+          );
+        } else if (result.value.duplicate) {
+          const existing = useStore.getState().documents[result.value.id]?.name ?? "";
+          duplicates.push(t("documentManager.duplicate", { name, existing }));
+        } else {
+          added++;
+        }
+      });
+
+      if (duplicates.length > 0) {
+        toast.info(duplicates.join("\n"));
+      }
+
+      if (errors.length > 0) {
+        toast.error(errors.join("\n"));
+      } else if (added > 0) {
+        toast.success(t("documentManager.uploadSuccess", { count: added }));
         scrollPendingRef.current = true;
-      } else {
-        const lines = failed.map((r, i) => {
-          const idx = results.indexOf(r);
-          const name = valid[idx]?.name ?? valid[i]?.name ?? "file";
-          const message = r.reason instanceof Error ? r.reason.message : "Unknown error";
-          return t("documentManager.uploadError", { name, message });
-        });
-        toast.error(lines.join("\n"));
       }
     } finally {
       setUploading(false);
@@ -199,16 +227,15 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     }
     setUploading(true);
     try {
-      await putFile(editingId, file);
-      const dedupName = uniqueName(file.name, otherNames(editingId));
-      updateDocument(editingId, { name: dedupName, size: file.size, notes });
+      await replaceDocumentFile(editingId, file);
+      updateDocument(editingId, { notes });
       toast.success(t("documentManager.saved"));
       startEditing(null);
     } catch (err) {
       toast.error(
         t("documentManager.uploadError", {
           name: file.name,
-          message: err instanceof Error ? err.message : "Unknown error",
+          message: errorMessage(err),
         }),
       );
     } finally {
@@ -225,31 +252,13 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     scrollPendingRef.current = true;
   };
 
-  const handleDelete = (id: string) => {
-    const refCount = Object.values(annotations).filter((a) => {
-      const allChunks = [...a.relevantChunks, ...a.distractingChunks];
-      return allChunks.some((c) => c.documentId === id);
-    }).length;
-
-    if (refCount > 0) {
-      toast.error(t("documentManager.deleteBlocked", { count: refCount }));
-      return;
-    }
-
-    confirm(id, () => {
-      deleteDocument(id);
-      deleteFile(id).catch(() => {});
-      if (editingId === id) startEditing(null);
-      toast.success(t("documentManager.deleteSuccess"));
-    });
+  const removeDocument = (id: string) => {
+    deleteDocument(id);
+    if (editingId === id) startEditing(null);
+    toast.success(t("documentManager.deleteSuccess"));
   };
 
   const handleCancelEdit = () => startEditing(null);
-
-  const otherNames = (excludeId: string) =>
-    Object.entries(documents)
-      .filter(([id]) => id !== excludeId)
-      .map(([, d]) => d.name);
 
   const handleDownload = async (id: string) => {
     const doc = documents[id];
@@ -259,12 +268,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       toast.error(t("documentManager.downloadError"));
       return;
     }
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = doc.name;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, doc.name);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -313,7 +317,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
-                    setDocumentFormDirty(true);
+                    useDirtyForms.setState({ document: true });
                   }}
                 />
               </div>
@@ -327,7 +331,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                   value={notes}
                   onChange={(e) => {
                     setNotes(e.target.value);
-                    setDocumentFormDirty(true);
+                    useDirtyForms.setState({ document: true });
                   }}
                   placeholder={t("documentManager.notesPlaceholder")}
                   rows={3}
@@ -345,8 +349,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
               <div className="flex gap-3">
                 <Button
                   onClick={() => {
-                    const dedupName = uniqueName(name, otherNames(editingId));
-                    updateDocument(editingId, { ...editingDoc, name: dedupName, notes });
+                    updateDocument(editingId, { name, notes });
                     toast.success(t("documentManager.saved"));
                     startEditing(null);
                   }}
@@ -389,24 +392,23 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
                 <ListItem
                   key={id}
                   onEdit={() => handleEdit(id)}
-                  onDelete={() => handleDelete(id)}
+                  onDelete={() => setPendingDeleteId(id)}
                   onDownload={() => handleDownload(id)}
-                  deleteConfirm={isConfirming(id)}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{doc.name}</div>
                       <div className="text-xs text-muted-foreground">
-                        {formatFileSize(doc.size)}
+                        {formatFileSize(doc.size)} ·{" "}
+                        <span title={t("documentManager.fingerprintHint")} className="font-mono">
+                          {t("documentManager.fingerprint", { hash: doc.sha256.slice(0, 12) })}
+                        </span>
+                        {usage.has(id) && (
+                          <> · {t("documentManager.usage", { count: usageOf(id).passages })}</>
+                        )}
                         {doc.updatedAt && (
-                          <>
-                            {" "}
-                            ·{" "}
-                            {t("common.lastEdited", {
-                              date: dayjs(doc.updatedAt).format("YYYY-MM-DD HH:mm"),
-                            })}
-                          </>
+                          <> · {t("common.lastEdited", { date: formatTimestamp(doc.updatedAt) })}</>
                         )}
                       </div>
                       {doc.notes && (
@@ -420,6 +422,42 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
           )}
         </CardContent>
       </Card>
+      <AlertDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeleteId(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("documentManager.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDeleteId &&
+                t(
+                  usage.has(pendingDeleteId)
+                    ? "documentManager.deleteUsed"
+                    : "documentManager.deleteUnused",
+                  {
+                    name: documents[pendingDeleteId]?.name ?? "",
+                    ...usageOf(pendingDeleteId),
+                  },
+                )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                if (pendingDeleteId) removeDocument(pendingDeleteId);
+                setPendingDeleteId(null);
+              }}
+            >
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AlertDialog
         open={pendingEditId !== null}
         onOpenChange={(open) => {

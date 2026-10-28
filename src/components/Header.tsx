@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import type { SupportedLanguage } from "@/i18n";
-import { resetApp } from "@/lib/fileStorage";
-import { useStore } from "@/lib/store";
+import { exportArchive, mergeImport, readArchive } from "@/lib/archive";
+import { resetApp, useDirtyForms, useStore } from "@/lib/store";
 import { useConfirmAction } from "@/lib/useConfirmAction";
+import { errorMessage } from "@/lib/utils";
 
 const languageLabels: Record<SupportedLanguage, string> = {
   de: "DE",
@@ -60,7 +61,7 @@ export default function Header() {
     if (!file) return;
 
     try {
-      const count = await useStore.getState().importAnnotations(file);
+      const { length: count } = await mergeImport(await readArchive(file));
       if (count > 0) {
         toast.success(t("header.importSuccess", { count }));
       } else {
@@ -69,7 +70,7 @@ export default function Header() {
     } catch (err) {
       toast.error(
         t("header.importError", {
-          message: err instanceof Error ? err.message : "Unknown error",
+          message: errorMessage(err),
         }),
       );
     }
@@ -91,11 +92,11 @@ export default function Header() {
       toast.warning(t("header.exportDisabledEmpty"));
       return;
     }
-    const { annotationFormDirty, documentFormDirty } = useStore.getState();
-    const hasUnsaved = annotationFormDirty || documentFormDirty;
+    const { annotation, document } = useDirtyForms.getState();
+    const hasUnsaved = annotation || document;
     setIsExporting(true);
     try {
-      await useStore.getState().exportAnnotations();
+      await exportArchive();
       if (hasUnsaved) {
         toast.warning(t("header.exportUnsavedWarning"));
       } else {
@@ -104,7 +105,7 @@ export default function Header() {
     } catch (err) {
       toast.error(
         t("header.exportError", {
-          message: err instanceof Error ? err.message : "Unknown error",
+          message: errorMessage(err),
         }),
       );
     } finally {
@@ -196,7 +197,7 @@ export default function Header() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleImportConfirm}>
+            <AlertDialogAction onClick={handleImportConfirm}>
               {t("common.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -12,7 +12,7 @@ export const resources = {
 
 export type SupportedLanguage = keyof typeof resources;
 
-export const supportedLanguages: SupportedLanguage[] = ["en", "de"];
+export const supportedLanguages = ["en", "de"] as const satisfies readonly SupportedLanguage[];
 
 export const defaultLanguage: SupportedLanguage = "en";
 

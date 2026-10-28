@@ -1,135 +1,120 @@
-import {
-  CircleOff,
-  Lightbulb,
-  ListTree,
-  MessageSquare,
-  Search,
-  StickyNote,
-  Tags,
-  Target,
-} from "lucide-react";
+import { Lightbulb, Plus, Search, StickyNote, Tags, Library, CircleQuestionMark } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { FieldError } from "@/components/FieldError";
-import { useFormErrors } from "@/lib/useFormErrors";
 import { useTranslation } from "react-i18next";
-import { useStore } from "@/lib/store";
-import { ChunksInput } from "@/components/ChunksInput";
+import { toast } from "sonner";
+import { ChoiceCards, useChoiceOptions } from "@/components/choices";
+import { FieldError } from "@/components/FieldError";
+import { OriginBadge } from "@/components/OriginBadge";
+import { PassageCard } from "@/components/PassageCard";
+import { PassageDialog } from "@/components/PassageDialog";
+import { ResponseEditor } from "@/components/ResponseEditor";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useDirtyForms, useStore } from "@/lib/store";
 import {
-  type Annotation,
-  annotationSchema,
-  type Chunk,
-  KNOWN_QUERY_TYPES,
-  type KnownQueryType,
+  ANSWERABILITIES,
+  type AnnotationContent,
+  annotationContentSchemaFor,
+  annotationHints,
+  type Passage,
+  QUESTION_TYPES,
 } from "@/lib/types";
-
-const QUERY_TYPE_ICONS: Record<KnownQueryType, React.ElementType> = {
-  fact_single: Target,
-  summary: ListTree,
-  reasoning: Lightbulb,
-  unanswerable: CircleOff,
-};
+import { useFormErrors } from "@/lib/useFormErrors";
 
 interface AnnotationFormProps {
-  annotation?: Annotation;
-  onSubmit: (data: Annotation) => void;
+  annotation?: AnnotationContent;
+  onSubmit: (data: AnnotationContent) => void;
   onCancel?: () => void;
 }
 
-const emptyFormData: Annotation = {
-  ...annotationSchema.parse({}),
-  relevantChunks: [{ content: "" }],
-  distractingChunks: [{ content: "" }],
+const emptyFormData: AnnotationContent = {
+  query: "",
+  questionType: "simple",
+  answerability: "answerable",
+  passages: [],
+  response: "",
+  keyFacts: [],
+  origin: "",
+  notes: "",
 };
+
+type Changes = Partial<AnnotationContent>;
 
 export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFormProps) {
   const { t } = useTranslation();
-  const setAnnotationFormDirty = useStore((s) => s.setAnnotationFormDirty);
-  const [formData, setFormData] = useState<Annotation>(() =>
-    annotation
-      ? {
-          ...annotation,
-          queryType: annotation.queryType ?? "fact_single",
-          relevantChunks:
-            annotation.relevantChunks.length > 0 ? annotation.relevantChunks : [{ content: "" }],
-          distractingChunks:
-            annotation.distractingChunks?.length > 0
-              ? annotation.distractingChunks
-              : [{ content: "" }],
-        }
-      : emptyFormData,
-  );
-  const { errors, validate, clearErrors } = useFormErrors<keyof Annotation>();
+  const documents = useStore((s) => s.documents);
+  const [formData, setFormData] = useState<AnnotationContent>(annotation ?? emptyFormData);
+  const [viewer, setViewer] = useState<{ documentId: string; focus?: Passage } | null>(null);
+  const [lastDocumentId, setLastDocumentId] = useState<string>();
+  const { errors, validate, clearErrors } = useFormErrors<string>();
+  const questionTypeOptions = useChoiceOptions(QUESTION_TYPES, "questionTypes");
+  const answerabilityOptions = useChoiceOptions(ANSWERABILITIES, "answerabilities");
+  const documentIds = Object.keys(documents);
 
   // State is initialized per mount, the parent remounts the form via `key` when switching annotations.
-  useEffect(() => () => setAnnotationFormDirty(false), [setAnnotationFormDirty]);
+  useEffect(() => () => useDirtyForms.setState({ annotation: false }), []);
 
-  const updateFormData = (next: Annotation) => {
-    setFormData(next);
-    setAnnotationFormDirty(true);
+  const update = (changes: Changes | ((current: AnnotationContent) => Changes)) => {
+    setFormData((current) => ({
+      ...current,
+      ...(typeof changes === "function" ? changes(current) : changes),
+    }));
+    useDirtyForms.setState({ annotation: true });
   };
 
-  const isUnanswerable = formData.queryType === "unanswerable";
-
-  const hasNoContent = (chunks: Chunk[]) => chunks.every((chunk) => !chunk.content.trim());
-
-  const hasMissingDocument = (chunks: Chunk[]) =>
-    chunks.some((chunk) => chunk.content.trim() && !chunk.documentId);
-
-  const validateChunks = (chunks: Chunk[], requireContent: boolean): string | undefined => {
-    if (isUnanswerable) return undefined;
-    if (requireContent && hasNoContent(chunks)) return t("chunks.relevantError");
-    if (hasMissingDocument(chunks)) return t("chunks.documentError");
-    return undefined;
-  };
-
-  const handleValidate = (): boolean =>
-    validate({
-      query: !formData.query.trim() ? t("annotationManager.queryError") : undefined,
-      relevantChunks: validateChunks(formData.relevantChunks, true),
-      distractingChunks: validateChunks(formData.distractingChunks, false),
-      response: !formData.response.trim() ? t("annotationManager.responseError") : undefined,
-    });
+  const passageError = (index: number) =>
+    Object.entries(errors).find(([path]) => path.startsWith(`passages.${index}.`))?.[1];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (handleValidate()) {
-      const cleanedData: Annotation = {
-        ...formData,
-        relevantChunks: isUnanswerable
-          ? []
-          : formData.relevantChunks.filter((chunk) => chunk.content.trim()),
-        distractingChunks: formData.distractingChunks.filter((chunk) => chunk.content.trim()),
-      };
-      onSubmit(cleanedData);
-      if (!annotation) {
-        setFormData(emptyFormData);
-        setAnnotationFormDirty(false);
-        clearErrors();
-      }
-    } else {
+    const result = annotationContentSchemaFor(documents).safeParse(formData);
+    const messages: Record<string, string> = {};
+
+    // Custom issues carry i18n keys, all others stem from required fields.
+    for (const issue of result.error?.issues ?? []) {
+      messages[issue.path.join(".")] = t(issue.message, { defaultValue: t("form.required") });
+    }
+
+    if (!validate(messages) || !result.success) {
       toast.error(t("form.validationError"));
+      return;
+    }
+
+    onSubmit(result.data);
+
+    if (!annotation) {
+      setFormData(emptyFormData);
+      useDirtyForms.setState({ annotation: false });
+      clearErrors();
     }
   };
 
-  const isEditing = !!annotation;
+  const openViewer = (documentId: string, focus?: Passage) => {
+    setLastDocumentId(documentId);
+    setViewer({ documentId, focus });
+  };
+
+  const defaultDocumentId =
+    lastDocumentId && documents[lastDocumentId] ? lastDocumentId : documentIds[0];
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          {isEditing ? t("annotationManager.titleEdit") : t("annotationManager.titleNew")}
+          {annotation ? t("annotationManager.titleEdit") : t("annotationManager.titleNew")}
         </CardTitle>
+        <CardAction>
+          <OriginBadge origin={formData.origin} />
+        </CardAction>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-2">
             <Label htmlFor="query" className="flex items-center gap-2">
-              <Search className="w-4 h-4" />
+              <Search className="size-4" />
               {t("annotationManager.query")} *
             </Label>
             <p className="text-sm text-muted-foreground">
@@ -138,89 +123,104 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <Textarea
               id="query"
               value={formData.query}
-              onChange={(e) => updateFormData({ ...formData, query: e.target.value })}
+              onChange={(e) => update({ query: e.target.value })}
               placeholder={t("annotationManager.queryPlaceholder")}
-              rows={3}
+              rows={2}
+              aria-invalid={!!errors.query}
             />
             <FieldError message={errors.query} />
           </div>
 
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
-              <Tags className="w-4 h-4" />
-              {t("annotationManager.queryType")} *
+              <Tags className="size-4" />
+              {t("annotationManager.questionType")} *
             </Label>
             <p className="text-sm text-muted-foreground">
-              {t("annotationManager.queryTypeDescription")}
+              {t("annotationManager.questionTypeDescription")}
             </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {KNOWN_QUERY_TYPES.map((type) => {
-                const Icon = QUERY_TYPE_ICONS[type];
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => updateFormData({ ...formData, queryType: type })}
-                    className={`p-3 text-left border rounded-md transition-colors ${
-                      formData.queryType === type
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="font-medium text-sm flex items-center gap-2">
-                      <Icon className="w-4 h-4" />
-                      {t(`queryTypes.${type}.label`)}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {t(`queryTypes.${type}.description`)}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {!isUnanswerable && (
-            <div className="space-y-2">
-              <ChunksInput
-                chunks={formData.relevantChunks}
-                onChange={(relevantChunks) => updateFormData({ ...formData, relevantChunks })}
-                required
-              />
-              <FieldError message={errors.relevantChunks} />
-            </div>
-          )}
-
-          <div className="space-y-2">
-            <ChunksInput
-              chunks={formData.distractingChunks}
-              onChange={(distractingChunks) => updateFormData({ ...formData, distractingChunks })}
-              variant="distracting"
+            <ChoiceCards
+              id="question-type"
+              options={questionTypeOptions}
+              value={formData.questionType}
+              onChange={(questionType) => update({ questionType })}
+              className="sm:grid-cols-2"
+              italic
             />
-            <FieldError message={errors.distractingChunks} />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="response" className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              {t("annotationManager.response")} *
+            <Label className="flex items-center gap-2">
+              <CircleQuestionMark className="size-4" />
+              {t("annotationManager.answerability")} *
             </Label>
-            <p className="text-sm text-muted-foreground">
-              {t("annotationManager.responseDescription")}
-            </p>
-            <Textarea
-              id="response"
-              value={formData.response}
-              onChange={(e) => updateFormData({ ...formData, response: e.target.value })}
-              placeholder={t("annotationManager.responsePlaceholder")}
-              rows={4}
+            <ChoiceCards
+              id="answerability"
+              options={answerabilityOptions}
+              value={formData.answerability}
+              onChange={(answerability) => update({ answerability })}
+              className="sm:grid-cols-3"
             />
-            <FieldError message={errors.response} />
           </div>
+
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Label className="flex items-center gap-2">
+                <Library className="size-4" />
+                {t("passages.label")}
+              </Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={!defaultDocumentId}
+                onClick={() => defaultDocumentId && openViewer(defaultDocumentId)}
+              >
+                <Plus />
+                {t("passages.addFromDocument")}
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {documentIds.length > 0 ? t("passages.description") : t("passages.noDocuments")}
+            </p>
+            {formData.passages.length === 0 ? (
+              <p className="text-sm text-muted-foreground/70 italic">{t("passages.empty")}</p>
+            ) : (
+              <div className="space-y-2">
+                {formData.passages.map((passage, i) => (
+                  <PassageCard
+                    key={i}
+                    passage={passage}
+                    error={passageError(i)}
+                    onGradeChange={(grade) =>
+                      update({
+                        passages: formData.passages.map((p, j) => (j === i ? { ...p, grade } : p)),
+                      })
+                    }
+                    onShow={() => openViewer(passage.documentId, passage)}
+                    onRemove={() => update({ passages: formData.passages.filter((_, j) => j !== i) })}
+                  />
+                ))}
+              </div>
+            )}
+            {annotationHints(formData).map((hint) => (
+              <Alert key={hint}>
+                <Lightbulb />
+                <AlertDescription>{t(`hints.${hint}`)}</AlertDescription>
+              </Alert>
+            ))}
+          </div>
+
+          <ResponseEditor
+            response={formData.response}
+            keyFacts={formData.keyFacts}
+            onChange={update}
+            errors={errors}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="notes" className="flex items-center gap-2">
-              <StickyNote className="w-4 h-4" />
+              <StickyNote className="size-4" />
               {t("annotationManager.notes")}
             </Label>
             <p className="text-sm text-muted-foreground">
@@ -229,15 +229,15 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => updateFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) => update({ notes: e.target.value })}
               placeholder={t("annotationManager.notesPlaceholder")}
-              rows={3}
+              rows={2}
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <Button type="submit">{isEditing ? t("common.update") : t("common.add")}</Button>
-            {isEditing && onCancel && (
+          <div className="flex gap-3">
+            <Button type="submit">{annotation ? t("common.update") : t("common.add")}</Button>
+            {annotation && onCancel && (
               <Button type="button" variant="outline" onClick={onCancel}>
                 {t("common.cancel")}
               </Button>
@@ -245,6 +245,15 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
           </div>
         </form>
       </CardContent>
+
+      {viewer && (
+        <PassageDialog
+          documentId={viewer.documentId}
+          focus={viewer.focus}
+          onAdd={(passage) => update((current) => ({ passages: [...current.passages, passage] }))}
+          onClose={() => setViewer(null)}
+        />
+      )}
     </Card>
   );
 }

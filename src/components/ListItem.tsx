@@ -1,13 +1,14 @@
 import { Copy, Download, Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { IconButton } from "@/components/IconButton";
 
 interface ListItemProps {
   onEdit: () => void;
   onDelete: () => void;
   onDownload?: () => void;
   onCopy?: () => void;
-  deleteConfirm: boolean;
+  /** Highlights the delete button while it awaits a second click. */
+  deleteConfirm?: boolean;
   children: React.ReactNode;
   /** Full-width content rendered below the overview row, not capped by the action buttons. */
   footer?: React.ReactNode;
@@ -33,25 +34,25 @@ export function ListItem({
             <span className="text-xs text-destructive mr-2">{t("common.clickAgain")}</span>
           )}
           {onCopy && (
-            <Button variant="ghost" size="icon-sm" onClick={onCopy}>
-              <Copy className="w-4 h-4" />
-            </Button>
+            <IconButton label={t("common.copy")} onClick={onCopy}>
+              <Copy />
+            </IconButton>
           )}
           {onDownload && (
-            <Button variant="ghost" size="icon-sm" onClick={onDownload}>
-              <Download className="w-4 h-4" />
-            </Button>
+            <IconButton label={t("common.download")} onClick={onDownload}>
+              <Download />
+            </IconButton>
           )}
-          <Button variant="ghost" size="icon-sm" onClick={onEdit}>
-            <Pencil className="w-4 h-4" />
-          </Button>
-          <Button
+          <IconButton label={t("common.edit")} onClick={onEdit}>
+            <Pencil />
+          </IconButton>
+          <IconButton
+            label={t("common.delete")}
             variant={deleteConfirm ? "destructive" : "ghost"}
-            size="icon-sm"
             onClick={onDelete}
           >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+            <Trash2 />
+          </IconButton>
         </div>
       </div>
       {footer && <div className="mt-3">{footer}</div>}
