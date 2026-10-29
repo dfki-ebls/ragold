@@ -7,6 +7,7 @@ import { IconButton } from "@/components/IconButton";
 import { SelectionPopover } from "@/components/SelectionPopover";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { followEdit, occurrences } from "@/lib/keyFacts";
 import { paintHighlight, rangeAnchor, type VirtualAnchor } from "@/lib/selection";
 import {
   isKeyFactInResponse,
@@ -32,16 +33,6 @@ function textRange(node: Text, start: number, end: number): Range {
   range.setStart(node, start);
   range.setEnd(node, end);
   return range;
-}
-
-function occurrences(text: string, part: string): number[] {
-  const indices: number[] = [];
-
-  for (let i = text.indexOf(part); i >= 0; i = text.indexOf(part, i + 1)) {
-    indices.push(i);
-  }
-
-  return indices;
 }
 
 /**
@@ -135,7 +126,12 @@ export function ResponseEditor({ response, keyFacts, onChange, errors }: Respons
             ref={textarea}
             id="response"
             value={response}
-            onChange={(e) => onChange({ response: e.target.value, keyFacts })}
+            onChange={(e) =>
+              onChange({
+                response: e.target.value,
+                keyFacts: followEdit(response, e.target.value, e.target.selectionEnd, keyFacts),
+              })
+            }
             onSelect={handleSelect}
             placeholder={t("response.placeholder")}
             rows={6}
