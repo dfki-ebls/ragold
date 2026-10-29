@@ -223,6 +223,11 @@ export const en = {
     openFile: "Open file",
     notFound: "The file is missing from this browser.",
   },
+  loadError: {
+    title: "Stored data could not be loaded",
+    description:
+      "The data in this browser does not match the current format of RAGold. Nothing has been changed or deleted. Export the data, fix the listed fields in its annotations.json, then reset the app and import the archive.",
+  },
   errorBoundary: {
     title: "Something went wrong",
     description: "An unexpected error occurred. You can export your data before resetting the app.",

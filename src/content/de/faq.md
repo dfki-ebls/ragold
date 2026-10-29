@@ -92,6 +92,9 @@ RAGold findet Passagen auch dann, wenn Zeilenumbrüche, Silbentrennung oder Form
 Der **Reset**-Button löscht alle Annotationen, Dokumente und gespeicherten Dateien.
 Klicken Sie einmal, um die Bestätigungsaufforderung zu sehen, dann klicken Sie innerhalb von 3 Sekunden erneut zur Bestätigung.
 
+Passen die in diesem Browser gespeicherten Daten nicht mehr zum Format von RAGold, listet eine Fehlerseite die Probleme auf, und es wird nichts verändert.
+Exportieren Sie dort die Daten, korrigieren Sie die `annotations.json`, setzen Sie dann die App zurück und importieren Sie das Archiv.
+
 ## Hintergrund
 
 Die Arten von Fragen folgen den Fragetypen des CRAG-Benchmarks ([Yang et al. 2024](https://doi.org/10.52202/079017-0335)): simple, simple with condition, comparison, aggregation, set, multi-hop, post-processing und false premise.

@@ -5,6 +5,7 @@ import { DocumentManager } from "@/components/DocumentManager";
 import { FaqPage } from "@/components/FaqPage";
 import Header from "@/components/Header";
 import { MetadataManager } from "@/components/MetadataManager";
+import { RecoveryScreen } from "@/components/RecoveryScreen";
 import { TransferDialog } from "@/components/TransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/lib/store";
@@ -13,6 +14,7 @@ export default function App() {
   const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
   const documents = useStore((s) => s.documents);
+  const loadError = useStore((s) => s.loadError);
 
   const [activeTab, setActiveTab] = useState("guide");
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -22,6 +24,16 @@ export default function App() {
       tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   };
+
+  if (loadError) {
+    return (
+      <RecoveryScreen
+        title={t("loadError.title")}
+        description={t("loadError.description")}
+        details={loadError}
+      />
+    );
+  }
 
   const annotationCount = Object.keys(annotations).length;
   const documentCount = Object.keys(documents).length;

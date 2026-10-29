@@ -1,6 +1,6 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { deleteFile } from "@/lib/fileStorage";
-import { useStore } from "@/lib/store";
+import { STORE_KEY, useStore } from "@/lib/store";
 
 vi.mock(import("@/lib/fileStorage"), async (importOriginal) => ({
   ...(await importOriginal()),
@@ -35,4 +35,14 @@ it("removes the passages of a deleted document", () => {
 
   expect(useStore.getState().annotations[id].passages.map((p) => p.documentId)).toEqual(["b"]);
   expect(deleteFile).toHaveBeenCalledWith("a");
+});
+
+it("keeps stored data that fails to load", async () => {
+  const stored = JSON.stringify({ state: { version: 2 }, version: 0 });
+  localStorage.setItem(STORE_KEY, stored);
+
+  await useStore.persist.rehydrate();
+
+  expect(useStore.getState().loadError).toContain("version");
+  expect(localStorage.getItem(STORE_KEY)).toBe(stored);
 });

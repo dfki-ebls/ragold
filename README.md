@@ -91,6 +91,9 @@ All documents must be present with a matching `sha256`, and every passage `docum
 Documents whose content already exists are reused, all other annotations and documents receive fresh ids.
 The metadata of the archive is only adopted if the current project is empty.
 
+The project is stored in the browser and validated against the same schema when loaded.
+Stored data that fails validation is left untouched, and RAGold shows the errors with an export of the raw data and its files instead of the app.
+
 ## Passage Matching
 
 Passages are either selected in RAGold from the rendered original (PDF text layer, DOCX as HTML, XLSX cells as tab-separated values, plain text) or transferred as plain text derived from a converted document, so reading order, line breaks, hyphenation, and table layout may differ from the original.

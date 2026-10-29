@@ -92,6 +92,9 @@ RAGold finds passages even when line breaks, hyphenation, or formatting differ f
 The **Reset** button deletes all annotations, documents, and stored files.
 Click once to see the confirmation prompt, then click again within 3 seconds to confirm.
 
+If the data stored in this browser no longer matches the format of RAGold, an error page lists the problems and nothing is changed.
+Export the data there, fix its `annotations.json`, then reset the app and import the archive.
+
 ## Background
 
 The kinds of questions follow the question types of the CRAG benchmark ([Yang et al. 2024](https://doi.org/10.52202/079017-0335)): simple, simple with condition, comparison, aggregation, set, multi-hop, post-processing, and false premise.

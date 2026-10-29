@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { v1 as uuidv1 } from "uuid";
+import { z } from "zod";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import i18n, { type SupportedLanguage } from "@/i18n";
@@ -32,6 +33,8 @@ export interface DocumentFile {
 }
 
 interface AppState extends AnnotationData {
+  /** Why the stored data failed to load, which stays untouched while this is set. */
+  loadError: string | null;
   /** Throws a `ZodError` if the content is invalid or a passage refers to an unknown document. */
   addAnnotation: (content: AnnotationContent) => string;
   updateAnnotation: (id: string, content: AnnotationContent) => void;
@@ -95,6 +98,7 @@ export const useStore = create<AppState>()(
   persist(
     (set, get) => ({
       ...createEmptyState(),
+      loadError: null,
 
       addAnnotation: (content) => {
         const id = uuidv1();
@@ -272,10 +276,18 @@ export const useStore = create<AppState>()(
     {
       name: STORE_KEY,
       partialize: (state) => snapshot(state),
-      // Data of other schema versions is discarded, there is no migration.
+      // Data that does not validate, such as data of another schema version, is kept for export,
+      // since the app shows only the recovery screen and thus writes nothing while `loadError` is set.
       merge: (persisted, current) => {
+        if (persisted === undefined) {
+          return current;
+        }
+
         const result = annotationDataSchema.safeParse(persisted);
-        return result.success ? { ...current, ...result.data } : current;
+
+        return result.success
+          ? { ...current, ...result.data, loadError: null }
+          : { ...current, loadError: z.prettifyError(result.error) };
       },
       onRehydrateStorage: () => (state) => {
         if (state?.language) {

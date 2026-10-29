@@ -234,6 +234,11 @@ export const de: TranslationKeys = {
     openFile: "Datei öffnen",
     notFound: "Die Datei fehlt in diesem Browser.",
   },
+  loadError: {
+    title: "Gespeicherte Daten konnten nicht geladen werden",
+    description:
+      "Die Daten in diesem Browser entsprechen nicht dem aktuellen Format von RAGold. Es wurde nichts geändert oder gelöscht. Exportieren Sie die Daten, korrigieren Sie die aufgeführten Felder in der annotations.json, setzen Sie dann die App zurück und importieren Sie das Archiv.",
+  },
   errorBoundary: {
     title: "Etwas ist schiefgelaufen",
     description:
