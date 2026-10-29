@@ -73,10 +73,11 @@ describe("mergeImport", () => {
     useStore.setState({ author: "Alice", documents: { local: await document("local.txt", known) } });
 
     const ids = await mergeImport(await archive(new Map([["a", known], ["b", fresh]])));
-    const { annotations, documents, author } = useStore.getState();
+    const { annotations, documents, author, project } = useStore.getState();
     const newDocumentId = Object.keys(documents).find((id) => id !== "local");
 
-    expect(author).toBe("Alice");
+    // Only unset metadata is taken from the archive.
+    expect([author, project]).toEqual(["Alice", "Imported"]);
     expect(ids).toHaveLength(1);
     expect(Object.keys(documents)).toHaveLength(2);
     expect(annotations[ids[0]].passages.map((p) => p.documentId)).toEqual(["local", newDocumentId]);

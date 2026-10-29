@@ -48,12 +48,10 @@ export async function readArchive(zipBlob: Blob): Promise<Archive> {
  * Merge an archive into the current project and return the new annotation ids.
  * Everything is validated before anything is written,
  * documents with known content are reused, and all other ids are regenerated.
- * Metadata is only adopted if the current project is empty.
+ * Metadata of the archive only fills fields that are still unset, so what the user entered is kept.
  */
 export async function mergeImport({ data, files }: Archive): Promise<string[]> {
   const state = useStore.getState();
-  const adoptMetadata =
-    Object.keys(state.annotations).length === 0 && Object.keys(state.documents).length === 0;
   const documents = Object.entries(data.documents);
   const results = await state.addFiles(
     documents.map(([id, doc]) => {
@@ -84,12 +82,10 @@ export async function mergeImport({ data, files }: Archive): Promise<string[]> {
   useStore.setState((current) => ({
     annotations: { ...current.annotations, ...annotations },
     updatedAt: dayjs().toISOString(),
-    ...(adoptMetadata && { author: data.author, project: data.project, notes: data.notes }),
+    author: current.author ?? data.author,
+    project: current.project ?? data.project,
+    notes: current.notes || data.notes,
   }));
-
-  if (adoptMetadata) {
-    state.setLanguage(data.language);
-  }
 
   return Object.keys(annotations);
 }

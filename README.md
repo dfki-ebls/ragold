@@ -93,7 +93,7 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
 Importing an archive merges it into the current project.
 All documents must be present with a matching `sha256`, and every passage `documentId` that is not null must refer to one of them.
 Documents whose content already exists are reused, all other annotations and documents receive fresh ids.
-The metadata of the archive is only adopted if the current project is empty.
+The author, project, and notes of the archive only fill fields that are still empty, its language is never adopted.
 An archive with a single annotation opens it in the form.
 
 The project is stored in the browser and validated against the same schema when loaded.

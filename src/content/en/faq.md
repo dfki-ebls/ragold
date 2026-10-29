@@ -76,7 +76,7 @@ You must fill in the **Author** and **Project** fields and create at least one a
 
 The **Import** button adds the annotations and documents of an exported zip archive to the current project.
 Documents with the same content as existing ones are reused, and nothing is imported if the archive is invalid.
-The author, project, and notes of the archive are only taken over if the current project is still empty.
+The author, project, and notes of the archive only fill fields that are still empty, so what you entered is never replaced.
 A confirmation dialog will appear before the import proceeds.
 If the archive holds a single annotation, it opens in the form so that you can review it right away.
 

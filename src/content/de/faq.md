@@ -76,7 +76,7 @@ Sie müssen die Felder **Autor** und **Projekt** ausfüllen und mindestens eine 
 
 Der **Import**-Button fügt die Annotationen und Dokumente eines exportierten Zip-Archivs zum aktuellen Projekt hinzu.
 Dokumente mit demselben Inhalt wie vorhandene werden wiederverwendet, und bei einem ungültigen Archiv wird nichts importiert.
-Autor, Projekt und Anmerkungen des Archivs werden nur übernommen, wenn das aktuelle Projekt noch leer ist.
+Autor, Projekt und Anmerkungen des Archivs füllen nur Felder, die noch leer sind, Ihre Eingaben werden also nie ersetzt.
 Ein Bestätigungsdialog erscheint vor dem Import.
 Enthält das Archiv eine einzelne Annotation, öffnet sie sich im Formular, damit Sie sie gleich prüfen können.
 
