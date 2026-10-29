@@ -17,6 +17,7 @@ import {
   rejectTransfer,
   type TransferRequest,
 } from "@/lib/transfer";
+import { showImported } from "@/lib/store";
 import { errorMessage } from "@/lib/utils";
 
 /** Confirms imports sent by the window that opened RAGold with `#import`. */
@@ -45,8 +46,7 @@ export function TransferDialog() {
     setRequest(null);
 
     try {
-      const count = await acceptTransfer(request);
-      toast.success(t("header.importSuccess", { count }));
+      showImported(await acceptTransfer(request));
     } catch (error) {
       toast.error(t("header.importError", { message: errorMessage(error) }));
     }

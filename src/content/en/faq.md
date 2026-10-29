@@ -78,11 +78,12 @@ The **Import** button adds the annotations and documents of an exported zip arch
 Documents with the same content as existing ones are reused, and nothing is imported if the archive is invalid.
 The author, project, and notes of the archive are only taken over if the current project is still empty.
 A confirmation dialog will appear before the import proceeds.
+If the archive holds a single annotation, it opens in the form so that you can review it right away.
 
 ### Transfer from hivegent
 
 In hivegent, you can send a conversation to RAGold.
-RAGold opens in a new tab and asks whether to add the annotation together with the documents it cites.
+RAGold opens in a new tab and asks whether to add the annotation together with the documents it cites, then opens it in the form.
 Such annotations carry a **From conversation** badge that links back to the conversation.
 Their passages usually have no location yet, so the viewer searches the document for the passage text and highlights it when you click the magnifier.
 RAGold finds passages even when line breaks, hyphenation, or formatting differ from the document.

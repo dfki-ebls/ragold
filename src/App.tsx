@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AnnotationManager } from "@/components/AnnotationManager";
 import { DocumentManager } from "@/components/DocumentManager";
@@ -8,7 +8,7 @@ import { MetadataManager } from "@/components/MetadataManager";
 import { RecoveryScreen } from "@/components/RecoveryScreen";
 import { TransferDialog } from "@/components/TransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useStore } from "@/lib/store";
+import { useStore, useView } from "@/lib/store";
 
 export default function App() {
   const { t } = useTranslation();
@@ -16,14 +16,25 @@ export default function App() {
   const documents = useStore((s) => s.documents);
   const loadError = useStore((s) => s.loadError);
 
-  const [activeTab, setActiveTab] = useState("guide");
+  const activeTab = useView((s) => s.tab);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const scrollToTabs = () => {
+  const scrollToTabs = useCallback(() => {
     requestAnimationFrame(() => {
       tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-  };
+  }, []);
+
+  // Bring the form into view whenever an annotation is loaded into it, including by an import.
+  useEffect(
+    () =>
+      useView.subscribe((state, prev) => {
+        if (state.editingId && state.editingId !== prev.editingId) {
+          scrollToTabs();
+        }
+      }),
+    [scrollToTabs],
+  );
 
   if (loadError) {
     return (
@@ -44,7 +55,7 @@ export default function App() {
       <main className="max-w-4xl mx-auto px-4 py-6">
         <MetadataManager />
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={(tab: string) => useView.setState({ tab })}>
           <TabsList ref={tabsRef} className="mb-4 flex w-fit flex-wrap gap-1 h-auto mx-auto">
             <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
             <TabsTrigger value="documents">

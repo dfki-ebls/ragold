@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDirtyForms, useStore } from "@/lib/store";
+import { editAnnotation, useStore, useView } from "@/lib/store";
 import { type Annotation, type AnnotationContent, PASSAGE_GRADES } from "@/lib/types";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { formatTimestamp } from "@/lib/utils";
@@ -150,10 +150,10 @@ function AnnotationItem({
 export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
   const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
-  const annotationFormDirty = useDirtyForms((s) => s.annotation);
   const { isConfirming, confirm } = useConfirmAction();
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const editingId = useView((s) => s.editingId);
+  const pendingEditId = useView((s) => s.pendingEditId);
+  const setEditingId = (id: string | null) => useView.setState({ editingId: id });
   const scrollPendingRef = useRef(false);
 
   useEffect(() => {
@@ -181,15 +181,6 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
 
   const handleCancel = () => {
     setEditingId(null);
-  };
-
-  const handleEdit = (id: string) => {
-    if (annotationFormDirty) {
-      setPendingEditId(id);
-      return;
-    }
-    setEditingId(id);
-    scrollPendingRef.current = true;
   };
 
   const handleDelete = (id: string) => {
@@ -226,7 +217,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
                 <AnnotationItem
                   key={id}
                   annotation={annotation}
-                  onEdit={() => handleEdit(id)}
+                  onEdit={() => editAnnotation(id)}
                   onDelete={() => handleDelete(id)}
                   deleteConfirm={isConfirming(id)}
                 />
@@ -238,7 +229,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
       <AlertDialog
         open={pendingEditId !== null}
         onOpenChange={(open) => {
-          if (!open) setPendingEditId(null);
+          if (!open) useView.setState({ pendingEditId: null });
         }}
       >
         <AlertDialogContent>
@@ -250,11 +241,7 @@ export function AnnotationManager({ scrollToTabs }: AnnotationManagerProps) {
             <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               variant="destructive"
-              onClick={() => {
-                setEditingId(pendingEditId);
-                setPendingEditId(null);
-                scrollPendingRef.current = true;
-              }}
+              onClick={() => useView.setState({ editingId: pendingEditId, pendingEditId: null })}
             >
               {t("common.confirm")}
             </AlertDialogAction>

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { toast } from "sonner";
 import { v1 as uuidv1 } from "uuid";
 import { z } from "zod";
 import { create } from "zustand";
@@ -307,6 +308,35 @@ window.addEventListener("storage", (event) => {
 
 /** Unsaved form changes, kept apart so that typing does not persist the whole store. */
 export const useDirtyForms = create(() => ({ annotation: false, document: false }));
+
+/** What the page shows, kept in a store so that imports can open what they added. */
+export const useView = create(() => ({
+  tab: "guide",
+  /** Annotation loaded into the form, which creates a new one while this is null. */
+  editingId: null as string | null,
+  /** Annotation to load once the user agrees to discard unsaved form changes. */
+  pendingEditId: null as string | null,
+}));
+
+/** Load an annotation into the form, after a confirmation if that discards unsaved changes. */
+export function editAnnotation(id: string): void {
+  useView.setState(useDirtyForms.getState().annotation ? { pendingEditId: id } : { editingId: id });
+}
+
+/** Report an import, and load a single imported annotation into the form, larger imports stay in the library. */
+export function showImported(ids: readonly string[]): void {
+  if (ids.length === 0) {
+    toast.warning(i18n.t("header.importEmpty"));
+    return;
+  }
+
+  toast.success(i18n.t("header.importSuccess", { count: ids.length }));
+
+  if (ids.length === 1) {
+    useView.setState({ tab: "annotations" });
+    editAnnotation(ids[0]);
+  }
+}
 
 /** Clear all persisted app data (IndexedDB and localStorage) and reload. */
 export async function resetApp(): Promise<void> {

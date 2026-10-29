@@ -90,6 +90,7 @@ Importing an archive merges it into the current project.
 All documents must be present with a matching `sha256`, and every passage `documentId` must refer to one of them.
 Documents whose content already exists are reused, all other annotations and documents receive fresh ids.
 The metadata of the archive is only adopted if the current project is empty.
+An archive with a single annotation opens it in the form.
 
 The project is stored in the browser and validated against the same schema when loaded.
 Stored data that fails validation is left untouched, and RAGold shows the errors with an export of the raw data and its files instead of the app.

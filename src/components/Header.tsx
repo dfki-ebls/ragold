@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { SupportedLanguage } from "@/i18n";
 import { exportArchive, mergeImport, readArchive } from "@/lib/archive";
-import { resetApp, useDirtyForms, useStore } from "@/lib/store";
+import { resetApp, showImported, useDirtyForms, useStore } from "@/lib/store";
 import { useConfirmAction } from "@/lib/useConfirmAction";
 import { errorMessage } from "@/lib/utils";
 
@@ -61,12 +61,7 @@ export default function Header() {
     if (!file) return;
 
     try {
-      const { length: count } = await mergeImport(await readArchive(file));
-      if (count > 0) {
-        toast.success(t("header.importSuccess", { count }));
-      } else {
-        toast.warning(t("header.importEmpty"));
-      }
+      showImported(await mergeImport(await readArchive(file)));
     } catch (err) {
       toast.error(
         t("header.importError", {

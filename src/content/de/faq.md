@@ -78,11 +78,12 @@ Der **Import**-Button fügt die Annotationen und Dokumente eines exportierten Zi
 Dokumente mit demselben Inhalt wie vorhandene werden wiederverwendet, und bei einem ungültigen Archiv wird nichts importiert.
 Autor, Projekt und Anmerkungen des Archivs werden nur übernommen, wenn das aktuelle Projekt noch leer ist.
 Ein Bestätigungsdialog erscheint vor dem Import.
+Enthält das Archiv eine einzelne Annotation, öffnet sie sich im Formular, damit Sie sie gleich prüfen können.
 
 ### Übernahme aus hivegent
 
 In hivegent können Sie eine Unterhaltung an RAGold senden.
-RAGold öffnet sich in einem neuen Tab und fragt, ob die Annotation zusammen mit den zitierten Dokumenten hinzugefügt werden soll.
+RAGold öffnet sich in einem neuen Tab, fragt, ob die Annotation zusammen mit den zitierten Dokumenten hinzugefügt werden soll, und öffnet sie dann im Formular.
 Solche Annotationen tragen ein Abzeichen **Aus Unterhaltung**, das zur Unterhaltung zurückführt.
 Ihre Passagen haben meist noch keine Fundstelle, daher sucht die Dokumentansicht den Text der Passage im Dokument und hebt ihn hervor, wenn Sie auf die Lupe klicken.
 RAGold findet Passagen auch dann, wenn Zeilenumbrüche, Silbentrennung oder Formatierung vom Dokument abweichen.

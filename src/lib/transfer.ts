@@ -75,13 +75,13 @@ export function receiveTransfer(): Promise<TransferRequest> | undefined {
   return pending;
 }
 
-/** Merge the received archive, report the result to the opener, and return the annotation count. */
-export async function acceptTransfer({ origin, archive }: TransferRequest): Promise<number> {
+/** Merge the received archive, report the result to the opener, and return the new annotation ids. */
+export async function acceptTransfer({ origin, archive }: TransferRequest): Promise<string[]> {
   try {
-    const { length: count } = await mergeImport(archive);
-    respond(origin, { ok: true, count });
+    const ids = await mergeImport(archive);
+    respond(origin, { ok: true, count: ids.length });
 
-    return count;
+    return ids;
   } catch (error) {
     respond(origin, { ok: false, error: errorMessage(error) });
     throw error;
