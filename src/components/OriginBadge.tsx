@@ -7,10 +7,10 @@ function isWebUrl(value: string): boolean {
 }
 
 /** Link to the conversation an annotation was created from, nothing for manual annotations. */
-export function OriginBadge({ origin }: { origin: string }) {
+export function OriginBadge({ origin }: { origin: string | null }) {
   const { t } = useTranslation();
 
-  if (!origin) {
+  if (origin === null) {
     return null;
   }
 

@@ -25,23 +25,33 @@ export const KEY_FACT_IMPORTANCES = ["must", "nice"] as const;
 
 const timestampSchema = z.iso.datetime({ offset: true }).meta({ id: "Timestamp" });
 
+/** Text with more than whitespace, stored trimmed. */
+const requiredText = z.string().trim().min(1);
+
+/** Free text that may be left empty. */
+const optionalText = z.string().default("");
+
+/** Reference such as an id, link, or location, null if there is none. */
+const optionalReference = requiredText.nullable().default(null);
+
 export const passageSchema = z.object({
-  documentId: z.string().min(1),
-  text: z.string().min(1),
-  location: z.string().default(""),
+  /** Null for snippets whose file is not available, `location` then names their source. */
+  documentId: optionalReference,
+  text: requiredText,
+  location: optionalReference,
   grade: z.enum(PASSAGE_GRADES),
 }).meta({ id: "Passage" });
 
 export const keyFactSchema = z.object({
-  text: z.string().min(1),
+  text: requiredText,
   importance: z.enum(KEY_FACT_IMPORTANCES),
 }).meta({ id: "KeyFact" });
 
 export const documentSchema = z.object({
-  name: z.string().min(1),
+  name: requiredText,
   size: z.int().nonnegative(),
   sha256: z.string().regex(/^[0-9a-f]{64}$/),
-  notes: z.string().default(""),
+  notes: optionalText,
   createdAt: timestampSchema,
   updatedAt: timestampSchema,
 }).meta({ id: "Document" });
@@ -52,14 +62,14 @@ export function isKeyFactInResponse(text: string, response: string): boolean {
 }
 
 const annotationFields = z.object({
-  query: z.string().min(1),
+  query: requiredText,
   questionType: z.enum(QUESTION_TYPES),
   answerability: z.enum(ANSWERABILITIES),
   passages: z.array(passageSchema).default([]),
-  response: z.string().min(1),
+  response: requiredText,
   keyFacts: z.array(keyFactSchema).default([]),
-  origin: z.string().default(""),
-  notes: z.string().default(""),
+  origin: optionalReference,
+  notes: optionalText,
 });
 
 // Custom issues carry i18n keys as their messages.
@@ -85,7 +95,7 @@ function checkDocuments(
   path: PropertyKey[] = [],
 ): void {
   passages.forEach((passage, i) => {
-    if (!Object.hasOwn(documents, passage.documentId)) {
+    if (passage.documentId !== null && !Object.hasOwn(documents, passage.documentId)) {
       ctx.addIssue({
         code: "custom",
         message: "form.documentMissing",
@@ -98,7 +108,7 @@ function checkDocuments(
 /** Annotation without timestamps, as edited in the form and passed to the store. */
 export const annotationContentSchema = annotationFields.superRefine(checkKeyFacts);
 
-/** Content schema that also requires every passage to refer to one of `documents`. */
+/** Content schema that also requires every passage with a document to refer to one of `documents`. */
 export function annotationContentSchemaFor(documents: Record<string, Document>) {
   return annotationContentSchema.superRefine((annotation, ctx) =>
     checkDocuments(annotation.passages, documents, ctx),
@@ -110,21 +120,36 @@ export const annotationSchema = annotationFields
   .superRefine(checkKeyFacts)
   .meta({ id: "Annotation" });
 
-export const annotationDataSchema = z.object({
+const dataFields = z.object({
   version: z.literal(SCHEMA_VERSION),
-  author: z.string().default(""),
-  project: z.string().default(""),
-  notes: z.string().default(""),
+  author: requiredText,
+  project: requiredText,
+  notes: optionalText,
   language: z.enum(supportedLanguages).default(defaultLanguage),
   createdAt: timestampSchema,
   updatedAt: timestampSchema,
   annotations: z.record(z.string(), annotationSchema).default({}),
   documents: z.record(z.string(), documentSchema).default({}),
-}).superRefine((data, ctx) => {
+});
+
+function checkDataDocuments(
+  data: Pick<z.output<typeof dataFields>, "annotations" | "documents">,
+  ctx: z.RefinementCtx,
+): void {
   for (const [id, annotation] of Object.entries(data.annotations)) {
     checkDocuments(annotation.passages, data.documents, ctx, ["annotations", id]);
   }
-}).meta({ title: "AnnotationData" });
+}
+
+/** Exported data, the contract of archives. */
+export const annotationDataSchema = dataFields
+  .superRefine(checkDataDocuments)
+  .meta({ title: "AnnotationData" });
+
+/** Data as stored in the browser, whose author and project stay unset until they are entered. */
+export const storedDataSchema = dataFields
+  .extend({ author: requiredText.nullable().default(null), project: requiredText.nullable().default(null) })
+  .superRefine(checkDataDocuments);
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
 export type Answerability = (typeof ANSWERABILITIES)[number];
@@ -141,6 +166,7 @@ export type AnnotationDraft = Omit<AnnotationContent, "questionType" | "answerab
   answerability: Answerability | null;
 };
 export type AnnotationData = z.output<typeof annotationDataSchema>;
+export type StoredData = z.output<typeof storedDataSchema>;
 
 /**
  * JSON Schema of the envelope, the contract for producers such as hivegent.

@@ -1,5 +1,10 @@
 import dayjs from "dayjs";
 
+/** Text typed into an optional field, null if it is blank. */
+export function textOrNull(value: string): string | null {
+  return value.trim() ? value : null;
+}
+
 /**
  * Returns a unique name by appending a numeric suffix if the name already
  * exists in the provided set. Mimics OS file manager behavior:

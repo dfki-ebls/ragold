@@ -37,7 +37,7 @@ export default function Header() {
   const [isExporting, setIsExporting] = useState(false);
 
   const annotationCount = Object.keys(annotations).length;
-  const isMetadataComplete = author.trim() && project.trim();
+  const isMetadataComplete = author !== null && project !== null;
 
   const handleClear = () => {
     confirm("reset", () => {

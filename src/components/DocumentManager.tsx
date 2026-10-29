@@ -49,7 +49,7 @@ function documentUsage(annotations: Record<string, Annotation>): Map<string, Usa
   const usage = new Map<string, Usage>();
 
   for (const { passages } of Object.values(annotations)) {
-    const ids = passages.map((p) => p.documentId);
+    const ids = passages.flatMap((p) => p.documentId ?? []);
 
     for (const id of new Set(ids)) {
       usage.set(id, {

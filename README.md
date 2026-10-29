@@ -55,10 +55,10 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
       "query": "",
       "questionType": "simple",
       "answerability": "answerable",
-      "passages": [{ "documentId": "<documentId>", "text": "", "location": "", "grade": "needed" }],
+      "passages": [{ "documentId": "<documentId>", "text": "", "location": null, "grade": "needed" }],
       "response": "",
       "keyFacts": [{ "text": "", "importance": "must" }],
-      "origin": "",
+      "origin": null,
       "notes": "",
       "createdAt": "2026-01-01T00:00:00.000Z",
       "updatedAt": "2026-01-01T00:00:00.000Z"
@@ -77,17 +77,21 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
 }
 ```
 
+- Required texts such as `author`, `project`, `query`, `response`, and `name` are trimmed and must not be empty.
+- `notes` are free text and default to an empty string.
+- References (`documentId`, `location`, `origin`) are null when absent, never empty, and may be omitted.
 - `questionType` is one of the CRAG types `simple`, `simple_w_condition`, `comparison`, `aggregation`, `set`, `multi-hop`, `post-processing`, `false_premise`.
 - `answerability` is `answerable`, `partial`, or `unanswerable` (MTRAG without the conversational class).
   Like `questionType` and `grade`, it has no default and must be chosen explicitly.
 - `grade` of a passage is `needed`, `helpful`, or `misleading`.
 - `location` of a passage is language-neutral: `page=4` or `page=4-5` for PDF, `line=10` or `line=10-12` for text files, an A1 range such as `Sheet1!B2:D5` for XLSX, and the nearest heading for DOCX.
-  Locations entered by hand are free text.
+  Locations entered by hand are free text, and name the source of passages without a document.
+- `documentId` of a passage is null for snippets whose file is not available.
 - Every key fact must be a verbatim excerpt of `response`, and its `importance` is `must` or `nice`.
-- `origin` links to the source conversation and is empty for manual annotations.
+- `origin` links to the source conversation and is null for manual annotations.
 
 Importing an archive merges it into the current project.
-All documents must be present with a matching `sha256`, and every passage `documentId` must refer to one of them.
+All documents must be present with a matching `sha256`, and every passage `documentId` that is not null must refer to one of them.
 Documents whose content already exists are reused, all other annotations and documents receive fresh ids.
 The metadata of the archive is only adopted if the current project is empty.
 An archive with a single annotation opens it in the form.

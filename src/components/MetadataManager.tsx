@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/store";
+import { textOrNull } from "@/lib/utils";
 
 export function MetadataManager() {
   const { t } = useTranslation();
@@ -23,8 +24,8 @@ export function MetadataManager() {
             </Label>
             <Input
               id="author"
-              value={author}
-              onChange={(e) => useStore.getState().setAuthor(e.target.value)}
+              value={author ?? ""}
+              onChange={(e) => useStore.getState().setAuthor(textOrNull(e.target.value))}
               placeholder={t("metadata.authorPlaceholder")}
             />
           </div>
@@ -35,8 +36,8 @@ export function MetadataManager() {
             </Label>
             <Input
               id="project"
-              value={project}
-              onChange={(e) => useStore.getState().setProject(e.target.value)}
+              value={project ?? ""}
+              onChange={(e) => useStore.getState().setProject(textOrNull(e.target.value))}
               placeholder={t("metadata.projectPlaceholder")}
             />
           </div>

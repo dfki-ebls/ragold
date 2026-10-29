@@ -9,11 +9,11 @@ import { deleteFile, putFiles, resetIndexedDb, sha256 } from "@/lib/fileStorage"
 import {
   type Annotation,
   type AnnotationContent,
-  type AnnotationData,
   annotationContentSchemaFor,
-  annotationDataSchema,
   type Document,
   SCHEMA_VERSION,
+  type StoredData,
+  storedDataSchema,
 } from "@/lib/types";
 import { uniqueName } from "@/lib/utils";
 
@@ -33,7 +33,7 @@ export interface DocumentFile {
   id?: string;
 }
 
-interface AppState extends AnnotationData {
+interface AppState extends StoredData {
   /** Why the stored data failed to load, which stays untouched while this is set. */
   loadError: string | null;
   /** Throws a `ZodError` if the content is invalid or a passage refers to an unknown document. */
@@ -53,8 +53,8 @@ interface AppState extends AnnotationData {
   /** Also removes the passages that refer to the document, so that exports stay consistent. */
   deleteDocument: (id: string) => void;
 
-  setAuthor: (author: string) => void;
-  setProject: (project: string) => void;
+  setAuthor: (author: string | null) => void;
+  setProject: (project: string | null) => void;
   setNotes: (notes: string) => void;
   setLanguage: (language: SupportedLanguage) => void;
 }
@@ -70,7 +70,7 @@ export function snapshot({
   updatedAt,
   annotations,
   documents,
-}: AnnotationData): AnnotationData {
+}: StoredData): StoredData {
   return { version, author, project, notes, language, createdAt, updatedAt, annotations, documents };
 }
 
@@ -84,10 +84,10 @@ function otherNames(documents: Record<string, Document>, excludeId?: string): st
     .map(([, doc]) => doc.name);
 }
 
-function createEmptyState(): AnnotationData {
+function createEmptyState(): StoredData {
   const now = dayjs().toISOString();
 
-  return annotationDataSchema.parse({
+  return storedDataSchema.parse({
     version: SCHEMA_VERSION,
     language: i18n.language,
     createdAt: now,
@@ -284,7 +284,7 @@ export const useStore = create<AppState>()(
           return current;
         }
 
-        const result = annotationDataSchema.safeParse(persisted);
+        const result = storedDataSchema.safeParse(persisted);
 
         return result.success
           ? { ...current, ...result.data, loadError: null }

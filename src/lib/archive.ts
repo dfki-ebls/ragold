@@ -67,7 +67,7 @@ export async function mergeImport({ data, files }: Archive): Promise<string[]> {
     }),
   );
   const idMap = new Map(documents.map(([id], i) => [id, results[i].id]));
-  // The schema guarantees that every passage refers to a document of the archive.
+  // The schema guarantees that every passage with a document refers to one of the archive.
   const annotations = Object.fromEntries(
     Object.values(data.annotations).map((annotation) => [
       uuidv1(),
@@ -75,7 +75,7 @@ export async function mergeImport({ data, files }: Archive): Promise<string[]> {
         ...annotation,
         passages: annotation.passages.map((p) => ({
           ...p,
-          documentId: idMap.get(p.documentId) ?? p.documentId,
+          documentId: p.documentId && (idMap.get(p.documentId) ?? p.documentId),
         })),
       },
     ]),
@@ -122,7 +122,11 @@ async function zipArchive(
 /** Download the current project as a zip archive. */
 export async function exportArchive(): Promise<void> {
   const now = dayjs();
-  const data: AnnotationData = { ...snapshot(useStore.getState()), updatedAt: now.toISOString() };
+  // Validated, since the stored data may lack the author or project that archives require.
+  const data = annotationDataSchema.parse({
+    ...snapshot(useStore.getState()),
+    updatedAt: now.toISOString(),
+  });
   downloadBlob(await zipArchive(data), `ragold-${now.format("YYYYMMDD-HHmmss")}.zip`);
   useStore.setState({ updatedAt: data.updatedAt });
 }
