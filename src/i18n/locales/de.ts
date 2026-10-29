@@ -257,7 +257,7 @@ export const de: TranslationKeys = {
     titleNew: "Dokumente hochladen",
     titleEdit: "Dokument bearbeiten",
     dropzoneLabel: "Dateien hierher ziehen oder klicken zum Auswählen",
-    dropzoneHint: "Beliebiger Dateityp, max. 10 MB pro Datei. Mehrere Dateien möglich.",
+    dropzoneHint: "Beliebiger Dateityp, max. {{max}} MB pro Datei. Mehrere Dateien möglich.",
     dropzoneHintEdit: "Ersatzdatei hierher ziehen oder klicken zum Auswählen.",
     library: "Dokumentbibliothek ({{count}})",
     empty: "Noch keine Dokumente vorhanden.",

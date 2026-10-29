@@ -15,7 +15,7 @@ Optional können Sie **Anmerkungen** zum Datensatz hinzufügen.
 
 Gehen Sie zum Tab **Dokumente**, um Ihre Referenzdokumente hochzuladen.
 Sie können Dateien per Drag-and-Drop ablegen oder klicken, um sie auszuwählen, auch mehrere auf einmal.
-Jeder Dateityp wird akzeptiert, mit einer maximalen Größe von 10 MB pro Datei.
+Jeder Dateityp wird akzeptiert, mit einer maximalen Größe von 50 MB pro Datei.
 Jedes Dokument erhält einen kurzen Fingerabdruck seines Inhalts.
 Laden Sie eine Datei hoch, deren Inhalt bereits vorhanden ist, weist RAGold darauf hin und behält das vorhandene Dokument.
 Über **Bearbeiten** in der Dokumentbibliothek können Sie ein Dokument umbenennen, seine Datei ersetzen oder **Anmerkungen** hinzufügen.

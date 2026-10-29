@@ -15,7 +15,7 @@ You can also add optional **Notes** for the dataset.
 
 Go to the **Documents** tab to upload your reference documents.
 You can drag and drop files or click to select them, several files at once are fine.
-Any file type is accepted, with a maximum size of 10 MB per file.
+Any file type is accepted, with a maximum size of 50 MB per file.
 Every document gets a short fingerprint of its content.
 If you upload a file whose content already exists, RAGold tells you and keeps the existing document.
 You can rename a document, replace its file, or add **Notes** by clicking **Edit** in the document library.

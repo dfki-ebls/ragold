@@ -245,7 +245,7 @@ export const en = {
     titleNew: "Upload Documents",
     titleEdit: "Edit Document",
     dropzoneLabel: "Drop files here or click to select",
-    dropzoneHint: "Any file type, max 10 MB per file. Multiple files supported.",
+    dropzoneHint: "Any file type, max {{max}} MB per file. Multiple files supported.",
     dropzoneHintEdit: "Drop a replacement file or click to select.",
     library: "Document Library ({{count}})",
     empty: "No documents yet.",

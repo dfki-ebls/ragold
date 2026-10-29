@@ -13,7 +13,7 @@ Question types follow [CRAG](https://doi.org/10.52202/079017-0335) and answerabi
   Images and other file types can be opened externally, with manual entry as a fallback for any file.
   Existing passages, such as those transferred without a location, are searched for and highlighted in their document.
 - Mark key facts by selecting them in the ideal answer, with key facts that no longer match an edited answer flagged for review.
-- Upload source documents (any file type, max 10 MB each) with drag-and-drop and bulk upload support, and add optional notes.
+- Upload source documents (any file type, max 50 MB each) with drag-and-drop and bulk upload support, and add optional notes.
   Identical files are detected by their SHA-256 hash and stored only once.
   Deleting a document also removes the passages that refer to it after a confirmation.
 - Export annotation datasets as zip archives and merge such archives into the current project.

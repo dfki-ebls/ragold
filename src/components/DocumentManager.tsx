@@ -366,7 +366,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
               inputRef={fileInputRef}
               multiple
               onChange={handleFileInputChange}
-              hint={t("documentManager.dropzoneHint")}
+              hint={t("documentManager.dropzoneHint", { max: MAX_FILE_SIZE_MB })}
               isDragging={isDragging}
               setIsDragging={setIsDragging}
               onDrop={handleDrop}

@@ -1,5 +1,5 @@
-/** Maximum allowed file size in bytes (10 MB). */
-export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+/** Maximum allowed file size in bytes (50 MB). */
+export const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 const DB_NAME = "ragold-files";
 const DB_VERSION = 1;
