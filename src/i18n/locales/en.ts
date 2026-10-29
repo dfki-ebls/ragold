@@ -189,10 +189,10 @@ export const en = {
     noMatch: "No matching document.",
     choosePrompt:
       "Choose a document to select passages in it. For text whose file is not available, choose Without document.",
-    snippetDescription:
+    noDocumentDescription:
       "Enter text whose file is not available here, such as a quote from a printed source, and name where it comes from.",
     listDocument: "In this document ({{count}})",
-    listSnippets: "Without document ({{count}})",
+    listNoDocument: "Without document ({{count}})",
     gradeTitle: "How important is this passage?",
     manualTitle: "Enter a passage by hand",
     manualDescription:

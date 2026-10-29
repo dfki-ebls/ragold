@@ -12,7 +12,7 @@ Question types follow [CRAG](https://doi.org/10.52202/079017-0335) and answerabi
   page for PDF, nearest heading for DOCX, cell range for XLSX, and line numbers for text files.
   Images and other file types can be opened externally, with manual entry as a fallback for any file.
   All passages of a document are highlighted by grade and listed next to it for regrading, and passages transferred without a location are searched for by their text.
-  Snippets whose file is not available can be added without a document.
+  Passages whose file is not available can be added without a document.
   Parsed documents are cached, so reopening the viewer is instant.
 - Mark key facts by selecting them in the ideal answer, with key facts that no longer match an edited answer flagged for review.
 - Upload source documents (any file type, max 50 MB each) with drag-and-drop and bulk upload support, and add optional notes.
@@ -88,7 +88,7 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
 - `grade` of a passage is `needed`, `helpful`, or `misleading`.
 - `location` of a passage is language-neutral: `page=4` or `page=4-5` for PDF, `line=10` or `line=10-12` for text files, an A1 range such as `Sheet1!B2:D5` for XLSX, and the nearest heading for DOCX.
   Locations entered by hand are free text, and name the source of passages without a document.
-- `documentId` of a passage is null for snippets whose file is not available.
+- `documentId` of a passage is null if its file is not available.
 - Every key fact must be a verbatim excerpt of `response`, and its `importance` is `must` or `nice`.
 - `origin` links to the source conversation and is null for manual annotations.
 

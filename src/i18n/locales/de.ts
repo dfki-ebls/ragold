@@ -197,10 +197,10 @@ export const de: TranslationKeys = {
     noMatch: "Kein passendes Dokument.",
     choosePrompt:
       "Wählen Sie ein Dokument, um darin Passagen zu markieren. Für Text, dessen Datei nicht verfügbar ist, wählen Sie Ohne Dokument.",
-    snippetDescription:
+    noDocumentDescription:
       "Geben Sie Text ein, dessen Datei hier nicht verfügbar ist, etwa ein Zitat aus einer gedruckten Quelle, und nennen Sie, woher er stammt.",
     listDocument: "In diesem Dokument ({{count}})",
-    listSnippets: "Ohne Dokument ({{count}})",
+    listNoDocument: "Ohne Dokument ({{count}})",
     gradeTitle: "Wie wichtig ist diese Passage?",
     manualTitle: "Passage von Hand eingeben",
     manualDescription:

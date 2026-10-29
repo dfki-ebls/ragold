@@ -162,7 +162,7 @@ export function PassageDialog({
     documentId === undefined ? (
       <Message>{t("passages.choosePrompt")}</Message>
     ) : documentId === null ? (
-      <Message>{t("passages.snippetDescription")}</Message>
+      <Message>{t("passages.noDocumentDescription")}</Message>
     ) : doc && file === undefined ? (
       <ViewerLoading />
     ) : doc && file ? (
@@ -206,7 +206,7 @@ export function PassageDialog({
           {documentId !== undefined && (
             <section className="max-h-48 space-y-2 overflow-auto lg:max-h-none">
               <h3 className="text-sm font-medium">
-                {t(documentId === null ? "passages.listSnippets" : "passages.listDocument", {
+                {t(documentId === null ? "passages.listNoDocument" : "passages.listDocument", {
                   count: shown.length,
                 })}
               </h3>
@@ -252,7 +252,7 @@ interface DocumentItem {
   name: string;
 }
 
-/** Searchable choice of a document, or none for snippets, with the passage count of each. */
+/** Searchable choice of a document, or none for passages without one, with the passage count of each. */
 function DocumentPicker({
   documents,
   passages,
@@ -321,7 +321,7 @@ function ManualEntry({
   defaultOpen,
   onAdd,
 }: {
-  /** The location then names the source of the snippet. */
+  /** The location then names the source of the passage. */
   withoutDocument: boolean;
   defaultOpen: boolean;
   onAdd: (passage: Omit<Passage, "documentId">) => void;

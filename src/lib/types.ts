@@ -35,7 +35,7 @@ const optionalText = z.string().default("");
 const optionalReference = requiredText.nullable().default(null);
 
 export const passageSchema = z.object({
-  /** Null for snippets whose file is not available, `location` then names their source. */
+  /** Null for passages whose file is not available, `location` then names their source. */
   documentId: optionalReference,
   text: requiredText,
   location: optionalReference,
