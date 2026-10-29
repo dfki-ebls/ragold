@@ -54,7 +54,7 @@ export function isKeyFactInResponse(text: string, response: string): boolean {
 const annotationFields = z.object({
   query: z.string().min(1),
   questionType: z.enum(QUESTION_TYPES),
-  answerability: z.enum(ANSWERABILITIES).default("answerable"),
+  answerability: z.enum(ANSWERABILITIES),
   passages: z.array(passageSchema).default([]),
   response: z.string().min(1),
   keyFacts: z.array(keyFactSchema).default([]),
@@ -135,6 +135,11 @@ export type KeyFact = z.output<typeof keyFactSchema>;
 export type Document = z.output<typeof documentSchema>;
 export type AnnotationContent = z.output<typeof annotationContentSchema>;
 export type Annotation = z.output<typeof annotationSchema>;
+/** Content as edited in the form, whose classification stays unset until the annotator picks it. */
+export type AnnotationDraft = Omit<AnnotationContent, "questionType" | "answerability"> & {
+  questionType: QuestionType | null;
+  answerability: Answerability | null;
+};
 export type AnnotationData = z.output<typeof annotationDataSchema>;
 
 /**
@@ -165,9 +170,13 @@ export type HintKey = "unanswerableWithNeeded" | "answerableWithoutNeeded" | "mu
 
 /** Soft consistency hints that do not block saving, returned as i18n keys under `hints`. */
 export function annotationHints(
-  annotation: Pick<AnnotationContent, "questionType" | "answerability" | "passages">,
+  annotation: Pick<AnnotationDraft, "questionType" | "answerability" | "passages">,
 ): HintKey[] {
   const needed = annotation.passages.filter((p) => p.grade === "needed").length;
+
+  if (annotation.answerability === null) {
+    return [];
+  }
 
   if (annotation.answerability === "unanswerable") {
     return needed > 0 ? ["unanswerableWithNeeded"] : [];
@@ -177,7 +186,7 @@ export function annotationHints(
     return ["answerableWithoutNeeded"];
   }
 
-  return MULTI_PASSAGE_TYPES.has(annotation.questionType) && needed < 2
+  return annotation.questionType && MULTI_PASSAGE_TYPES.has(annotation.questionType) && needed < 2
     ? ["multiPassageFewNeeded"]
     : [];
 }

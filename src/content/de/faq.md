@@ -32,6 +32,8 @@ Wechseln Sie zum Tab **Annotationen** und füllen Sie aus:
 5. **Ideale Antwort** und **Kernaussagen**: Schreiben Sie die Antwort und markieren Sie dann ihre Kernaussagen (siehe unten).
 6. **Anmerkungen** (optional): Fügen Sie besondere Hinweise zu diesem Beispiel hinzu.
 
+Nichts ist vorausgewählt, daher ist jede Art, Beantwortbarkeit und Einstufung eine bewusste Entscheidung.
+
 Das Formular zeigt Hinweise bei ungewöhnlichen Kombinationen, etwa wenn eine als nicht beantwortbar markierte Frage notwendige Passagen hat.
 Diese Hinweise verhindern das Speichern nicht.
 

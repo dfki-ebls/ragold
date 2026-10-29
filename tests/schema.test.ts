@@ -13,6 +13,7 @@ const now = "2026-01-01T00:00:00.000Z";
 const annotation = {
   query: "When was RAGold released?",
   questionType: "simple",
+  answerability: "answerable",
   passages: [{ documentId: "doc-1", text: "RAGold was released in 2026.", grade: "needed" }],
   response: "RAGold was released in 2026.",
   keyFacts: [{ text: "2026", importance: "must" }],
@@ -33,7 +34,6 @@ describe("annotationDataSchema", () => {
     });
 
     expect(result.annotations["ann-1"]).toMatchObject({
-      answerability: "answerable",
       origin: "",
       notes: "",
       passages: [{ location: "" }],
@@ -54,6 +54,12 @@ describe("annotationDataSchema", () => {
 });
 
 describe("annotationSchema", () => {
+  it("requires an explicit answerability", () => {
+    const { answerability: _, ...rest } = annotation;
+
+    expect(annotationSchema.safeParse(rest).success).toBe(false);
+  });
+
   it("requires key facts to be excerpts of the response", () => {
     const result = annotationSchema.safeParse({
       ...annotation,

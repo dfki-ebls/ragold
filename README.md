@@ -79,6 +79,7 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
 
 - `questionType` is one of the CRAG types `simple`, `simple_w_condition`, `comparison`, `aggregation`, `set`, `multi-hop`, `post-processing`, `false_premise`.
 - `answerability` is `answerable`, `partial`, or `unanswerable` (MTRAG without the conversational class).
+  Like `questionType` and `grade`, it has no default and must be chosen explicitly.
 - `grade` of a passage is `needed`, `helpful`, or `misleading`.
 - `location` of a passage is language-neutral: `page=4` or `page=4-5` for PDF, `line=10` or `line=10-12` for text files, an A1 range such as `Sheet1!B2:D5` for XLSX, and the nearest heading for DOCX.
   Locations entered by hand are free text.

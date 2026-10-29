@@ -183,12 +183,17 @@ function ManualEntry({
   const { t } = useTranslation();
   const [text, setText] = useState("");
   const [location, setLocation] = useState("");
-  const [grade, setGrade] = useState<PassageGrade>("needed");
+  const [grade, setGrade] = useState<PassageGrade | null>(null);
 
   const submit = () => {
+    if (!grade) {
+      return;
+    }
+
     onAdd({ text: text.trim(), location: location.trim(), grade });
     setText("");
     setLocation("");
+    setGrade(null);
   };
 
   return (
@@ -222,7 +227,7 @@ function ManualEntry({
             />
           </div>
           <GradePicker value={grade} onChange={setGrade} />
-          <Button disabled={!text.trim()} onClick={submit}>
+          <Button disabled={!text.trim() || !grade} onClick={submit}>
             {t("passages.manualAdd")}
           </Button>
         </div>

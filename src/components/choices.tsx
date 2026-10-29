@@ -31,7 +31,8 @@ function optionOf<T extends string>(options: readonly SelectionOption<T>[], valu
 
 interface ChoiceProps<T extends string> {
   options: readonly SelectionOption<T>[];
-  value: T;
+  /** Nothing is selected until the user picks an option. */
+  value: T | null;
   onChange: (value: T) => void;
 }
 
@@ -84,7 +85,7 @@ export function ChoiceToggle<T extends string>({ options, value, onChange }: Cho
       variant="outline"
       size="sm"
       spacing={0}
-      value={[value]}
+      value={value ? [value] : []}
       onValueChange={(values) => {
         const option = optionOf(options, values[0]);
         if (option) onChange(option.value);
@@ -103,7 +104,7 @@ export function GradePicker({
   value,
   onChange,
 }: {
-  value: PassageGrade;
+  value: PassageGrade | null;
   onChange: (grade: PassageGrade) => void;
 }) {
   const options = useChoiceOptions(PASSAGE_GRADES, "passageGrades");

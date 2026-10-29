@@ -17,6 +17,7 @@ import { useDirtyForms, useStore } from "@/lib/store";
 import {
   ANSWERABILITIES,
   type AnnotationContent,
+  type AnnotationDraft,
   annotationContentSchemaFor,
   annotationHints,
   type Passage,
@@ -30,10 +31,10 @@ interface AnnotationFormProps {
   onCancel?: () => void;
 }
 
-const emptyFormData: AnnotationContent = {
+const emptyFormData: AnnotationDraft = {
   query: "",
-  questionType: "simple",
-  answerability: "answerable",
+  questionType: null,
+  answerability: null,
   passages: [],
   response: "",
   keyFacts: [],
@@ -41,12 +42,12 @@ const emptyFormData: AnnotationContent = {
   notes: "",
 };
 
-type Changes = Partial<AnnotationContent>;
+type Changes = Partial<AnnotationDraft>;
 
 export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFormProps) {
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
-  const [formData, setFormData] = useState<AnnotationContent>(annotation ?? emptyFormData);
+  const [formData, setFormData] = useState<AnnotationDraft>(annotation ?? emptyFormData);
   const [viewer, setViewer] = useState<{ documentId: string; focus?: Passage } | null>(null);
   const [lastDocumentId, setLastDocumentId] = useState<string>();
   const { errors, validate, clearErrors } = useFormErrors<string>();
@@ -57,7 +58,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
   // State is initialized per mount, the parent remounts the form via `key` when switching annotations.
   useEffect(() => () => useDirtyForms.setState({ annotation: false }), []);
 
-  const update = (changes: Changes | ((current: AnnotationContent) => Changes)) => {
+  const update = (changes: Changes | ((current: AnnotationDraft) => Changes)) => {
     setFormData((current) => ({
       ...current,
       ...(typeof changes === "function" ? changes(current) : changes),
@@ -147,6 +148,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
               className="sm:grid-cols-2"
               italic
             />
+            <FieldError message={errors.questionType} />
           </div>
 
           <div className="space-y-2">
@@ -161,6 +163,7 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
               onChange={(answerability) => update({ answerability })}
               className="sm:grid-cols-3"
             />
+            <FieldError message={errors.answerability} />
           </div>
 
           <div className="space-y-3">

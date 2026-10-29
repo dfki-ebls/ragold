@@ -32,6 +32,8 @@ Switch to the **Annotations** tab and fill in:
 5. **Ideal answer** and **Key facts**: Write the answer, then mark its key facts (see below).
 6. **Notes** (optional): Add any special considerations about this example.
 
+Nothing is preselected, so every kind, answerability, and grade is a deliberate choice.
+
 The form shows hints for unusual combinations, for example a question marked as not answerable that still has needed passages.
 These hints do not prevent saving.
 
