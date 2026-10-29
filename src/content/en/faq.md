@@ -52,8 +52,7 @@ In the form, you can change the grade of a passage, remove it, or click the magn
 
 #### Marking Key Facts
 
-Write the ideal answer and click **Done editing**.
-Then select words in the answer, and a popup lets you mark them as _Must mention_ or _Nice to mention_.
+Write the ideal answer, then select words in it, and a popup lets you mark them as _Must mention_ or _Nice to mention_.
 Key facts are highlighted in the answer and listed below it.
 If you edit the answer later so that a key fact no longer appears in it, the key fact is flagged and you can remove it or restore the wording.
 

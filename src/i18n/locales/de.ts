@@ -202,11 +202,9 @@ export const de: TranslationKeys = {
   },
   response: {
     label: "Ideale Antwort",
-    description: "Schreiben Sie die Antwort, die das Chat-System geben sollte.",
+    description:
+      "Schreiben Sie die Antwort, die das Chat-System geben sollte, und markieren Sie dann Wörter darin, um sie als Kernaussagen festzulegen.",
     placeholder: "Antwort auf die Frage...",
-    edit: "Antwort bearbeiten",
-    finishEditing: "Bearbeitung beenden",
-    selectHint: "Markieren Sie Wörter in der Antwort, um sie als Kernaussagen festzulegen.",
     emptyHint: "Schreiben Sie zuerst die Antwort und markieren Sie dann ihre Kernaussagen.",
     keyFacts: "Kernaussagen",
     keyFactsDescription: "Die Teile der Antwort, die eine gute Antwort enthalten muss.",

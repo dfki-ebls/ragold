@@ -52,8 +52,7 @@ Im Formular können Sie die Einstufung einer Passage ändern, sie entfernen oder
 
 #### Kernaussagen markieren
 
-Schreiben Sie die ideale Antwort und klicken Sie auf **Bearbeitung beenden**.
-Markieren Sie dann Wörter in der Antwort, und ein Popup lässt Sie diese als _Muss erwähnt werden_ oder _Sollte erwähnt werden_ festlegen.
+Schreiben Sie die ideale Antwort und markieren Sie dann Wörter darin, und ein Popup lässt Sie diese als _Muss erwähnt werden_ oder _Sollte erwähnt werden_ festlegen.
 Kernaussagen werden in der Antwort hervorgehoben und darunter aufgelistet.
 Ändern Sie die Antwort später so, dass eine Kernaussage nicht mehr darin vorkommt, wird diese markiert, und Sie können sie entfernen oder den Wortlaut wiederherstellen.
 

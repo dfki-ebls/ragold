@@ -194,11 +194,9 @@ export const en = {
   },
   response: {
     label: "Ideal answer",
-    description: "Write the answer the chat system should give.",
+    description:
+      "Write the answer the chat system should give, then select words in it to mark them as key facts.",
     placeholder: "Answer to the question...",
-    edit: "Edit answer",
-    finishEditing: "Done editing",
-    selectHint: "Select words in the answer to mark them as key facts.",
     emptyHint: "Write the answer first, then mark its key facts.",
     keyFacts: "Key facts",
     keyFactsDescription: "The parts of the answer that a good response has to contain.",
