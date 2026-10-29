@@ -42,3 +42,44 @@ export function downloadBlob(blob: Blob, filename: string): void {
 export function formatTimestamp(timestamp: string): string {
   return dayjs(timestamp).format("YYYY-MM-DD HH:mm");
 }
+
+/**
+ * Cache the results of `load` for the `size` most recently used keys and dispose evicted ones.
+ * Failed loads are not cached.
+ */
+export function cached<A, T>(
+  load: (arg: A) => Promise<T>,
+  keyOf: (arg: A) => string,
+  size: number,
+  dispose?: (value: T) => void,
+): (arg: A) => Promise<T> {
+  const entries = new Map<string, Promise<T>>();
+
+  return (arg) => {
+    const key = keyOf(arg);
+    const promise = entries.get(key) ?? load(arg);
+
+    if (!entries.delete(key)) {
+      promise.catch(() => {
+        if (entries.get(key) === promise) entries.delete(key);
+      });
+    }
+
+    // Reinserting moves the key to the end, so the map iterates from the least recently used.
+    entries.set(key, promise);
+
+    for (const [oldest, value] of entries) {
+      if (entries.size <= size) {
+        break;
+      }
+
+      entries.delete(oldest);
+
+      if (dispose) {
+        value.then(dispose, () => undefined);
+      }
+    }
+
+    return promise;
+  };
+}

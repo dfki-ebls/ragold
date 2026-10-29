@@ -1,4 +1,4 @@
-import { locatePassage } from "@/lib/match";
+import { passageLocator } from "@/lib/match";
 
 export type ViewerKind = "pdf" | "docx" | "spreadsheet" | "text" | "image" | "other";
 
@@ -39,8 +39,8 @@ export function formatSpan({ unit, from, to }: Span): string {
 }
 
 /** Inverse of `formatSpan`, returns null for anything else such as manually entered locations. */
-export function parseSpan(location: string): Span | null {
-  const match = /^(page|line)=(\d+)(?:-(\d+))?$/.exec(location.trim());
+export function parseSpan(location: string | null): Span | null {
+  const match = location && /^(page|line)=(\d+)(?:-(\d+))?$/.exec(location);
 
   if (!match) {
     return null;
@@ -125,10 +125,9 @@ export function formatRange(range: CellRange): string {
 }
 
 /** Inverse of `formatRange`, returns null for anything else. */
-export function parseRange(location: string): CellRange | null {
-  const match = /^(?:'((?:[^']|'')+)'|(\w+))!([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/.exec(
-    location.trim(),
-  );
+export function parseRange(location: string | null): CellRange | null {
+  const match =
+    location && /^(?:'((?:[^']|'')+)'|(\w+))!([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?$/.exec(location);
 
   if (!match) {
     return null;
@@ -179,36 +178,44 @@ export function rangeToTsv(rows: readonly (readonly Cell[])[], range: CellRange)
   return lines.join("\n");
 }
 
-/** Locate a passage in a sheet, as the range from its first to its last cell. */
-export function locateCells(
+/** Locator of passages in a sheet, as the range from their first to their last cell. */
+export function cellLocator(
   rows: readonly (readonly Cell[])[],
   sheet: string,
-  passage: string,
-): CellRange | null {
+): (passage: string) => CellRange | null {
   const cells: { row: number; column: number; start: number }[] = [];
-  let text = "";
+  let locate: ((passage: string) => [number, number] | null) | undefined;
 
-  rows.forEach((row, r) => {
-    row.forEach((cell, c) => {
-      cells.push({ row: r, column: c, start: text.length });
-      text += `${cellText(cell)}\t`;
+  // The text of the sheet is built on the first search.
+  const build = () => {
+    let text = "";
+
+    rows.forEach((row, r) => {
+      row.forEach((cell, c) => {
+        cells.push({ row: r, column: c, start: text.length });
+        text += `${cellText(cell)}\t`;
+      });
+      text += "\n";
     });
-    text += "\n";
-  });
 
-  const found = locatePassage(passage, text);
-  const first = found && cells.findLast((cell) => cell.start <= found[0]);
-  const last = found && cells.findLast((cell) => cell.start < found[1]);
+    return passageLocator(text);
+  };
 
-  if (!first || !last) {
-    return null;
-  }
+  return (passage) => {
+    const found = (locate ??= build())(passage);
+    const first = found && cells.findLast((cell) => cell.start <= found[0]);
+    const last = found && cells.findLast((cell) => cell.start < found[1]);
 
-  return normalizeRange({
-    sheet,
-    top: first.row,
-    left: first.column,
-    bottom: last.row,
-    right: last.column,
-  });
+    if (!first || !last) {
+      return null;
+    }
+
+    return normalizeRange({
+      sheet,
+      top: first.row,
+      left: first.column,
+      bottom: last.row,
+      right: last.column,
+    });
+  };
 }

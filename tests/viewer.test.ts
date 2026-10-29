@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   type Cell,
+  cellLocator,
   columnLabel,
   formatRange,
   formatSpan,
   lineAt,
-  locateCells,
   parseRange,
   parseSpan,
   rangeToTsv,
@@ -35,8 +35,9 @@ describe("spreadsheet ranges", () => {
     const tsv = rangeToTsv(rows, range);
 
     expect(tsv).toBe("Ada\t1815-12-10\ttrue\nAlan\t1912\t");
-    expect(locateCells(rows, "S", tsv.split("\n")[0])).toEqual({ ...range, bottom: 1 });
-    expect(locateCells(rows, "S", "| Alan | 1912 |")).toEqual({ ...range, top: 2, right: 1 });
+    const locate = cellLocator(rows, "S");
+    expect(locate(tsv.split("\n")[0])).toEqual({ ...range, bottom: 1 });
+    expect(locate("| Alan | 1912 |")).toEqual({ ...range, top: 2, right: 1 });
   });
 });
 

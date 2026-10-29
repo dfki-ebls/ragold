@@ -42,6 +42,9 @@
   --highlight: oklch(0.93 0.12 95 / 0.8);
   --key-must: oklch(0.87 0.12 150 / 0.7);
   --key-nice: oklch(0.89 0.07 235 / 0.7);
+  --grade-needed: var(--key-must);
+  --grade-helpful: var(--key-nice);
+  --grade-misleading: oklch(0.85 0.1 25 / 0.7);
 }
 
 .dark {
@@ -81,6 +84,7 @@
   --highlight: oklch(0.6 0.12 95 / 0.5);
   --key-must: oklch(0.55 0.12 150 / 0.55);
   --key-nice: oklch(0.55 0.1 240 / 0.55);
+  --grade-misleading: oklch(0.55 0.15 25 / 0.55);
 }
 
 @theme inline {
@@ -128,11 +132,28 @@
   --color-highlight: var(--highlight);
   --color-key-must: var(--key-must);
   --color-key-nice: var(--key-nice);
+  --color-grade-needed: var(--grade-needed);
+  --color-grade-helpful: var(--grade-helpful);
+  --color-grade-misleading: var(--grade-misleading);
 }
 
 /* Painted with the CSS Custom Highlight API, see `paintHighlight`. */
-::highlight(ragold-passage) {
-  background-color: var(--highlight);
+::highlight(ragold-needed) {
+  background-color: var(--grade-needed);
+}
+
+::highlight(ragold-helpful) {
+  background-color: var(--grade-helpful);
+}
+
+::highlight(ragold-misleading) {
+  background-color: var(--grade-misleading);
+}
+
+/* The text of pdf.js text layers is transparent, so the decoration needs its own color. */
+::highlight(ragold-focus) {
+  text-decoration: underline 2px var(--foreground);
+  text-underline-offset: 2px;
 }
 
 ::highlight(ragold-must) {

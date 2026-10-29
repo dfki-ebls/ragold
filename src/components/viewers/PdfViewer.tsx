@@ -2,14 +2,17 @@ import "@/components/viewers/pdfjs";
 import "pdfjs-dist/web/pdf_viewer.css";
 import { getDocument, type PDFDocumentProxy } from "pdfjs-dist";
 import { EventBus, LinkTarget, PDFLinkService, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import type { ViewerProps } from "@/components/viewers/types";
+import { memo, useEffect, useRef, useState } from "react";
+import { type ViewerPassage, type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
-import { locatePassage } from "@/lib/match";
+import { passageLocator } from "@/lib/match";
 import {
   closestData,
   findTextRange,
-  paintHighlight,
+  focusRange,
+  type GradedRange,
+  paintGrades,
+  passageRanges,
   rangeAnchor,
   selectionHandlers,
 } from "@/lib/selection";
@@ -18,8 +21,8 @@ import { formatSpan } from "@/lib/viewer";
 
 interface Pdf {
   proxy: PDFDocumentProxy;
-  /** Text of every page, extracted once on the first focus search. */
-  pages: () => Promise<string[]>;
+  /** Number of the page where a passage starts, null if it is not found. */
+  pageOf: (passage: string) => Promise<number | null>;
 }
 
 function extractPages(proxy: PDFDocumentProxy): Promise<string[]> {
@@ -34,50 +37,79 @@ function extractPages(proxy: PDFDocumentProxy): Promise<string[]> {
   );
 }
 
-async function loadPdf(blob: Blob): Promise<Pdf> {
-  const proxy = await getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
-  let pages: Promise<string[]> | undefined;
-
-  return { proxy, pages: () => (pages ??= extractPages(proxy)) };
-}
-
-function destroyPdf({ proxy }: Pdf): void {
-  void proxy.loadingTask.destroy();
-}
-
-/** Number of the page where `passage` starts, null if it is not found. */
-async function findPage(pdf: Pdf, passage: string): Promise<number | null> {
+async function pageLocator(proxy: PDFDocumentProxy): Promise<(passage: string) => number | null> {
   const starts: number[] = [];
   let text = "";
 
-  for (const page of await pdf.pages()) {
+  for (const page of await extractPages(proxy)) {
     starts.push(text.length);
     text += `${page}\n`;
   }
 
-  const found = locatePassage(passage, text);
+  const locate = passageLocator(text);
 
-  return found && starts.findLastIndex((start) => start <= found[0]) + 1;
+  return (passage) => {
+    const found = locate(passage);
+    return found && starts.findLastIndex((start) => start <= found[0]) + 1;
+  };
 }
 
-function PdfViewer({ blob, focus, onSelect }: ViewerProps) {
-  const pdf = useResource(blob, loadPdf, destroyPdf);
+const loadPdf = viewerLoader(
+  async (blob): Promise<Pdf> => {
+    const proxy = await getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+    // The text of all pages is extracted once on the first search.
+    let locate: Promise<(passage: string) => number | null> | undefined;
 
-  return pdf ? <PdfPages pdf={pdf} focus={focus} onSelect={onSelect} /> : <ViewerLoading />;
+    return {
+      proxy,
+      pageOf: (passage) =>
+        (locate ??= pageLocator(proxy)).then((pageOf) => pageOf(passage)).catch(() => null),
+    };
+  },
+  ({ proxy }) => void proxy.loadingTask.destroy(),
+);
+
+function PdfViewer({ file, passages, focus, onSelect }: ViewerProps) {
+  const pdf = useResource(file, loadPdf);
+
+  return pdf ? (
+    <PdfPages pdf={pdf} passages={passages} focus={focus} onSelect={onSelect} />
+  ) : (
+    <ViewerLoading />
+  );
 }
 
 export default memo(PdfViewer);
 
+/**
+ * Call `paint` for each of `pages` now and again whenever pdf.js renders one of them,
+ * since it rebuilds the text layers on rendering.
+ */
+function onTextLayers(
+  viewer: PDFViewer,
+  signal: AbortSignal,
+  pages: ReadonlySet<number>,
+  paint: (page: number, layer: Element) => void,
+): void {
+  const repaint = (page: number) => {
+    const layer = viewer.container.querySelector(`[data-page-number="${page}"] .textLayer`);
+    if (layer && pages.has(page)) paint(page, layer);
+  };
+
+  viewer.eventBus.on("textlayerrendered", ({ pageNumber }: { pageNumber: number }) => repaint(pageNumber), {
+    signal,
+  });
+  pages.forEach(repaint);
+}
+
 function PdfPages({
   pdf,
+  passages,
   focus,
   onSelect,
-}: Pick<ViewerProps, "focus" | "onSelect"> & { pdf: Pdf }) {
+}: Pick<ViewerProps, "passages" | "focus" | "onSelect"> & { pdf: Pdf }) {
   const ref = useRef<HTMLDivElement>(null);
   const [viewer, setViewer] = useState<PDFViewer>();
-  const findFocus = useCallback((text: string) => findPage(pdf, text).catch(() => null), [pdf]);
-  const focusPage = useResource(focus?.text ?? null, findFocus);
-  const focusText = focus?.text;
 
   useEffect(() => {
     const container = ref.current;
@@ -127,44 +159,63 @@ function PdfPages({
   }, [pdf]);
 
   useEffect(() => {
-    if (!viewer || !focusText || !focusPage) {
+    if (!viewer) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const painted = new Map<number, GradedRange[]>();
+    let clear: (() => void) | undefined;
+
+    void Promise.all(passages.map((passage) => pdf.pageOf(passage.text))).then((pages) => {
+      const byPage = new Map<number, ViewerPassage[]>();
+
+      passages.forEach((passage, i) => {
+        const page = pages[i];
+        if (page) byPage.set(page, [...(byPage.get(page) ?? []), passage]);
+      });
+
+      if (!controller.signal.aborted) {
+        onTextLayers(viewer, controller.signal, new Set(byPage.keys()), (page, layer) => {
+          painted.set(page, passageRanges(layer, byPage.get(page) ?? []));
+          clear = paintGrades([...painted.values()].flat());
+        });
+      }
+    });
+
+    return () => {
+      controller.abort();
+      clear?.();
+    };
+  }, [viewer, pdf, passages]);
+
+  useEffect(() => {
+    if (!viewer || !focus) {
       return;
     }
 
     const controller = new AbortController();
     let clear: (() => void) | undefined;
 
-    // Text layers are rebuilt when pages are rendered again, so the highlight is repainted each time.
-    const highlight = () => {
-      const layer = viewer.container.querySelector(`[data-page-number="${focusPage}"] .textLayer`);
-      const range = layer && findTextRange(layer, focusText);
-
-      if (!range) {
+    void pdf.pageOf(focus.text).then((page) => {
+      if (controller.signal.aborted || !page) {
         return;
       }
 
-      if (!clear) {
-        range.startContainer.parentElement?.scrollIntoView({ block: "center" });
-      }
+      viewer.scrollPageIntoView({ pageNumber: page });
+      onTextLayers(viewer, controller.signal, new Set([page]), (_, layer) => {
+        const range = findTextRange(layer, focus.text);
 
-      clear = paintHighlight("ragold-passage", [range]);
-    };
-
-    viewer.eventBus.on(
-      "textlayerrendered",
-      ({ pageNumber }: { pageNumber: number }) => {
-        if (pageNumber === focusPage) highlight();
-      },
-      { signal: controller.signal },
-    );
-    viewer.scrollPageIntoView({ pageNumber: focusPage });
-    highlight();
+        // Scroll to the passage once, repaints follow when the page is rendered again.
+        if (range) clear = focusRange(range, !clear);
+      });
+    });
 
     return () => {
       controller.abort();
       clear?.();
     };
-  }, [viewer, focusText, focusPage]);
+  }, [viewer, pdf, focus]);
 
   const handlers = selectionHandlers((selection) => {
     onSelect(

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ChoiceCards, useChoiceOptions } from "@/components/choices";
 import { FieldError } from "@/components/FieldError";
 import { OriginBadge } from "@/components/OriginBadge";
-import { PassageCard } from "@/components/PassageCard";
+import { PassageList } from "@/components/PassageCard";
 import { PassageDialog } from "@/components/PassageDialog";
 import { ResponseEditor } from "@/components/ResponseEditor";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -38,7 +38,7 @@ const emptyFormData: AnnotationDraft = {
   passages: [],
   response: "",
   keyFacts: [],
-  origin: "",
+  origin: null,
   notes: "",
 };
 
@@ -48,21 +48,16 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
   const { t } = useTranslation();
   const documents = useStore((s) => s.documents);
   const [formData, setFormData] = useState<AnnotationDraft>(annotation ?? emptyFormData);
-  const [viewer, setViewer] = useState<{ documentId: string; focus?: Passage } | null>(null);
-  const [lastDocumentId, setLastDocumentId] = useState<string>();
+  const [viewer, setViewer] = useState<{ focus?: Passage } | null>(null);
   const { errors, validate, clearErrors } = useFormErrors<string>();
   const questionTypeOptions = useChoiceOptions(QUESTION_TYPES, "questionTypes");
   const answerabilityOptions = useChoiceOptions(ANSWERABILITIES, "answerabilities");
-  const documentIds = Object.keys(documents);
 
   // State is initialized per mount, the parent remounts the form via `key` when switching annotations.
   useEffect(() => () => useDirtyForms.setState({ annotation: false }), []);
 
-  const update = (changes: Changes | ((current: AnnotationDraft) => Changes)) => {
-    setFormData((current) => ({
-      ...current,
-      ...(typeof changes === "function" ? changes(current) : changes),
-    }));
+  const update = (changes: Changes) => {
+    setFormData((current) => ({ ...current, ...changes }));
     useDirtyForms.setState({ annotation: true });
   };
 
@@ -92,14 +87,6 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
       clearErrors();
     }
   };
-
-  const openViewer = (documentId: string, focus?: Passage) => {
-    setLastDocumentId(documentId);
-    setViewer({ documentId, focus });
-  };
-
-  const defaultDocumentId =
-    lastDocumentId && documents[lastDocumentId] ? lastDocumentId : documentIds[0];
 
   return (
     <Card>
@@ -172,40 +159,22 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
                 <Library className="size-4" />
                 {t("passages.label")}
               </Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={!defaultDocumentId}
-                onClick={() => defaultDocumentId && openViewer(defaultDocumentId)}
-              >
+              <Button type="button" variant="outline" size="sm" onClick={() => setViewer({})}>
                 <Plus />
-                {t("passages.addFromDocument")}
+                {t("passages.add")}
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              {documentIds.length > 0 ? t("passages.description") : t("passages.noDocuments")}
+              {Object.keys(documents).length > 0
+                ? t("passages.description")
+                : t("passages.noDocuments")}
             </p>
-            {formData.passages.length === 0 ? (
-              <p className="text-sm text-muted-foreground/70 italic">{t("passages.empty")}</p>
-            ) : (
-              <div className="space-y-2">
-                {formData.passages.map((passage, i) => (
-                  <PassageCard
-                    key={i}
-                    passage={passage}
-                    error={passageError(i)}
-                    onGradeChange={(grade) =>
-                      update({
-                        passages: formData.passages.map((p, j) => (j === i ? { ...p, grade } : p)),
-                      })
-                    }
-                    onShow={() => openViewer(passage.documentId, passage)}
-                    onRemove={() => update({ passages: formData.passages.filter((_, j) => j !== i) })}
-                  />
-                ))}
-              </div>
-            )}
+            <PassageList
+              passages={formData.passages}
+              onChange={(passages) => update({ passages })}
+              onShow={(focus) => setViewer({ focus })}
+              errorOf={passageError}
+            />
             {annotationHints(formData).map((hint) => (
               <Alert key={hint}>
                 <Lightbulb />
@@ -251,9 +220,9 @@ export function AnnotationForm({ annotation, onSubmit, onCancel }: AnnotationFor
 
       {viewer && (
         <PassageDialog
-          documentId={viewer.documentId}
+          passages={formData.passages}
           focus={viewer.focus}
-          onAdd={(passage) => update((current) => ({ passages: [...current.passages, passage] }))}
+          onChange={(passages) => update({ passages })}
           onClose={() => setViewer(null)}
         />
       )}

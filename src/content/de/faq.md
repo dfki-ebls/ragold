@@ -39,7 +39,8 @@ Diese Hinweise verhindern das Speichern nicht.
 
 #### Passagen hinzufügen
 
-Klicken Sie auf **Aus Dokument hinzufügen**, um die Dokumentansicht zu öffnen, und wählen Sie oben ein Dokument.
+Klicken Sie auf **Passagen hinzufügen**, um die Dokumentansicht zu öffnen, und wählen Sie oben in der durchsuchbaren Liste ein Dokument.
+Sie öffnet sich mit dem Dokument Ihrer letzten Passage, oder mit der Liste, wenn mehrere Dokumente zur Auswahl stehen.
 PDF-Dateien, Word-Dokumente (.docx), Excel-Arbeitsmappen (.xlsx) und Textdateien wie .txt, .md, .csv oder .json werden direkt angezeigt.
 Markieren Sie den relevanten Text mit der Maus oder ziehen Sie in einer Arbeitsmappe über Zellen, dann fragt ein kleines Popup, wie wichtig die Passage ist:
 
@@ -48,8 +49,11 @@ Markieren Sie den relevanten Text mit der Maus oder ziehen Sie in einer Arbeitsm
 - _Irreführend_: Wirkt relevant, würde aber zu einer falschen Antwort führen.
 
 Die Ansicht bleibt geöffnet, sodass Sie mehrere Passagen nacheinander hinzufügen und sie mit **Fertig** schließen können.
+Bereits hinzugefügte Passagen sind in der Farbe ihrer Einstufung hervorgehoben und neben dem Dokument aufgelistet, wo Sie die Einstufung ändern, sie entfernen oder über die Lupe zu ihnen springen können.
+Markieren Sie den Text einer vorhandenen Passage erneut, ändert sich ihre Einstufung, statt sie doppelt hinzuzufügen.
 RAGold merkt sich, wo jede Passage gefunden wurde, etwa die Seite eines PDFs, die Überschrift in einem Word-Dokument, die Zeilen einer Textdatei oder den Zellbereich einer Arbeitsmappe.
 Bei Bildern und anderen Dateitypen wie CAD-Zeichnungen oder alten Office-Formaten öffnen Sie die Datei mit **Datei öffnen** und nutzen **Passage von Hand eingeben**, um den Text einzufügen und die Fundstelle zu beschreiben.
+Ist die Originaldatei nicht verfügbar, etwa bei einem Zitat aus einer gedruckten Quelle, wählen Sie **Ohne Dokument** und geben Text und Quelle von Hand ein.
 Im Formular können Sie die Einstufung einer Passage ändern, sie entfernen oder über die Lupe im Dokument anzeigen.
 
 #### Kernaussagen markieren

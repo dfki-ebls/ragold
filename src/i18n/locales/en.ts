@@ -172,16 +172,27 @@ export const en = {
     description:
       "Mark the parts of your documents that matter for the answer and say how important each one is.",
     empty: "No passages yet.",
-    addFromDocument: "Add from document",
-    noDocuments: "Upload documents in the Documents tab to add passages.",
+    add: "Add passages",
+    noDocuments:
+      "No documents yet. Upload them in the Documents tab, or enter passages by hand.",
     showInDocument: "Show in document",
     deletedDocument: "Deleted document",
+    noDocument: "Without document",
     noLocation: "No location",
     added: "Passage added.",
+    updated: "This passage was already added, its importance has been updated.",
     dialogTitle: "Add passages",
     dialogDescription:
-      "Select text in the document, then choose how important it is. You can add several passages in a row.",
+      "Select text in the document, then choose how important it is. Passages you added are highlighted by importance and listed next to the document.",
     document: "Document",
+    searchDocuments: "Search documents...",
+    noMatch: "No matching document.",
+    choosePrompt:
+      "Choose a document to select passages in it. For text whose file is not available, choose Without document.",
+    snippetDescription:
+      "Enter text whose file is not available here, such as a quote from a printed source, and name where it comes from.",
+    listDocument: "In this document ({{count}})",
+    listSnippets: "Without document ({{count}})",
     gradeTitle: "How important is this passage?",
     manualTitle: "Enter a passage by hand",
     manualDescription:
@@ -190,6 +201,8 @@ export const en = {
     manualTextPlaceholder: "Paste the text from the document...",
     manualLocation: "Where in the document (optional)",
     manualLocationPlaceholder: "page 4, section 2.1, ...",
+    manualSource: "Source (optional)",
+    manualSourcePlaceholder: "Annual report 2024, page 4, ...",
     manualAdd: "Add passage",
   },
   response: {

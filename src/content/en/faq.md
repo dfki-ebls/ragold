@@ -39,7 +39,8 @@ These hints do not prevent saving.
 
 #### Adding Passages
 
-Click **Add from document** to open the document viewer and pick a document at the top.
+Click **Add passages** to open the document viewer and pick a document in the searchable list at the top.
+It opens with the document of your last passage, or with the list if there are several documents to choose from.
 PDF files, Word documents (.docx), Excel workbooks (.xlsx), and text files such as .txt, .md, .csv, or .json are shown directly.
 Select the relevant text with the mouse, or drag across cells in a workbook, and a small popup asks how important the passage is:
 
@@ -48,8 +49,11 @@ Select the relevant text with the mouse, or drag across cells in a workbook, and
 - _Misleading_: Looks relevant but would lead to a wrong answer.
 
 The viewer stays open, so you can add several passages in a row and close it with **Done**.
+Passages you already added are highlighted in the color of their grade and listed next to the document, where you can change their grade, remove them, or click the magnifier to jump to them.
+Selecting the text of an existing passage again changes its grade instead of adding it twice.
 RAGold records where each passage was found, such as the page of a PDF, the heading in a Word document, the lines of a text file, or the cell range of a workbook.
 For images and other file types such as CAD drawings or old Office formats, open the file with **Open file** and use **Enter a passage by hand** to paste the text and describe where it is.
+If the original file is not available, for example a quote from a printed source, choose **Without document** and enter the text and its source by hand.
 In the form, you can change the grade of a passage, remove it, or click the magnifier to show it in its document.
 
 #### Marking Key Facts

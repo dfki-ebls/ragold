@@ -1,20 +1,17 @@
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import type { ViewerProps } from "@/components/viewers/types";
+import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
 import { useResource } from "@/lib/useResource";
 
-async function createUrl(blob: Blob): Promise<string> {
-  return URL.createObjectURL(blob);
-}
+const loadUrl = viewerLoader(
+  async (blob) => URL.createObjectURL(blob),
+  (url) => URL.revokeObjectURL(url),
+);
 
-function revokeUrl(url: string): void {
-  URL.revokeObjectURL(url);
-}
-
-function ImageViewer({ blob, name }: ViewerProps) {
+function ImageViewer({ file, name }: ViewerProps) {
   const { t } = useTranslation();
-  const url = useResource(blob, createUrl, revokeUrl);
+  const url = useResource(file, loadUrl);
 
   if (url === undefined) {
     return <ViewerLoading />;

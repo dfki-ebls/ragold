@@ -180,16 +180,27 @@ export const de: TranslationKeys = {
     description:
       "Markieren Sie die Stellen Ihrer Dokumente, auf die es für die Antwort ankommt, und geben Sie an, wie wichtig sie sind.",
     empty: "Noch keine Passagen.",
-    addFromDocument: "Aus Dokument hinzufügen",
-    noDocuments: "Laden Sie im Tab Dokumente Dateien hoch, um Passagen hinzuzufügen.",
+    add: "Passagen hinzufügen",
+    noDocuments:
+      "Noch keine Dokumente. Laden Sie sie im Tab Dokumente hoch, oder geben Sie Passagen von Hand ein.",
     showInDocument: "Im Dokument zeigen",
     deletedDocument: "Gelöschtes Dokument",
+    noDocument: "Ohne Dokument",
     noLocation: "Ohne Fundstelle",
     added: "Passage hinzugefügt.",
+    updated: "Diese Passage war bereits vorhanden, ihre Wichtigkeit wurde aktualisiert.",
     dialogTitle: "Passagen hinzufügen",
     dialogDescription:
-      "Markieren Sie Text im Dokument und wählen Sie dann, wie wichtig er ist. Sie können mehrere Passagen nacheinander hinzufügen.",
+      "Markieren Sie Text im Dokument und wählen Sie dann, wie wichtig er ist. Hinzugefügte Passagen sind nach Wichtigkeit hervorgehoben und neben dem Dokument aufgelistet.",
     document: "Dokument",
+    searchDocuments: "Dokumente durchsuchen...",
+    noMatch: "Kein passendes Dokument.",
+    choosePrompt:
+      "Wählen Sie ein Dokument, um darin Passagen zu markieren. Für Text, dessen Datei nicht verfügbar ist, wählen Sie Ohne Dokument.",
+    snippetDescription:
+      "Geben Sie Text ein, dessen Datei hier nicht verfügbar ist, etwa ein Zitat aus einer gedruckten Quelle, und nennen Sie, woher er stammt.",
+    listDocument: "In diesem Dokument ({{count}})",
+    listSnippets: "Ohne Dokument ({{count}})",
     gradeTitle: "Wie wichtig ist diese Passage?",
     manualTitle: "Passage von Hand eingeben",
     manualDescription:
@@ -198,6 +209,8 @@ export const de: TranslationKeys = {
     manualTextPlaceholder: "Text aus dem Dokument einfügen...",
     manualLocation: "Fundstelle im Dokument (optional)",
     manualLocationPlaceholder: "Seite 4, Abschnitt 2.1, ...",
+    manualSource: "Quelle (optional)",
+    manualSourcePlaceholder: "Jahresbericht 2024, Seite 4, ...",
     manualAdd: "Passage hinzufügen",
   },
   response: {

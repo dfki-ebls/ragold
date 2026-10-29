@@ -1,19 +1,19 @@
 import DOMPurify from "dompurify";
 import mammoth from "mammoth";
 import { memo, useRef } from "react";
-import type { ViewerProps } from "@/components/viewers/types";
+import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
-import { rangeAnchor, selectionHandlers, useFocusHighlight } from "@/lib/selection";
+import { rangeAnchor, selectionHandlers, useTextHighlights } from "@/lib/selection";
 import { useResource } from "@/lib/useResource";
 
-async function loadHtml(blob: Blob): Promise<string> {
+const loadHtml = viewerLoader(async (blob) => {
   const { value } = await mammoth.convertToHtml({ arrayBuffer: await blob.arrayBuffer() });
   return DOMPurify.sanitize(value);
-}
+});
 
-/** Text of the nearest heading before `node`, empty if there is none. */
-function headingBefore(root: HTMLElement, node: Node): string {
-  let heading = "";
+/** Text of the nearest heading before `node`, null if there is none. */
+function headingBefore(root: HTMLElement, node: Node): string | null {
+  let heading: string | null = null;
 
   for (const element of root.querySelectorAll("h1, h2, h3, h4, h5, h6")) {
     const before =
@@ -24,16 +24,16 @@ function headingBefore(root: HTMLElement, node: Node): string {
       break;
     }
 
-    heading = element.textContent.trim();
+    heading = element.textContent.trim() || null;
   }
 
   return heading;
 }
 
-function DocxViewer({ blob, focus, onSelect }: ViewerProps) {
+function DocxViewer({ file, passages, focus, onSelect }: ViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const html = useResource(blob, loadHtml);
-  useFocusHighlight(ref, focus?.text, html !== undefined);
+  const html = useResource(file, loadHtml);
+  useTextHighlights(ref, html, passages, focus);
 
   const handlers = selectionHandlers((selection) => {
     onSelect(

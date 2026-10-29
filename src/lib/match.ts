@@ -119,43 +119,73 @@ function bestWindow(needle: readonly string[], tokens: readonly string[], size: 
   return best.start;
 }
 
+interface Index extends Normalized {
+  tokens: string[];
+  /** Offset in `text` where each token starts, plus one past the end. */
+  offsets: number[];
+}
+
+function indexOf(haystack: string): Index {
+  const normalized = normalize(haystack);
+  const tokens = normalized.text.split(" ");
+  const offsets = [0];
+
+  for (const token of tokens) {
+    offsets.push(offsets[offsets.length - 1] + token.length + 1);
+  }
+
+  return { ...normalized, tokens, offsets };
+}
+
 /**
- * Locate `passage` in `haystack`, returning `[start, end)` offsets into `haystack` or null.
+ * Locator of passages in `haystack`, returning `[start, end)` offsets into `haystack` or null.
  * Normalized containment is tried first, then the window of about the passage's length whose tokens
  * cover at least `MATCH_THRESHOLD` of the passage tokens in order.
+ * The haystack is indexed once on the first search and results are kept per passage,
+ * so reuse the locator for several passages.
  */
-export function locatePassage(passage: string, haystack: string): [number, number] | null {
-  const needle = normalizePassage(passage);
-  const { text, starts, ends } = normalize(haystack);
+export function passageLocator(haystack: string): (passage: string) => [number, number] | null {
+  let index: Index | undefined;
+  const results = new Map<string, [number, number] | null>();
 
-  if (!needle || !text) {
-    return null;
-  }
+  const locate = (passage: string): [number, number] | null => {
+    const needle = normalizePassage(passage);
+    const { text, starts, ends, tokens, offsets } = (index ??= indexOf(haystack));
 
-  const index = text.indexOf(needle);
+    if (!needle || !text) {
+      return null;
+    }
 
-  if (index >= 0) {
-    return [starts[index], ends[index + needle.length - 1]];
-  }
+    const found = text.indexOf(needle);
 
-  const needleTokens = needle.split(" ");
-  const tokens = text.split(" ");
-  const offset = (k: number) => tokens.slice(0, k).reduce((sum, token) => sum + token.length + 1, 0);
-  const size = Math.min(needleTokens.length, tokens.length);
-  const start = bestWindow(needleTokens, tokens, size);
-  const window = tokens.slice(start, start + size);
-  const forward = lcsPrefixes(needleTokens, window);
-  const matched = forward[size];
+    if (found >= 0) {
+      return [starts[found], ends[found + needle.length - 1]];
+    }
 
-  if (matched / needleTokens.length < MATCH_THRESHOLD) {
-    return null;
-  }
+    const needleTokens = needle.split(" ");
+    const size = Math.min(needleTokens.length, tokens.length);
+    const start = bestWindow(needleTokens, tokens, size);
+    const window = tokens.slice(start, start + size);
+    const forward = lcsPrefixes(needleTokens, window);
+    const matched = forward[size];
 
-  // Trim the window to its first and last token that take part in the in-order match.
-  const last = forward.indexOf(matched) - 1;
-  const backward = lcsPrefixes(needleTokens.toReversed(), window.slice(0, last + 1).toReversed());
-  const first = last + 1 - backward.indexOf(matched);
-  const end = offset(start + last + 1) - 2;
+    if (matched / needleTokens.length < MATCH_THRESHOLD) {
+      return null;
+    }
 
-  return [starts[offset(start + first)], ends[end]];
+    // Trim the window to its first and last token that take part in the in-order match.
+    const last = forward.indexOf(matched) - 1;
+    const backward = lcsPrefixes(needleTokens.toReversed(), window.slice(0, last + 1).toReversed());
+    const first = last + 1 - backward.indexOf(matched);
+
+    return [starts[offsets[start + first]], ends[offsets[start + last + 1] - 2]];
+  };
+
+  return (passage) => {
+    if (!results.has(passage)) {
+      results.set(passage, locate(passage));
+    }
+
+    return results.get(passage) ?? null;
+  };
 }

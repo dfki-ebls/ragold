@@ -1,46 +1,39 @@
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import type { ViewerProps } from "@/components/viewers/types";
+import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
-import { closestData, rangeAnchor, selectionHandlers } from "@/lib/selection";
+import { passageLocator } from "@/lib/match";
+import { closestData, rangeAnchor, selectionHandlers, useTextHighlights } from "@/lib/selection";
 import { useResource } from "@/lib/useResource";
-import { locatePassage } from "@/lib/match";
 import { decodeText, formatSpan, lineAt } from "@/lib/viewer";
-import { cn } from "cn";
 
 /** Lines rendered at once, more are added on request to keep the DOM small. */
 const LINES_STEP = 2000;
 
-async function loadText(blob: Blob): Promise<string> {
-  return decodeText(await blob.arrayBuffer());
-}
+const loadText = viewerLoader(async (blob) => decodeText(await blob.arrayBuffer()));
 
 function TextViewer(props: ViewerProps) {
-  const text = useResource(props.blob, loadText);
+  const text = useResource(props.file, loadText);
 
   return text === undefined ? <ViewerLoading /> : <TextContent text={text} {...props} />;
 }
 
 export default memo(TextViewer);
 
-function TextContent({ text, focus, onSelect }: ViewerProps & { text: string }) {
+function TextContent({ text, passages, focus, onSelect }: ViewerProps & { text: string }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
   const lines = useMemo(() => text.split(/\r?\n/), [text]);
-  const marked = useMemo(() => {
-    const found = focus && locatePassage(focus.text, text);
-    return found ? { from: lineAt(text, found[0]), to: lineAt(text, found[1] - 1) } : null;
-  }, [text, focus]);
-  const [limit, setLimit] = useState(() => Math.max(LINES_STEP, (marked?.to ?? 0) + LINES_STEP));
-
-  useEffect(() => {
-    if (marked) {
-      ref.current
-        ?.querySelector(`[data-line="${marked.from}"]`)
-        ?.scrollIntoView({ block: "center" });
-    }
-  }, [marked]);
+  const locate = useMemo(() => passageLocator(text), [text]);
+  // The focus is located in the full text, so that its lines are rendered before they are highlighted.
+  const focusEnd = useMemo(() => {
+    const found = focus && locate(focus.text);
+    return found ? lineAt(text, found[1] - 1) : 0;
+  }, [text, locate, focus]);
+  const [requested, setRequested] = useState(LINES_STEP);
+  const limit = Math.max(requested, focusEnd + LINES_STEP);
+  useTextHighlights(ref, limit, passages, focus);
 
   const handlers = selectionHandlers((selection) => {
     if (!selection) {
@@ -71,10 +64,7 @@ function TextContent({ text, focus, onSelect }: ViewerProps & { text: string }) 
           <div
             key={i}
             data-line={i + 1}
-            className={cn(
-              "relative min-h-5 pl-14 break-all whitespace-pre-wrap before:absolute before:left-0 before:w-10 before:text-right before:text-muted-foreground before:content-[attr(data-line)] before:select-none",
-              marked && i + 1 >= marked.from && i + 1 <= marked.to && "bg-highlight",
-            )}
+            className="relative min-h-5 pl-14 break-all whitespace-pre-wrap before:absolute before:left-0 before:w-10 before:text-right before:text-muted-foreground before:content-[attr(data-line)] before:select-none"
           >
             {line}
           </div>
@@ -83,7 +73,7 @@ function TextContent({ text, focus, onSelect }: ViewerProps & { text: string }) 
       {limit < lines.length && (
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           {t("viewer.textTruncated", { shown: limit, total: lines.length })}
-          <Button variant="outline" size="sm" onClick={() => setLimit(limit + LINES_STEP)}>
+          <Button variant="outline" size="sm" onClick={() => setRequested(limit + LINES_STEP)}>
             {t("viewer.showMore")}
           </Button>
         </div>

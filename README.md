@@ -11,7 +11,9 @@ Question types follow [CRAG](https://doi.org/10.52202/079017-0335) and answerabi
 - Add passages by selecting text in the built-in document viewer, which records the location automatically:
   page for PDF, nearest heading for DOCX, cell range for XLSX, and line numbers for text files.
   Images and other file types can be opened externally, with manual entry as a fallback for any file.
-  Existing passages, such as those transferred without a location, are searched for and highlighted in their document.
+  All passages of a document are highlighted by grade and listed next to it for regrading, and passages transferred without a location are searched for by their text.
+  Snippets whose file is not available can be added without a document.
+  Parsed documents are cached, so reopening the viewer is instant.
 - Mark key facts by selecting them in the ideal answer, with key facts that no longer match an edited answer flagged for review.
 - Upload source documents (any file type, max 50 MB each) with drag-and-drop and bulk upload support, and add optional notes.
   Identical files are detected by their SHA-256 hash and stored only once.

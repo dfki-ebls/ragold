@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { locatePassage, normalizePassage } from "@/lib/match";
+import { normalizePassage, passageLocator } from "@/lib/match";
 
 describe("normalizePassage", () => {
   it("folds Unicode, case, hyphenation, punctuation, and markdown", () => {
@@ -9,19 +9,20 @@ describe("normalizePassage", () => {
   });
 });
 
-describe("locatePassage", () => {
+describe("passageLocator", () => {
   const haystack = "Intro.\nThe **quick** brown fox jum-\nps over the lazy dog.\nOutro.";
+  const locate = passageLocator(haystack);
 
   it("maps normalized containment back to original offsets", () => {
-    const found = locatePassage("quick brown fox jumps", haystack);
+    const found = locate("quick brown fox jumps");
 
     expect(found && haystack.slice(...found)).toBe("quick** brown fox jum-\nps");
   });
 
   it("falls back to in-order token coverage above the threshold", () => {
-    const found = locatePassage("the quick red fox jumps over the lazy dog", haystack);
+    const found = locate("the quick red fox jumps over the lazy dog");
 
     expect(found && haystack.slice(...found)).toBe("The **quick** brown fox jum-\nps over the lazy dog");
-    expect(locatePassage("the slow red cat jumps over a lazy dog", haystack)).toBeNull();
+    expect(locate("the slow red cat jumps over a lazy dog")).toBeNull();
   });
 });

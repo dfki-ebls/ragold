@@ -1,22 +1,37 @@
 import readXlsxFile, { type CellValue } from "read-excel-file/browser";
-import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/components/ui/label";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
-import type { ViewerProps } from "@/components/viewers/types";
+import {
+  GRADE_BACKGROUNDS,
+  type ViewerPassage,
+  type ViewerProps,
+  viewerLoader,
+} from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
+import type { PassageGrade } from "@/lib/types";
 import { useResource } from "@/lib/useResource";
 import {
   type Cell,
   type CellRange,
+  cellLocator,
   cellText,
   columnLabel,
-  locateCells,
   formatRange,
   normalizeRange,
   parseRange,
   rangeToTsv,
 } from "@/lib/viewer";
+import { cn } from "cn";
 
 /** Rendered grid bounds that keep the table responsive. */
 const MAX_ROWS = 500;
@@ -30,6 +45,8 @@ interface Sheet {
   width: number;
 }
 
+type Locators = Map<string, (passage: string) => CellRange | null>;
+
 function toCell(value: CellValue | null): Cell {
   if (value instanceof Date) {
     return value;
@@ -38,28 +55,26 @@ function toCell(value: CellValue | null): Cell {
   return typeof value === "function" ? null : value;
 }
 
-async function loadSheets(blob: Blob): Promise<Sheet[]> {
+const loadSheets = viewerLoader(async (blob): Promise<Sheet[]> => {
   const sheets = await readXlsxFile(blob);
+
   return sheets.map(({ sheet, data }) => ({
     name: sheet,
     rows: data.map((row) => row.map(toCell)),
     width: data.reduce((max, row) => Math.max(max, row.length), 0),
   }));
-}
+});
 
-function locate(sheets: Sheet[], focus: ViewerProps["focus"]): CellRange | null {
-  if (!focus) {
-    return null;
-  }
+/** Range of a passage, by its recorded location or else by its text. */
+function locate(locators: Locators, passage: ViewerPassage): CellRange | null {
+  const parsed = parseRange(passage.location);
 
-  const parsed = parseRange(focus.location);
-
-  if (parsed && sheets.some((sheet) => sheet.name === parsed.sheet)) {
+  if (parsed && locators.has(parsed.sheet)) {
     return parsed;
   }
 
-  for (const sheet of sheets) {
-    const found = locateCells(sheet.rows, sheet.name, focus.text);
+  for (const locateIn of locators.values()) {
+    const found = locateIn(passage.text);
 
     if (found) {
       return found;
@@ -69,27 +84,55 @@ function locate(sheets: Sheet[], focus: ViewerProps["focus"]): CellRange | null 
   return null;
 }
 
+/** Position of a range over the rendered cells, null if they are not rendered. */
+function boxOf(table: HTMLTableElement, range: CellRange): CSSProperties | null {
+  const { top, left, bottom, right } = normalizeRange(range);
+  const start = table.querySelector<HTMLElement>(`td[data-row="${top}"][data-column="${left}"]`);
+  const end = table.querySelector<HTMLElement>(`td[data-row="${bottom}"][data-column="${right}"]`);
+
+  return (
+    start &&
+    end && {
+      left: `${start.offsetLeft}px`,
+      top: `${start.offsetTop}px`,
+      width: `${end.offsetLeft + end.offsetWidth - start.offsetLeft}px`,
+      height: `${end.offsetTop + end.offsetHeight - start.offsetTop}px`,
+    }
+  );
+}
+
 function cellOf(target: EventTarget): { row: number; column: number } | null {
   const cell = target instanceof Element ? target.closest<HTMLElement>("td[data-row]") : null;
   return cell ? { row: Number(cell.dataset.row), column: Number(cell.dataset.column) } : null;
 }
 
 function SpreadsheetViewer(props: ViewerProps) {
-  const sheets = useResource(props.blob, loadSheets);
+  const sheets = useResource(props.file, loadSheets);
 
   return sheets === undefined ? <ViewerLoading /> : <SheetGrid sheets={sheets} {...props} />;
 }
 
 export default memo(SpreadsheetViewer);
 
-function SheetGrid({ sheets, focus, onSelect }: ViewerProps & { sheets: Sheet[] }) {
+function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets: Sheet[] }) {
   const { t } = useTranslation();
   const tableRef = useRef<HTMLTableElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [initial] = useState(() => locate(sheets, focus));
-  const [sheetName, setSheetName] = useState(initial?.sheet ?? sheets[0]?.name ?? "");
-  const [range, setRange] = useState<CellRange | null>(initial);
+  const [sheetName, setSheetName] = useState(sheets[0]?.name ?? "");
+  const [range, setRange] = useState<CellRange | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [boxes, setBoxes] = useState<{ style: CSSProperties; grade: PassageGrade }[]>([]);
+  const [focused, setFocused] = useState<ViewerPassage>();
+  const [scrollTarget, setScrollTarget] = useState<CellRange>();
+  // Built per mount rather than cached with the sheets, so that the search index goes with the viewer.
+  const locators: Locators = useMemo(
+    () => new Map(sheets.map((s) => [s.name, cellLocator(s.rows, s.name)])),
+    [sheets],
+  );
+  const located = useMemo(
+    () => passages.map((passage) => ({ range: locate(locators, passage), grade: passage.grade })),
+    [locators, passages],
+  );
   const sheet = sheets.find((s) => s.name === sheetName);
   const rows = sheet?.rows ?? NO_ROWS;
   const width = sheet?.width ?? 0;
@@ -114,42 +157,49 @@ function SheetGrid({ sheets, focus, onSelect }: ViewerProps & { sheets: Sheet[] 
     [rows, shownColumns],
   );
 
+  // Adjusted while rendering, so that a focus on another sheet does not flash the current one.
+  if (focus !== focused) {
+    const found = focus && locate(locators, focus);
+    setFocused(focus);
+
+    if (found) {
+      setSheetName(found.sheet);
+      setRange(found);
+      setScrollTarget(found);
+    }
+  }
+
+  useLayoutEffect(() => {
+    const table = tableRef.current;
+
+    setBoxes(
+      located.flatMap(({ range, grade }) => {
+        const style = range?.sheet === sheetName && table && boxOf(table, range);
+        return style ? [{ style, grade }] : [];
+      }),
+    );
+  }, [located, sheetName]);
+
+  // The selection is positioned directly, so that dragging does not re-render the grid.
   useLayoutEffect(() => {
     const overlay = overlayRef.current;
     const table = tableRef.current;
-    const visible = range && range.sheet === sheetName ? normalizeRange(range) : null;
-    const start =
-      visible &&
-      table?.querySelector<HTMLElement>(
-        `td[data-row="${visible.top}"][data-column="${visible.left}"]`,
-      );
-    const end =
-      visible &&
-      table?.querySelector<HTMLElement>(
-        `td[data-row="${visible.bottom}"][data-column="${visible.right}"]`,
-      );
+    const box = range?.sheet === sheetName && table && boxOf(table, range);
 
     if (!overlay) {
       return;
     }
 
-    overlay.hidden = !start || !end;
+    overlay.hidden = !box;
 
-    if (start && end) {
-      Object.assign(overlay.style, {
-        left: `${start.offsetLeft}px`,
-        top: `${start.offsetTop}px`,
-        width: `${end.offsetLeft + end.offsetWidth - start.offsetLeft}px`,
-        height: `${end.offsetTop + end.offsetHeight - start.offsetTop}px`,
-      });
-    }
-  }, [range, sheetName]);
+    if (box) {
+      Object.assign(overlay.style, box);
 
-  useEffect(() => {
-    if (initial) {
-      overlayRef.current?.scrollIntoView({ block: "center", inline: "center" });
+      if (range === scrollTarget) {
+        overlay.scrollIntoView({ block: "center", inline: "center" });
+      }
     }
-  }, [initial]);
+  }, [range, sheetName, scrollTarget]);
 
   useEffect(() => {
     if (!dragging) {
@@ -241,7 +291,7 @@ function SheetGrid({ sheets, focus, onSelect }: ViewerProps & { sheets: Sheet[] 
         </p>
       )}
       <div className="overflow-auto rounded-md border">
-        <div className="relative w-fit">
+        <div className="relative isolate w-fit">
           <table
             ref={tableRef}
             className="border-collapse text-xs select-none"
@@ -263,6 +313,13 @@ function SheetGrid({ sheets, focus, onSelect }: ViewerProps & { sheets: Sheet[] 
             </thead>
             <tbody>{body}</tbody>
           </table>
+          {boxes.map(({ style, grade }, i) => (
+            <div
+              key={i}
+              style={style}
+              className={cn("pointer-events-none absolute -z-10", GRADE_BACKGROUNDS[grade])}
+            />
+          ))}
           <div
             ref={overlayRef}
             hidden
