@@ -1,7 +1,6 @@
 {
   dockerTools,
-  cacert,
-  tzdata,
+  mailcap,
   lib,
   linkFarm,
   writeText,
@@ -34,13 +33,12 @@ let
 in
 dockerTools.streamLayeredImage {
   name = "ragold";
-  tag = "latest";
-  created = "now";
   contents = [
-    cacert
-    tzdata
+    mailcap
+    dockerTools.caCertificates
     dockerTools.fakeNss
     notices
+    server
   ];
   extraCommands = ''
     mkdir -m 1777 tmp data config srv
@@ -54,7 +52,7 @@ dockerTools.streamLayeredImage {
     Env = [
       "XDG_CONFIG_HOME=/config"
       "XDG_DATA_HOME=/data"
-      "HOME=/root"
+      "HOME=/tmp"
     ];
     WorkingDir = "/srv";
     # The license is RAGold's own, the third-party ones are in /usr/share/doc/ragold/NOTICE.
