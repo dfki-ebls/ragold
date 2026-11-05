@@ -173,8 +173,7 @@ export const en = {
       "Mark the parts of your documents that matter for the answer and say how important each one is.",
     empty: "No passages yet.",
     add: "Add passages",
-    noDocuments:
-      "No documents yet. Upload them in the Documents tab, or enter passages by hand.",
+    noDocuments: "No documents yet. Upload them in the Documents tab, or enter passages by hand.",
     showInDocument: "Show in document",
     deletedDocument: "Deleted document",
     noDocument: "Without document",

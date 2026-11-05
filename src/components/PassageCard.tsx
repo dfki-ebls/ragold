@@ -24,7 +24,13 @@ function locationLabel(location: string | null, t: TFunction): string {
 }
 
 /** Icon of the document of a passage, or of a passage without document. */
-export function DocumentIcon({ documentId, className }: { documentId: string | null; className?: string }) {
+export function DocumentIcon({
+  documentId,
+  className,
+}: {
+  documentId: string | null;
+  className?: string;
+}) {
   const Icon = documentId === null ? TextQuote : FileText;
   return <Icon className={className} />;
 }

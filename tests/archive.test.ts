@@ -70,9 +70,19 @@ describe("mergeImport", () => {
   it("reuses documents with known content and remaps ids", async () => {
     const known = bytes("known");
     const fresh = bytes("fresh");
-    useStore.setState({ author: "Alice", documents: { local: await document("local.txt", known) } });
+    useStore.setState({
+      author: "Alice",
+      documents: { local: await document("local.txt", known) },
+    });
 
-    const ids = await mergeImport(await archive(new Map([["a", known], ["b", fresh]])));
+    const ids = await mergeImport(
+      await archive(
+        new Map([
+          ["a", known],
+          ["b", fresh],
+        ]),
+      ),
+    );
     const { annotations, documents, author, project } = useStore.getState();
     const newDocumentId = Object.keys(documents).find((id) => id !== "local");
 
@@ -87,9 +97,9 @@ describe("mergeImport", () => {
   it("rejects checksum mismatches without writing anything", async () => {
     const declared = { a: await document("a.txt", bytes("other")) };
 
-    await expect(mergeImport(await archive(new Map([["a", bytes("content")]]), declared))).rejects.toThrow(
-      "Checksum mismatch",
-    );
+    await expect(
+      mergeImport(await archive(new Map([["a", bytes("content")]]), declared)),
+    ).rejects.toThrow("Checksum mismatch");
     expect(putFiles).not.toHaveBeenCalled();
     expect(useStore.getState().annotations).toEqual({});
   });

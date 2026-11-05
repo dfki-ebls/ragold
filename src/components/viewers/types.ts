@@ -35,5 +35,10 @@ export function viewerLoader<T>(
   load: (blob: Blob) => Promise<T>,
   dispose?: (value: T) => void,
 ): (file: ViewerFile) => Promise<T> {
-  return cached((file: ViewerFile) => load(file.blob), (file) => file.sha256, CACHE_SIZE, dispose);
+  return cached(
+    (file: ViewerFile) => load(file.blob),
+    (file) => file.sha256,
+    CACHE_SIZE,
+    dispose,
+  );
 }

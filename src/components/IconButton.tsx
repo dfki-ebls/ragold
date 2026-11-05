@@ -7,6 +7,13 @@ export function IconButton({
   ...props
 }: Omit<ComponentProps<typeof Button>, "title" | "aria-label"> & { label: string }) {
   return (
-    <Button type="button" variant="ghost" size="icon-sm" title={label} aria-label={label} {...props} />
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon-sm"
+      title={label}
+      aria-label={label}
+      {...props}
+    />
   );
 }

@@ -62,7 +62,21 @@ export function clearSelection(): void {
 }
 
 /** Elements that separate words in the text of a viewer, such as pdf.js line ends or table cells. */
-const BREAKS = new Set(["BR", "P", "DIV", "LI", "TD", "TH", "TR", "H1", "H2", "H3", "H4", "H5", "H6"]);
+const BREAKS = new Set([
+  "BR",
+  "P",
+  "DIV",
+  "LI",
+  "TD",
+  "TH",
+  "TR",
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+]);
 
 /** Search for each of `passages` in the text of `root` with `passageLocator`. */
 export function findTextRanges(root: Node, passages: readonly string[]): (Range | null)[] {

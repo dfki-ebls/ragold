@@ -34,27 +34,33 @@ const optionalText = z.string().default("");
 /** Reference such as an id, link, or location, null if there is none. */
 const optionalReference = requiredText.nullable().default(null);
 
-export const passageSchema = z.object({
-  /** Null for passages whose file is not available, `location` then names their source. */
-  documentId: optionalReference,
-  text: requiredText,
-  location: optionalReference,
-  grade: z.enum(PASSAGE_GRADES),
-}).meta({ id: "Passage" });
+export const passageSchema = z
+  .object({
+    /** Null for passages whose file is not available, `location` then names their source. */
+    documentId: optionalReference,
+    text: requiredText,
+    location: optionalReference,
+    grade: z.enum(PASSAGE_GRADES),
+  })
+  .meta({ id: "Passage" });
 
-export const keyFactSchema = z.object({
-  text: requiredText,
-  importance: z.enum(KEY_FACT_IMPORTANCES),
-}).meta({ id: "KeyFact" });
+export const keyFactSchema = z
+  .object({
+    text: requiredText,
+    importance: z.enum(KEY_FACT_IMPORTANCES),
+  })
+  .meta({ id: "KeyFact" });
 
-export const documentSchema = z.object({
-  name: requiredText,
-  size: z.int().nonnegative(),
-  sha256: z.string().regex(/^[0-9a-f]{64}$/),
-  notes: optionalText,
-  createdAt: timestampSchema,
-  updatedAt: timestampSchema,
-}).meta({ id: "Document" });
+export const documentSchema = z
+  .object({
+    name: requiredText,
+    size: z.int().nonnegative(),
+    sha256: z.string().regex(/^[0-9a-f]{64}$/),
+    notes: optionalText,
+    createdAt: timestampSchema,
+    updatedAt: timestampSchema,
+  })
+  .meta({ id: "Document" });
 
 /** Key facts are verbatim, case-sensitive excerpts of the response. */
 export function isKeyFactInResponse(text: string, response: string): boolean {
@@ -148,7 +154,10 @@ export const annotationDataSchema = dataFields
 
 /** Data as stored in the browser, whose author and project stay unset until they are entered. */
 export const storedDataSchema = dataFields
-  .extend({ author: requiredText.nullable().default(null), project: requiredText.nullable().default(null) })
+  .extend({
+    author: requiredText.nullable().default(null),
+    project: requiredText.nullable().default(null),
+  })
   .superRefine(checkDataDocuments);
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
@@ -192,7 +201,10 @@ const MULTI_PASSAGE_TYPES: ReadonlySet<QuestionType> = new Set([
   "multi-hop",
 ]);
 
-export type HintKey = "unanswerableWithNeeded" | "answerableWithoutNeeded" | "multiPassageFewNeeded";
+export type HintKey =
+  | "unanswerableWithNeeded"
+  | "answerableWithoutNeeded"
+  | "multiPassageFewNeeded";
 
 /** Soft consistency hints that do not block saving, returned as i18n keys under `hints`. */
 export function annotationHints(

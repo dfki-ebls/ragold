@@ -22,7 +22,9 @@ describe("passageLocator", () => {
   it("falls back to in-order token coverage above the threshold", () => {
     const found = locate("the quick red fox jumps over the lazy dog");
 
-    expect(found && haystack.slice(...found)).toBe("The **quick** brown fox jum-\nps over the lazy dog");
+    expect(found && haystack.slice(...found)).toBe(
+      "The **quick** brown fox jum-\nps over the lazy dog",
+    );
     expect(locate("the slow red cat jumps over a lazy dog")).toBeNull();
   });
 });

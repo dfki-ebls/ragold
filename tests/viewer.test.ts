@@ -25,8 +25,16 @@ describe("spreadsheet ranges", () => {
 
     const range = { sheet: "Q1 Sales", top: 4, left: 3, bottom: 1, right: 1 };
     expect(formatRange(range)).toBe("'Q1 Sales'!B2:D5");
-    expect(parseRange("'Q1 Sales'!B2:D5")).toEqual({ sheet: "Q1 Sales", top: 1, left: 1, bottom: 4, right: 3 });
-    expect(formatRange({ sheet: "Sheet1", top: 0, left: 0, bottom: 0, right: 0 })).toBe("Sheet1!A1");
+    expect(parseRange("'Q1 Sales'!B2:D5")).toEqual({
+      sheet: "Q1 Sales",
+      top: 1,
+      left: 1,
+      bottom: 4,
+      right: 3,
+    });
+    expect(formatRange({ sheet: "Sheet1", top: 0, left: 0, bottom: 0, right: 0 })).toBe(
+      "Sheet1!A1",
+    );
     expect(parseRange("page 3")).toBeNull();
   });
 
@@ -52,13 +60,7 @@ it("formats and parses language-neutral spans", () => {
 });
 
 it("chooses viewers by extension", () => {
-  expect(["a.PDF", "b.docx", "c.xlsx", "d.csv", "e.png", "f.dwg", "g.xls"].map(viewerKind)).toEqual([
-    "pdf",
-    "docx",
-    "spreadsheet",
-    "text",
-    "image",
-    "other",
-    "other",
-  ]);
+  expect(["a.PDF", "b.docx", "c.xlsx", "d.csv", "e.png", "f.dwg", "g.xls"].map(viewerKind)).toEqual(
+    ["pdf", "docx", "spreadsheet", "text", "image", "other", "other"],
+  );
 });

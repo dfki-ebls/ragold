@@ -1,13 +1,7 @@
 import { Download, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import i18n from "@/i18n";
 import { exportPersisted } from "@/lib/archive";
 import { resetApp, STORE_KEY } from "@/lib/store";
@@ -76,10 +70,7 @@ export function RecoveryScreen({ title, description, details }: RecoveryScreenPr
               "Resetting clears all stored data and reloads the app.",
             )}
           </p>
-          <Button
-            variant={isConfirming("reset") ? "destructive" : "outline"}
-            onClick={handleReset}
-          >
+          <Button variant={isConfirming("reset") ? "destructive" : "outline"} onClick={handleReset}>
             <RotateCcw />
             {isConfirming("reset")
               ? t("errorBoundary.resetConfirm", "Confirm Reset")

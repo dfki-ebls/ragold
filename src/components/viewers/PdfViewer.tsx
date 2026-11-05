@@ -96,9 +96,13 @@ function onTextLayers(
     if (layer && pages.has(page)) paint(page, layer);
   };
 
-  viewer.eventBus.on("textlayerrendered", ({ pageNumber }: { pageNumber: number }) => repaint(pageNumber), {
-    signal,
-  });
+  viewer.eventBus.on(
+    "textlayerrendered",
+    ({ pageNumber }: { pageNumber: number }) => repaint(pageNumber),
+    {
+      signal,
+    },
+  );
   pages.forEach(repaint);
 }
 

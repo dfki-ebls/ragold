@@ -1,4 +1,12 @@
-import { Lightbulb, Plus, Search, StickyNote, Tags, Library, CircleQuestionMark } from "lucide-react";
+import {
+  Lightbulb,
+  Plus,
+  Search,
+  StickyNote,
+  Tags,
+  Library,
+  CircleQuestionMark,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";

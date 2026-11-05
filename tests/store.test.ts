@@ -14,7 +14,14 @@ beforeEach(() => {
 });
 
 it("removes the passages of a deleted document", () => {
-  const doc = { name: "a.txt", size: 1, sha256: "0".repeat(64), notes: "", createdAt: now, updatedAt: now };
+  const doc = {
+    name: "a.txt",
+    size: 1,
+    sha256: "0".repeat(64),
+    notes: "",
+    createdAt: now,
+    updatedAt: now,
+  };
   const passage = { text: "x", location: null, grade: "needed" as const };
   useStore.setState({ documents: { a: doc, b: { ...doc, name: "b.txt" } } });
   const id = useStore.getState().addAnnotation({

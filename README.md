@@ -57,7 +57,9 @@ The `annotations.json` file follows schema version 3, whose JSON Schema is commi
       "query": "",
       "questionType": "simple",
       "answerability": "answerable",
-      "passages": [{ "documentId": "<documentId>", "text": "", "location": null, "grade": "needed" }],
+      "passages": [
+        { "documentId": "<documentId>", "text": "", "location": null, "grade": "needed" }
+      ],
       "response": "",
       "keyFacts": [{ "text": "", "importance": "must" }],
       "origin": null,

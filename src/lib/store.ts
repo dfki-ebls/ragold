@@ -71,7 +71,17 @@ export function snapshot({
   annotations,
   documents,
 }: StoredData): StoredData {
-  return { version, author, project, notes, language, createdAt, updatedAt, annotations, documents };
+  return {
+    version,
+    author,
+    project,
+    notes,
+    language,
+    createdAt,
+    updatedAt,
+    annotations,
+    documents,
+  };
 }
 
 function idsBySha(documents: Record<string, Document>): Map<string, string> {

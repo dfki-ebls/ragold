@@ -22,7 +22,13 @@ const annotation = {
   updatedAt: now,
 };
 
-const envelope = { version: SCHEMA_VERSION, author: "Ann", project: "RAGold", createdAt: now, updatedAt: now };
+const envelope = {
+  version: SCHEMA_VERSION,
+  author: "Ann",
+  project: "RAGold",
+  createdAt: now,
+  updatedAt: now,
+};
 
 describe("annotationDataSchema", () => {
   it("parses v3 data and fills defaults", () => {
