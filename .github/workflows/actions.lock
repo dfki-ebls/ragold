@@ -4,18 +4,18 @@
 version: 'v0.0.3'
 workflows:
     '.github/workflows/check.yml':
-        - 'actions/checkout@v7.0.1'
+        - 'actions/checkout@v7'
         - 'cachix/cachix-action@v17'
         - 'determinatesystems/nix-installer-action@v23'
     '.github/workflows/release.yml':
-        - 'actions/checkout@v7.0.1'
+        - 'actions/checkout@v7'
         - 'cachix/cachix-action@v17'
-        - 'cihelper/action-semanticrelease-npm@v1.3.5'
+        - 'cihelper/action-semanticrelease-npm@v1'
         - 'determinatesystems/nix-installer-action@v23'
-        - 'docker/setup-qemu-action@v4.4.0'
+        - 'docker/setup-qemu-action@v4'
 dependencies:
-    'actions/checkout@v7.0.1':
-        ref: 'v7.0.1'
+    'actions/checkout@v7':
+        ref: 'v7'
         commit: 'sha1-3d3c42e5aac5ba805825da76410c181273ba90b1'
         owner_id: 44036562
         repo_id: 197814629
@@ -29,8 +29,8 @@ dependencies:
         commit: 'sha1-38b082610b782e7e93e209c35fd730d399dee866'
         owner_id: 36824654
         repo_id: 211717886
-    'cihelper/action-semanticrelease-npm@v1.3.5':
-        ref: 'v1.3.5'
+    'cihelper/action-semanticrelease-npm@v1':
+        ref: 'v1'
         commit: 'sha1-5119ab27646fc13f949b459232db96292100e129'
         owner_id: 120823150
         repo_id: 579499719
@@ -47,8 +47,8 @@ dependencies:
         commit: 'sha1-3138316df39ed29be04236d7ffc686fa525866aa'
         owner_id: 80991770
         repo_id: 588678074
-    'docker/setup-qemu-action@v4.4.0':
-        ref: 'v4.4.0'
+    'docker/setup-qemu-action@v4':
+        ref: 'v4'
         commit: 'sha1-99012661954931238ded8c8b007157a8430204e1'
         owner_id: 5429470
         repo_id: 288487894

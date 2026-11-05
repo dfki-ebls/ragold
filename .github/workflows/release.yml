@@ -24,10 +24,10 @@ jobs:
       name: release
       url: https://github.com/dfki-ebls/ragold/releases/tag/${{ steps.semanticrelease.outputs.git-tag }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: cihelper/action-semanticrelease-npm@v1.3.5
+      - uses: cihelper/action-semanticrelease-npm@v1
         id: semanticrelease
   deploy-docker:
     runs-on: ubuntu-latest
@@ -40,11 +40,11 @@ jobs:
       name: release
       url: https://ghcr.io/dfki-ebls/ragold
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           ref: ${{ needs.release.outputs.git-head }}
-      - uses: docker/setup-qemu-action@v4.4.0
+      - uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
       - uses: DeterminateSystems/nix-installer-action@v23
