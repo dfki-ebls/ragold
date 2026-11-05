@@ -44,7 +44,10 @@
           token = "$GH_TOKEN";
         };
         version = builtins.getEnv "VERSION";
-        imageStreams = with self.packages; [ x86_64-linux.docker ];
+        imageStreams = with self.packages; [
+          x86_64-linux.docker
+          aarch64-linux.docker
+        ];
       };
       treefmt = {
         projectRootFile = "flake.nix";
