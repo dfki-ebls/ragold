@@ -1,8 +1,11 @@
 name: release
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 permissions: {}
+# Never cancel a running release halfway through publishing.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 jobs:
   check:
     uses: $/.github/workflows/check.yml
