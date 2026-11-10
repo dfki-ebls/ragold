@@ -1,5 +1,6 @@
 {
   "name": "ragold",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -50,6 +51,5 @@
     "typescript": "^7",
     "vite": "^8",
     "vitest": "^5"
-  },
-  "version": "1.0.0"
+  }
 }
