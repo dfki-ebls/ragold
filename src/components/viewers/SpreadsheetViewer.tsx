@@ -100,10 +100,43 @@ function cellOf(target: EventTarget): { row: number; column: number } | null {
 export default function SpreadsheetViewer(props: ViewerProps) {
   const sheets = useResource(props.file, loadSheets);
 
-  return sheets === undefined ? <ViewerLoading /> : <SheetGrid sheets={sheets} {...props} />;
+  if (sheets === undefined) {
+    return <ViewerLoading />;
+  }
+
+  // Built per mount rather than cached with the sheets, so that the search index goes with the viewer.
+  const locators: Locators = new Map(sheets.map((s) => [s.name, cellLocator(s.rows, s.name)]));
+
+  return <SheetGrid sheets={sheets} locators={locators} {...props} />;
 }
 
-function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets: Sheet[] }) {
+/** The cells of a sheet, a component of its own so that dragging re-renders just the overlay. */
+function SheetBody({ rows, columns }: { rows: Cell[][]; columns: number }) {
+  return (
+    <tbody>
+      {rows.slice(0, MAX_ROWS).map((row, r) => (
+        <tr key={r}>
+          <th className="sticky left-0 z-10 bg-muted px-2 text-right font-normal text-muted-foreground">
+            {r + 1}
+          </th>
+          {Array.from({ length: columns }, (_, c) => (
+            <td key={c} data-row={r} data-column={c} className="max-w-64 truncate border px-2 py-1">
+              {cellText(row[c] ?? null)}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  );
+}
+
+function SheetGrid({
+  sheets,
+  locators,
+  passages,
+  focus,
+  onSelect,
+}: ViewerProps & { sheets: Sheet[]; locators: Locators }) {
   const { t } = useTranslation();
   const tableRef = useRef<HTMLTableElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -113,12 +146,6 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
   const [boxes, setBoxes] = useState<{ style: CSSProperties; grade: PassageGrade }[]>([]);
   const [focused, setFocused] = useState<ViewerPassage>();
   const [scrollTarget, setScrollTarget] = useState<CellRange>();
-  // Built per mount rather than cached with the sheets, so that the search index goes with the viewer.
-  const locators: Locators = new Map(sheets.map((s) => [s.name, cellLocator(s.rows, s.name)]));
-  const located = passages.map((passage) => ({
-    range: locate(locators, passage),
-    grade: passage.grade,
-  }));
   const sheet = sheets.find((s) => s.name === sheetName);
   const rows = sheet?.rows ?? [];
   const width = sheet?.width ?? 0;
@@ -141,12 +168,13 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
     const table = tableRef.current;
 
     setBoxes(
-      located.flatMap(({ range, grade }) => {
+      passages.flatMap((passage) => {
+        const range = locate(locators, passage);
         const style = range?.sheet === sheetName && table && boxOf(table, range);
-        return style ? [{ style, grade }] : [];
+        return style ? [{ style, grade: passage.grade }] : [];
       }),
     );
-  }, [located, sheetName]);
+  }, [locators, passages, sheetName]);
 
   // The selection is positioned directly, so that dragging does not re-render the grid.
   useLayoutEffect(() => {
@@ -279,25 +307,7 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {rows.slice(0, MAX_ROWS).map((row, r) => (
-                <tr key={r}>
-                  <th className="sticky left-0 z-10 bg-muted px-2 text-right font-normal text-muted-foreground">
-                    {r + 1}
-                  </th>
-                  {Array.from({ length: shownColumns }, (_, c) => (
-                    <td
-                      key={c}
-                      data-row={r}
-                      data-column={c}
-                      className="max-w-64 truncate border px-2 py-1"
-                    >
-                      {cellText(row[c] ?? null)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
+            <SheetBody rows={rows} columns={shownColumns} />
           </table>
           {boxes.map(({ style, grade }, i) => (
             <div
