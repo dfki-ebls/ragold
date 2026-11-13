@@ -8,7 +8,7 @@ export default defineConfig({
       "@": new URL("./src", import.meta.url).pathname,
     },
   },
-  plugins: [tailwindcss(), react({ compiler: true })],
+  plugins: [tailwindcss(), react({ compiler: { logDiagnostics: true } })],
   build: {
     target: "esnext",
     // Served next to `index.html`, the notices that the bundled packages require.
