@@ -106,13 +106,7 @@ interface PassageListProps {
 }
 
 /** Editable cards of passages, whose changes apply to the full list. */
-export function PassageList({
-  passages,
-  shown,
-  onChange,
-  onShow,
-  errorOf,
-}: PassageListProps) {
+export function PassageList({ passages, shown, onChange, onShow, errorOf }: PassageListProps) {
   const { t } = useTranslation();
   const indices = shown ?? passages.map((_, i) => i);
 
