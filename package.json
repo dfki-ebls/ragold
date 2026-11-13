@@ -48,6 +48,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6",
     "jsdom": "^31",
+    "oxc-transform-react": "^0.156",
     "typescript": "^7",
     "vite": "^8",
     "vitest": "^5"
