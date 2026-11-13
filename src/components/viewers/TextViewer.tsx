@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
@@ -13,24 +13,20 @@ const LINES_STEP = 2000;
 
 const loadText = viewerLoader(async (blob) => decodeText(await blob.arrayBuffer()));
 
-function TextViewer(props: ViewerProps) {
+export default function TextViewer(props: ViewerProps) {
   const text = useResource(props.file, loadText);
 
   return text === undefined ? <ViewerLoading /> : <TextContent text={text} {...props} />;
 }
 
-export default memo(TextViewer);
-
 function TextContent({ text, passages, focus, onSelect }: ViewerProps & { text: string }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
-  const lines = useMemo(() => text.split(/\r?\n/), [text]);
-  const locate = useMemo(() => passageLocator(text), [text]);
+  const lines = text.split(/\r?\n/);
+  const locate = passageLocator(text);
   // The focus is located in the full text, so that its lines are rendered before they are highlighted.
-  const focusEnd = useMemo(() => {
-    const found = focus && locate(focus.text);
-    return found ? lineAt(text, found[1] - 1) : 0;
-  }, [text, locate, focus]);
+  const found = focus && locate(focus.text);
+  const focusEnd = found ? lineAt(text, found[1] - 1) : 0;
   const [requested, setRequested] = useState(LINES_STEP);
   const limit = Math.max(requested, focusEnd + LINES_STEP);
   useTextHighlights(ref, limit, passages, focus);

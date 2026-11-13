@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
@@ -9,7 +8,7 @@ const loadUrl = viewerLoader(
   (url) => URL.revokeObjectURL(url),
 );
 
-function ImageViewer({ file, name }: ViewerProps) {
+export default function ImageViewer({ file, name }: ViewerProps) {
   const { t } = useTranslation();
   const url = useResource(file, loadUrl);
 
@@ -24,5 +23,3 @@ function ImageViewer({ file, name }: ViewerProps) {
     </div>
   );
 }
-
-export default memo(ImageViewer);

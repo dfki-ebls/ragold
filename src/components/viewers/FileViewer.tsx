@@ -1,12 +1,11 @@
 import { FileQuestionMark, SquareArrowOutUpRight } from "lucide-react";
-import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { ViewerProps } from "@/components/viewers/types";
 import { downloadBlob } from "@/lib/utils";
 
 /** Fallback for file types without a viewer, the file is opened by the operating system. */
-function FileViewer({ file, name }: ViewerProps) {
+export default function FileViewer({ file, name }: ViewerProps) {
   const { t } = useTranslation();
 
   return (
@@ -20,5 +19,3 @@ function FileViewer({ file, name }: ViewerProps) {
     </div>
   );
 }
-
-export default memo(FileViewer);

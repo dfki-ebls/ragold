@@ -1,5 +1,5 @@
 import { FileText, PenLine, StickyNote, Upload } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/EmptyState";
@@ -128,7 +128,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const updateDocument = useStore((s) => s.updateDocument);
   const deleteDocument = useStore((s) => s.deleteDocument);
   const documentFormDirty = useDirtyForms((s) => s.document);
-  const usage = useMemo(() => documentUsage(annotations), [annotations]);
+  const usage = documentUsage(annotations);
   const usageOf = (id: string) => usage.get(id) ?? UNUSED;
 
   const [editingId, setEditingId] = useState<string | null>(null);

@@ -2,7 +2,7 @@ import "@/components/viewers/pdfjs";
 import "pdfjs-dist/web/pdf_viewer.css";
 import { getDocument, type PDFDocumentProxy } from "pdfjs-dist";
 import { EventBus, LinkTarget, PDFLinkService, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
-import { memo, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type ViewerPassage, type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
 import { passageLocator } from "@/lib/match";
@@ -69,7 +69,7 @@ const loadPdf = viewerLoader(
   ({ proxy }) => void proxy.loadingTask.destroy(),
 );
 
-function PdfViewer({ file, passages, focus, onSelect }: ViewerProps) {
+export default function PdfViewer({ file, passages, focus, onSelect }: ViewerProps) {
   const pdf = useResource(file, loadPdf);
 
   return pdf ? (
@@ -78,8 +78,6 @@ function PdfViewer({ file, passages, focus, onSelect }: ViewerProps) {
     <ViewerLoading />
   );
 }
-
-export default memo(PdfViewer);
 
 /**
  * Call `paint` for each of `pages` now and again whenever pdf.js renders one of them,

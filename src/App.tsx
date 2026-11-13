@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AnnotationManager } from "@/components/AnnotationManager";
 import { DocumentManager } from "@/components/DocumentManager";
@@ -10,6 +10,12 @@ import { TransferDialog } from "@/components/TransferDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore, useView } from "@/lib/store";
 
+function scrollToStart(ref: RefObject<HTMLElement | null>) {
+  requestAnimationFrame(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+}
+
 export default function App() {
   const { t } = useTranslation();
   const annotations = useStore((s) => s.annotations);
@@ -19,21 +25,17 @@ export default function App() {
   const activeTab = useView((s) => s.tab);
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  const scrollToTabs = useCallback(() => {
-    requestAnimationFrame(() => {
-      tabsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }, []);
+  const scrollToTabs = () => scrollToStart(tabsRef);
 
   // Bring the form into view whenever an annotation is loaded into it, including by an import.
   useEffect(
     () =>
       useView.subscribe((state, prev) => {
         if (state.editingId && state.editingId !== prev.editingId) {
-          scrollToTabs();
+          scrollToStart(tabsRef);
         }
       }),
-    [scrollToTabs],
+    [],
   );
 
   if (loadError) {

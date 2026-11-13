@@ -1,5 +1,5 @@
 import { ChevronDown, PencilLine } from "lucide-react";
-import { Component, lazy, type ReactNode, Suspense, useCallback, useMemo, useState } from "react";
+import { Component, lazy, type ReactNode, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { GradePicker, useChoiceOptions } from "@/components/choices";
@@ -109,22 +109,16 @@ export function PassageDialog({
   const [selection, setSelection] = useState<ViewerSelection | null>(null);
   const gradeOptions = useChoiceOptions(PASSAGE_GRADES, "passageGrades");
   const doc = documentId ? documents[documentId] : undefined;
-  const loadFile = useCallback(
-    async (sha256: string): Promise<ViewerFile | null> => {
-      const blob = documentId ? await getFile(documentId).catch(() => null) : null;
-      return blob && { blob, sha256 };
-    },
-    [documentId],
-  );
+  const loadFile = async (sha256: string): Promise<ViewerFile | null> => {
+    const blob = documentId ? await getFile(documentId).catch(() => null) : null;
+    return blob && { blob, sha256 };
+  };
   // Keyed by content, so that a replaced file is loaded again.
   const file = useResource(doc?.sha256 ?? null, loadFile);
   const kind = doc ? viewerKind(doc.name) : "other";
   const Viewer = VIEWERS[kind];
-  const shown = useMemo(
-    () => passages.flatMap((p, i) => (p.documentId === documentId ? [i] : [])),
-    [passages, documentId],
-  );
-  const highlighted = useMemo(() => shown.map((i) => passages[i]), [passages, shown]);
+  const shown = passages.flatMap((p, i) => (p.documentId === documentId ? [i] : []));
+  const highlighted = shown.map((i) => passages[i]);
 
   /** Add a passage, or regrade the one with the same text in the same document. */
   const add = (passage: Omit<Passage, "documentId">) => {
@@ -265,15 +259,12 @@ function DocumentPicker({
   onChange: (id: string | null) => void;
 }) {
   const { t } = useTranslation();
-  const items = useMemo<DocumentItem[]>(
-    () => [
-      ...Object.entries(documents)
-        .map(([id, doc]) => ({ id, name: doc.name }))
-        .toSorted((a, b) => a.name.localeCompare(b.name)),
-      { id: null, name: t("passages.noDocument") },
-    ],
-    [documents, t],
-  );
+  const items: DocumentItem[] = [
+    ...Object.entries(documents)
+      .map(([id, doc]) => ({ id, name: doc.name }))
+      .toSorted((a, b) => a.name.localeCompare(b.name)),
+    { id: null, name: t("passages.noDocument") },
+  ];
   const counts = Map.groupBy(passages, (p) => p.documentId);
 
   return (

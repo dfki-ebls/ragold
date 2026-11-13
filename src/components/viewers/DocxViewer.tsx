@@ -1,6 +1,6 @@
 import DOMPurify from "dompurify";
 import mammoth from "mammoth";
-import { memo, useRef } from "react";
+import { useRef } from "react";
 import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
 import { rangeAnchor, selectionHandlers, useTextHighlights } from "@/lib/selection";
@@ -30,7 +30,7 @@ function headingBefore(root: HTMLElement, node: Node): string | null {
   return heading;
 }
 
-function DocxViewer({ file, passages, focus, onSelect }: ViewerProps) {
+export default function DocxViewer({ file, passages, focus, onSelect }: ViewerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const html = useResource(file, loadHtml);
   useTextHighlights(ref, html, passages, focus);
@@ -58,5 +58,3 @@ function DocxViewer({ file, passages, focus, onSelect }: ViewerProps) {
     />
   );
 }
-
-export default memo(DocxViewer);

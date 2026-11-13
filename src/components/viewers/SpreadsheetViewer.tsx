@@ -1,13 +1,5 @@
 import readXlsxFile, { type CellValue } from "read-excel-file/browser";
-import {
-  type CSSProperties,
-  memo,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/components/ui/label";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
@@ -36,7 +28,6 @@ import { cn } from "cn";
 /** Rendered grid bounds that keep the table responsive. */
 const MAX_ROWS = 500;
 const MAX_COLUMNS = 50;
-const NO_ROWS: Cell[][] = [];
 
 interface Sheet {
   name: string;
@@ -106,13 +97,11 @@ function cellOf(target: EventTarget): { row: number; column: number } | null {
   return cell ? { row: Number(cell.dataset.row), column: Number(cell.dataset.column) } : null;
 }
 
-function SpreadsheetViewer(props: ViewerProps) {
+export default function SpreadsheetViewer(props: ViewerProps) {
   const sheets = useResource(props.file, loadSheets);
 
   return sheets === undefined ? <ViewerLoading /> : <SheetGrid sheets={sheets} {...props} />;
 }
-
-export default memo(SpreadsheetViewer);
 
 function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets: Sheet[] }) {
   const { t } = useTranslation();
@@ -125,37 +114,16 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
   const [focused, setFocused] = useState<ViewerPassage>();
   const [scrollTarget, setScrollTarget] = useState<CellRange>();
   // Built per mount rather than cached with the sheets, so that the search index goes with the viewer.
-  const locators: Locators = useMemo(
-    () => new Map(sheets.map((s) => [s.name, cellLocator(s.rows, s.name)])),
-    [sheets],
-  );
-  const located = useMemo(
-    () => passages.map((passage) => ({ range: locate(locators, passage), grade: passage.grade })),
-    [locators, passages],
-  );
+  const locators: Locators = new Map(sheets.map((s) => [s.name, cellLocator(s.rows, s.name)]));
+  const located = passages.map((passage) => ({
+    range: locate(locators, passage),
+    grade: passage.grade,
+  }));
   const sheet = sheets.find((s) => s.name === sheetName);
-  const rows = sheet?.rows ?? NO_ROWS;
+  const rows = sheet?.rows ?? [];
   const width = sheet?.width ?? 0;
   const shownRows = Math.min(rows.length, MAX_ROWS);
   const shownColumns = Math.min(width, MAX_COLUMNS);
-
-  // The grid only depends on the sheet, so dragging re-renders just the overlay.
-  const body = useMemo(
-    () =>
-      rows.slice(0, MAX_ROWS).map((row, r) => (
-        <tr key={r}>
-          <th className="sticky left-0 z-10 bg-muted px-2 text-right font-normal text-muted-foreground">
-            {r + 1}
-          </th>
-          {Array.from({ length: shownColumns }, (_, c) => (
-            <td key={c} data-row={r} data-column={c} className="max-w-64 truncate border px-2 py-1">
-              {cellText(row[c] ?? null)}
-            </td>
-          ))}
-        </tr>
-      )),
-    [rows, shownColumns],
-  );
 
   // Adjusted while rendering, so that a focus on another sheet does not flash the current one.
   if (focus !== focused) {
@@ -215,9 +183,9 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
           `td[data-row="${range.bottom}"][data-column="${range.right}"]`,
         );
 
-      if (range && end) {
+      if (sheet && range && end) {
         onSelect({
-          text: rangeToTsv(rows, range),
+          text: rangeToTsv(sheet.rows, range),
           location: formatRange(range),
           anchor: end,
         });
@@ -227,7 +195,7 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
     window.addEventListener("pointerup", finish);
 
     return () => window.removeEventListener("pointerup", finish);
-  }, [dragging, range, rows, onSelect]);
+  }, [dragging, range, sheet, onSelect]);
 
   const handlePointerDown = (event: React.PointerEvent) => {
     const cell = cellOf(event.target);
@@ -311,7 +279,25 @@ function SheetGrid({ sheets, passages, focus, onSelect }: ViewerProps & { sheets
                 ))}
               </tr>
             </thead>
-            <tbody>{body}</tbody>
+            <tbody>
+              {rows.slice(0, MAX_ROWS).map((row, r) => (
+                <tr key={r}>
+                  <th className="sticky left-0 z-10 bg-muted px-2 text-right font-normal text-muted-foreground">
+                    {r + 1}
+                  </th>
+                  {Array.from({ length: shownColumns }, (_, c) => (
+                    <td
+                      key={c}
+                      data-row={r}
+                      data-column={c}
+                      className="max-w-64 truncate border px-2 py-1"
+                    >
+                      {cellText(row[c] ?? null)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
           </table>
           {boxes.map(({ style, grade }, i) => (
             <div
