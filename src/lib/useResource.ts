@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 
 type Loaded<K, T> = { key: K; value: T } | { key: K; error: unknown };
 
@@ -6,10 +6,11 @@ type Loaded<K, T> = { key: K; value: T } | { key: K; error: unknown };
  * Load a resource for `key`, ignoring results for keys that are no longer current.
  * A null key loads nothing.
  * Returns undefined while loading and rethrows failures during render for the nearest error boundary.
- * Pass a stable function, it is an effect dependency.
+ * Only a change of `key` loads again, not a change of `load`.
  */
 export function useResource<K, T>(key: K | null, load: (key: K) => Promise<T>): T | undefined {
   const [state, setState] = useState<Loaded<K, T>>();
+  const loadKey = useEffectEvent(load);
 
   useEffect(() => {
     if (key === null) {
@@ -18,7 +19,7 @@ export function useResource<K, T>(key: K | null, load: (key: K) => Promise<T>): 
 
     let active = true;
 
-    load(key).then(
+    loadKey(key).then(
       (value) => {
         if (active) setState({ key, value });
       },
@@ -30,7 +31,7 @@ export function useResource<K, T>(key: K | null, load: (key: K) => Promise<T>): 
     return () => {
       active = false;
     };
-  }, [key, load]);
+  }, [key]);
 
   if (key === null || state?.key !== key) {
     return undefined;
