@@ -137,6 +137,9 @@ function indexOf(haystack: string): Index {
   return { ...normalized, tokens, offsets };
 }
 
+/** Search for a passage, returning its `[start, end)` offsets or null. */
+export type PassageLocator = (passage: string) => [number, number] | null;
+
 /**
  * Locator of passages in `haystack`, returning `[start, end)` offsets into `haystack` or null.
  * Normalized containment is tried first, then the window of about the passage's length whose tokens
@@ -144,7 +147,7 @@ function indexOf(haystack: string): Index {
  * The haystack is indexed once on the first search and results are kept per passage,
  * so reuse the locator for several passages.
  */
-export function passageLocator(haystack: string): (passage: string) => [number, number] | null {
+export function passageLocator(haystack: string): PassageLocator {
   let index: Index | undefined;
   const results = new Map<string, [number, number] | null>();
 

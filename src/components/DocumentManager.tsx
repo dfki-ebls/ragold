@@ -128,8 +128,6 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const updateDocument = useStore((s) => s.updateDocument);
   const deleteDocument = useStore((s) => s.deleteDocument);
   const documentFormDirty = useDirtyForms((s) => s.document);
-  const usage = documentUsage(annotations);
-  const usageOf = (id: string) => usage.get(id) ?? UNUSED;
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
@@ -156,6 +154,9 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     }
   });
 
+  // Derived after the hooks, so that the compiler caches it.
+  const usage = documentUsage(annotations);
+  const usageOf = (id: string) => usage.get(id) ?? UNUSED;
   const documentList = Object.entries(documents);
   const editingDoc = editingId ? documents[editingId] : null;
 

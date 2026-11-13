@@ -119,6 +119,10 @@ export function PassageDialog({
   const Viewer = VIEWERS[kind];
   const shown = passages.flatMap((p, i) => (p.documentId === documentId ? [i] : []));
   const highlighted = shown.map((i) => passages[i]);
+  // Translated outside of the markup, where the compiler would cache the viewer together with the selection.
+  const listTitle = t(documentId === null ? "passages.listNoDocument" : "passages.listDocument", {
+    count: shown.length,
+  });
 
   /** Add a passage, or regrade the one with the same text in the same document. */
   const add = (passage: Omit<Passage, "documentId">) => {
@@ -127,14 +131,16 @@ export function PassageDialog({
     }
 
     const text = normalizePassage(passage.text);
-    const index = shown.find((i) => normalizePassage(passages[i].text) === text);
+    const index = passages.findIndex(
+      (p) => p.documentId === documentId && normalizePassage(p.text) === text,
+    );
 
     onChange(
-      index === undefined
+      index === -1
         ? [...passages, { ...passage, documentId }]
-        : passages.map((p, i) => (i === index ? { ...p, grade: passage.grade } : p)),
+        : passages.with(index, { ...passages[index], grade: passage.grade }),
     );
-    toast.success(t(index === undefined ? "passages.added" : "passages.updated"));
+    toast.success(t(index === -1 ? "passages.added" : "passages.updated"));
   };
 
   const pickGrade = (grade: PassageGrade) => {
@@ -200,9 +206,7 @@ export function PassageDialog({
           {documentId !== undefined && (
             <section className="max-h-48 space-y-2 overflow-auto lg:max-h-none">
               <h3 className="text-sm font-medium">
-                {t(documentId === null ? "passages.listNoDocument" : "passages.listDocument", {
-                  count: shown.length,
-                })}
+                {listTitle}
               </h3>
               <PassageList
                 passages={passages}

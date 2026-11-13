@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { type ViewerProps, viewerLoader } from "@/components/viewers/types";
 import { ViewerLoading } from "@/components/viewers/ViewerLoading";
-import { passageLocator } from "@/lib/match";
+import { type PassageLocator, passageLocator } from "@/lib/match";
 import { closestData, rangeAnchor, selectionHandlers, useTextHighlights } from "@/lib/selection";
 import { useResource } from "@/lib/useResource";
 import { decodeText, formatSpan, lineAt } from "@/lib/viewer";
@@ -16,20 +16,31 @@ const loadText = viewerLoader(async (blob) => decodeText(await blob.arrayBuffer(
 export default function TextViewer(props: ViewerProps) {
   const text = useResource(props.file, loadText);
 
-  return text === undefined ? <ViewerLoading /> : <TextContent text={text} {...props} />;
+  if (text === undefined) {
+    return <ViewerLoading />;
+  }
+
+  // Built here rather than in the content, where locating the focus would rebuild the index on each focus.
+  return <TextContent text={text} locate={passageLocator(text)} {...props} />;
 }
 
-function TextContent({ text, passages, focus, onSelect }: ViewerProps & { text: string }) {
+function TextContent({
+  text,
+  locate,
+  passages,
+  focus,
+  onSelect,
+}: ViewerProps & { text: string; locate: PassageLocator }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
-  const lines = text.split(/\r?\n/);
-  const locate = passageLocator(text);
   // The focus is located in the full text, so that its lines are rendered before they are highlighted.
   const found = focus && locate(focus.text);
   const focusEnd = found ? lineAt(text, found[1] - 1) : 0;
   const [requested, setRequested] = useState(LINES_STEP);
   const limit = Math.max(requested, focusEnd + LINES_STEP);
   useTextHighlights(ref, limit, passages, focus);
+  // Split after the hooks, so that the compiler caches the lines together with the markup.
+  const lines = text.split(/\r?\n/);
 
   const handlers = selectionHandlers((selection) => {
     if (!selection) {
