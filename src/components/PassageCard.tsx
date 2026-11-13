@@ -108,20 +108,21 @@ interface PassageListProps {
 /** Editable cards of passages, whose changes apply to the full list. */
 export function PassageList({
   passages,
-  shown = passages.map((_, i) => i),
+  shown,
   onChange,
   onShow,
   errorOf,
 }: PassageListProps) {
   const { t } = useTranslation();
+  const indices = shown ?? passages.map((_, i) => i);
 
-  if (shown.length === 0) {
+  if (indices.length === 0) {
     return <p className="text-sm text-muted-foreground/70 italic">{t("passages.empty")}</p>;
   }
 
   return (
     <div className="space-y-2">
-      {shown.map((i) => (
+      {indices.map((i) => (
         <PassageCard
           key={i}
           passage={passages[i]}

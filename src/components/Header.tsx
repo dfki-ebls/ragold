@@ -103,9 +103,9 @@ export default function Header() {
           message: errorMessage(err),
         }),
       );
-    } finally {
-      setIsExporting(false);
     }
+
+    setIsExporting(false);
   };
 
   const toggleLanguage = () => {

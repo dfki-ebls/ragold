@@ -178,39 +178,36 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     if (valid.length === 0) return;
 
     setUploading(true);
-    try {
-      const results = await Promise.allSettled(valid.map((file) => uploadDocument(file)));
-      const duplicates: string[] = [];
-      const errors: string[] = [];
-      let added = 0;
+    const results = await Promise.allSettled(valid.map((file) => uploadDocument(file)));
+    setUploading(false);
+    const duplicates: string[] = [];
+    const errors: string[] = [];
+    let added = 0;
 
-      results.forEach((result, i) => {
-        const { name } = valid[i];
+    for (const [i, result] of results.entries()) {
+      const { name } = valid[i];
 
-        if (result.status === "rejected") {
-          errors.push(
-            t("documentManager.uploadError", { name, message: errorMessage(result.reason) }),
-          );
-        } else if (result.value.duplicate) {
-          const existing = useStore.getState().documents[result.value.id]?.name ?? "";
-          duplicates.push(t("documentManager.duplicate", { name, existing }));
-        } else {
-          added++;
-        }
-      });
-
-      if (duplicates.length > 0) {
-        toast.info(duplicates.join("\n"));
+      if (result.status === "rejected") {
+        errors.push(
+          t("documentManager.uploadError", { name, message: errorMessage(result.reason) }),
+        );
+      } else if (result.value.duplicate) {
+        const existing = useStore.getState().documents[result.value.id]?.name ?? "";
+        duplicates.push(t("documentManager.duplicate", { name, existing }));
+      } else {
+        added++;
       }
+    }
 
-      if (errors.length > 0) {
-        toast.error(errors.join("\n"));
-      } else if (added > 0) {
-        toast.success(t("documentManager.uploadSuccess", { count: added }));
-        scrollPendingRef.current = true;
-      }
-    } finally {
-      setUploading(false);
+    if (duplicates.length > 0) {
+      toast.info(duplicates.join("\n"));
+    }
+
+    if (errors.length > 0) {
+      toast.error(errors.join("\n"));
+    } else if (added > 0) {
+      toast.success(t("documentManager.uploadSuccess", { count: added }));
+      scrollPendingRef.current = true;
     }
   };
 
@@ -238,9 +235,9 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
           message: errorMessage(err),
         }),
       );
-    } finally {
-      setUploading(false);
     }
+
+    setUploading(false);
   };
 
   const handleEdit = (id: string) => {
