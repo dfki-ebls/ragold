@@ -205,9 +205,7 @@ export function PassageDialog({
           <div className="min-h-48 overflow-auto rounded-2xl border bg-muted/30 p-4">{viewer}</div>
           {documentId !== undefined && (
             <section className="max-h-48 space-y-2 overflow-auto lg:max-h-none">
-              <h3 className="text-sm font-medium">
-                {listTitle}
-              </h3>
+              <h3 className="text-sm font-medium">{listTitle}</h3>
               <PassageList
                 passages={passages}
                 shown={shown}
