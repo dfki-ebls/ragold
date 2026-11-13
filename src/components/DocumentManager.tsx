@@ -1,5 +1,5 @@
 import { FileText, PenLine, StickyNote, Upload } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { EmptyState } from "@/components/EmptyState";
@@ -134,7 +134,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const scrollPendingRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploading, startUpload] = useTransition();
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -160,7 +160,7 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
   const documentList = Object.entries(documents);
   const editingDoc = editingId ? documents[editingId] : null;
 
-  const processFiles = async (files: File[]) => {
+  const processFiles = (files: File[]) => {
     const oversized = files.filter((f) => f.size > MAX_FILE_SIZE);
     const valid = files.filter((f) => f.size <= MAX_FILE_SIZE);
 
@@ -178,41 +178,41 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     }
     if (valid.length === 0) return;
 
-    setUploading(true);
-    const results = await Promise.allSettled(valid.map((file) => uploadDocument(file)));
-    setUploading(false);
-    const duplicates: string[] = [];
-    const errors: string[] = [];
-    let added = 0;
+    startUpload(async () => {
+      const results = await Promise.allSettled(valid.map((file) => uploadDocument(file)));
+      const duplicates: string[] = [];
+      const errors: string[] = [];
+      let added = 0;
 
-    for (const [i, result] of results.entries()) {
-      const { name } = valid[i];
+      for (const [i, result] of results.entries()) {
+        const { name } = valid[i];
 
-      if (result.status === "rejected") {
-        errors.push(
-          t("documentManager.uploadError", { name, message: errorMessage(result.reason) }),
-        );
-      } else if (result.value.duplicate) {
-        const existing = useStore.getState().documents[result.value.id]?.name ?? "";
-        duplicates.push(t("documentManager.duplicate", { name, existing }));
-      } else {
-        added++;
+        if (result.status === "rejected") {
+          errors.push(
+            t("documentManager.uploadError", { name, message: errorMessage(result.reason) }),
+          );
+        } else if (result.value.duplicate) {
+          const existing = useStore.getState().documents[result.value.id]?.name ?? "";
+          duplicates.push(t("documentManager.duplicate", { name, existing }));
+        } else {
+          added++;
+        }
       }
-    }
 
-    if (duplicates.length > 0) {
-      toast.info(duplicates.join("\n"));
-    }
+      if (duplicates.length > 0) {
+        toast.info(duplicates.join("\n"));
+      }
 
-    if (errors.length > 0) {
-      toast.error(errors.join("\n"));
-    } else if (added > 0) {
-      toast.success(t("documentManager.uploadSuccess", { count: added }));
-      scrollPendingRef.current = true;
-    }
+      if (errors.length > 0) {
+        toast.error(errors.join("\n"));
+      } else if (added > 0) {
+        toast.success(t("documentManager.uploadSuccess", { count: added }));
+        scrollPendingRef.current = true;
+      }
+    });
   };
 
-  const handleReUpload = async (file: File) => {
+  const handleReUpload = (file: File) => {
     if (!editingId) return;
     if (file.size > MAX_FILE_SIZE) {
       toast.error(
@@ -223,22 +223,21 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
       );
       return;
     }
-    setUploading(true);
-    try {
-      await replaceDocumentFile(editingId, file);
-      updateDocument(editingId, { notes });
-      toast.success(t("documentManager.saved"));
-      startEditing(null);
-    } catch (err) {
-      toast.error(
-        t("documentManager.uploadError", {
-          name: file.name,
-          message: errorMessage(err),
-        }),
-      );
-    }
-
-    setUploading(false);
+    startUpload(async () => {
+      try {
+        await replaceDocumentFile(editingId, file);
+        updateDocument(editingId, { notes });
+        toast.success(t("documentManager.saved"));
+        startEditing(null);
+      } catch (err) {
+        toast.error(
+          t("documentManager.uploadError", {
+            name: file.name,
+            message: errorMessage(err),
+          }),
+        );
+      }
+    });
   };
 
   const handleEdit = (id: string) => {
@@ -275,22 +274,22 @@ export function DocumentManager({ scrollToTabs }: DocumentManagerProps) {
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       if (editingId) {
-        void handleReUpload(files[0]);
+        handleReUpload(files[0]);
       } else {
-        void processFiles(files);
+        processFiles(files);
       }
     }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
-    if (files.length > 0) void processFiles(files);
+    if (files.length > 0) processFiles(files);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleReUploadInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) void handleReUpload(file);
+    if (file) handleReUpload(file);
     if (reUploadInputRef.current) reUploadInputRef.current.value = "";
   };
 

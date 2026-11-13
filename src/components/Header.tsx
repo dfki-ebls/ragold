@@ -1,5 +1,5 @@
 import { Download, Globe, Loader2, RotateCcw, Upload } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -34,7 +34,7 @@ export default function Header() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isConfirming, confirm } = useConfirmAction();
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExporting, startExport] = useTransition();
 
   const annotationCount = Object.keys(annotations).length;
   const isMetadataComplete = author !== null && project !== null;
@@ -78,7 +78,7 @@ export default function Header() {
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = () => {
     if (!isMetadataComplete) {
       toast.warning(t("header.exportDisabledMeta"));
       return;
@@ -89,23 +89,22 @@ export default function Header() {
     }
     const { annotation, document } = useDirtyForms.getState();
     const hasUnsaved = annotation || document;
-    setIsExporting(true);
-    try {
-      await exportArchive();
-      if (hasUnsaved) {
-        toast.warning(t("header.exportUnsavedWarning"));
-      } else {
-        toast.success(t("header.exportSuccess"));
+    startExport(async () => {
+      try {
+        await exportArchive();
+        if (hasUnsaved) {
+          toast.warning(t("header.exportUnsavedWarning"));
+        } else {
+          toast.success(t("header.exportSuccess"));
+        }
+      } catch (err) {
+        toast.error(
+          t("header.exportError", {
+            message: errorMessage(err),
+          }),
+        );
       }
-    } catch (err) {
-      toast.error(
-        t("header.exportError", {
-          message: errorMessage(err),
-        }),
-      );
-    }
-
-    setIsExporting(false);
+    });
   };
 
   const toggleLanguage = () => {
